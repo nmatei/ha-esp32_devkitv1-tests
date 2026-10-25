@@ -1,0 +1,32 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Alfabetul pe fire",
+        "description": "The 5 lamps, wire 1 is the most significant bit.",
+        "data": {
+          "name": "Name",
+          "fir_1": "Wire 1 (yellow)",
+          "fir_2": "Wire 2 (red)",
+          "fir_3": "Wire 3 (blue)",
+          "fir_4": "Wire 4 (green)",
+          "fir_5": "Wire 5 (white)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Alfabetul pe fire",
+        "data": {
+          "fir_1": "Wire 1 (yellow)",
+          "fir_2": "Wire 2 (red)",
+          "fir_3": "Wire 3 (blue)",
+          "fir_4": "Wire 4 (green)",
+          "fir_5": "Wire 5 (white)"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Alfabetul pe fire",
+        "description": "Cele 5 becuri; firul 1 e bitul cel mai semnificativ.",
+        "data": {
+          "name": "Nume",
+          "fir_1": "Fir 1 (galben)",
+          "fir_2": "Fir 2 (roșu)",
+          "fir_3": "Fir 3 (albastru)",
+          "fir_4": "Fir 4 (verde)",
+          "fir_5": "Fir 5 (alb)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Alfabetul pe fire",
+        "data": {
+          "fir_1": "Fir 1 (galben)",
+          "fir_2": "Fir 2 (roșu)",
+          "fir_3": "Fir 3 (albastru)",
+          "fir_4": "Fir 4 (verde)",
+          "fir_5": "Fir 5 (alb)"
+        }
+      }
+    }
+  }
+}

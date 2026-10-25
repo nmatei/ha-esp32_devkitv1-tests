@@ -1,0 +1,36 @@
+# ESPHome: the 5 LEDs of the ESP32 devkitv1 (add to the device config).
+# Wire order: 1 yellow GPIO23, 2 red GPIO22, 3 blue GPIO21, 4 green GPIO19, 5 white GPIO18.
+
+output:
+  - platform: gpio
+    pin: GPIO23
+    id: out_galben
+  - platform: gpio
+    pin: GPIO22
+    id: out_rosu
+  - platform: gpio
+    pin: GPIO21
+    id: out_albastru
+  - platform: gpio
+    pin: GPIO19
+    id: out_verde
+  - platform: gpio
+    pin: GPIO18
+    id: out_alb
+
+light:
+  - platform: binary
+    name: "LED Galben"
+    output: out_galben
+  - platform: binary
+    name: "LED Rosu"
+    output: out_rosu
+  - platform: binary
+    name: "LED Albastru"
+    output: out_albastru
+  - platform: binary
+    name: "LED Verde"
+    output: out_verde
+  - platform: binary
+    name: "LED Alb"
+    output: out_alb

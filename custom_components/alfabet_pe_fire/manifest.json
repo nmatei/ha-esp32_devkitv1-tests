@@ -1,0 +1,12 @@
+{
+  "domain": "alfabet_pe_fire",
+  "name": "Alfabetul pe fire",
+  "codeowners": ["@nmatei"],
+  "config_flow": true,
+  "documentation": "https://github.com/nmatei/ha-esp32_devkitv1-tests",
+  "integration_type": "device",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/nmatei/ha-esp32_devkitv1-tests/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

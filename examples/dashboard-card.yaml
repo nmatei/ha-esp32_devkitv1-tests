@@ -1,0 +1,43 @@
+# Dashboard → Edit → Add card → Manual.
+# Entity ids assume the entry is named "ESP32 devkitv1" (the default).
+type: vertical-stack
+cards:
+  - type: entities
+    title: 💡 Alfabetul pe fire
+    entities:
+      - entity: text.esp32_devkitv1_mesaj
+      - entity: number.esp32_devkitv1_interval
+      - entity: sensor.esp32_devkitv1_progres
+  - type: horizontal-stack
+    cards:
+      - type: button
+        entity: button.esp32_devkitv1_start
+        name: Start
+        icon: mdi:play
+        tap_action:
+          action: perform-action
+          perform_action: button.press
+          target:
+            entity_id: button.esp32_devkitv1_start
+      - type: button
+        entity: button.esp32_devkitv1_stop
+        name: Stop
+        icon: mdi:stop
+        tap_action:
+          action: perform-action
+          perform_action: button.press
+          target:
+            entity_id: button.esp32_devkitv1_stop
+  - type: glance
+    title: Becurile (fir 1 → fir 5)
+    entities:
+      - entity: light.office_esphome_esp32_devkitv1_led_galben
+        name: "1"
+      - entity: light.office_esphome_esp32_devkitv1_led_rosu
+        name: "2"
+      - entity: light.office_esphome_esp32_devkitv1_led_albastru
+        name: "3"
+      - entity: light.office_esphome_esp32_devkitv1_led_verde
+        name: "4"
+      - entity: light.office_esphome_esp32_devkitv1_led_alb
+        name: "5"
