@@ -76,7 +76,7 @@ One device per entry, with:
 | ------------------------------- | ------------------------------------------------- |
 | `text.<name>_mesaj`             | the message (max 255 characters), kept on restart |
 | `select.<name>_tip_mesaj`       | `Litere colorate` (5 wires) or `Morse`            |
-| `number.<name>_interval`        | ms, 200–60000, step 100; **one value per message type**: time per symbol for colored letters (default 5000), dot length for Morse (default 400). Switching the type shows its value. |
+| `number.<name>_interval`        | ms, 100–60000, step 100; **one value per message type**: time per symbol for colored letters (default 5000), dot length for Morse (default 400). Switching the type shows its value. |
 | `select.<name>_culoare_morse`   | Morse: the lamp (`galben` … `alb`, wire 1 … 5)    |
 | `number.<name>_repeta_dupa`     | ms, 0–3600000, step 100: **0 = play once**; above 0 the message starts again after that pause, forever, until Stop (or until set back to 0). Each repetition reads the settings again, so they can be changed while it repeats. |
 | `button.<name>_start`           | plays from the beginning (restarts if running)    |

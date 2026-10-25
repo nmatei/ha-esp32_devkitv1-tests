@@ -39,7 +39,7 @@ DEFAULT_MORSE_COLOR: Final = "galben"
 # colored letters = time per symbol (dark gap included),
 # Morse = the length of a dot (dash 3, letter gap 3, word gap 7).
 DEFAULT_INTERVALS: Final = {MODE_COLORS: 5000, MODE_MORSE: 400}
-MIN_INTERVAL: Final = 200
+MIN_INTERVAL: Final = 100
 MAX_INTERVAL: Final = 60000
 INTERVAL_STEP: Final = 100
 
