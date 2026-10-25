@@ -32,6 +32,7 @@ def test_bits_wire_1_is_most_significant():
     assert s.bits == (True, False, True, False, True)
     assert Symbol(".", 31).bits == (True,) * 5
     assert Symbol(" ", 29).label == "␣"
+    assert encode_char("L").detail == "01100 · 12"
 
 
 def test_same_codes_as_wires_js():

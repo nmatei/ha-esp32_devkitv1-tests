@@ -31,6 +31,8 @@ def test_one_word_break_between_words_only():
     symbols = encode("  e   t  ")
     assert symbols == [MorseSymbol("E", "."), WORD_BREAK, MorseSymbol("T", "-")]
     assert WORD_BREAK.label == "␣" and WORD_BREAK.is_word_break
+    assert WORD_BREAK.detail == ""
+    assert [s.detail for s in encode("l t")] == ["· - · ·", "", "-"]
 
 
 def test_unknown_signs_are_skipped_and_empty_words_dropped():

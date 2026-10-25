@@ -55,6 +55,11 @@ class Symbol:
         """Readable form; the space is shown as ␣."""
         return "␣" if self.char == " " else self.char
 
+    @property
+    def detail(self) -> str:
+        """Binary and decimal code, e.g. ``01100 · 12``."""
+        return f"{self.binary} · {self.code}"
+
 
 def encode_char(ch: str) -> Symbol | None:
     """Encode one character, or ``None`` if it is skipped."""

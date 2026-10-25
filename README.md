@@ -80,7 +80,7 @@ One device per entry, with:
 | `select.<name>_culoare_morse`   | Morse: the lamp (`galben` … `alb`, wire 1 … 5)    |
 | `button.<name>_start`           | plays from the beginning (restarts if running)    |
 | `button.<name>_stop`            | stops and turns all lamps off                     |
-| `sensor.<name>_progres`         | `7 / 42 · L`, `gata`, `oprit`; attributes `index`, `total`, `symbol`, `code` (`21`, or `.-` in Morse), `binary` (colored letters only) |
+| `sensor.<name>_progres`         | `2 / 3 · L (01100 · 12)`, in Morse `2 / 3 · L (· - · ·)`, then `gata` / `oprit`; attributes `index`, `total`, `symbol`, `code` (`21`, or `.-` in Morse), `binary` (colored letters only) |
 
 A ready dashboard card: [examples/dashboard-card.yaml](examples/dashboard-card.yaml)
 (Edit dashboard → Add card → Manual).

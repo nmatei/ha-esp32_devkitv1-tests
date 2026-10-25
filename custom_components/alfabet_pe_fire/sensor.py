@@ -1,4 +1,4 @@
-"""Playback progress: ``7 / 42 · L``, with the code in the attributes."""
+"""Playback progress: ``2 / 3 · L (01100 · 12)``, or ``2 / 3 · L (· - · ·)`` in Morse."""
 
 from __future__ import annotations
 
@@ -36,7 +36,8 @@ class ProgressSensor(AlfabetEntity, SensorEntity):
     def native_value(self) -> str:
         p = self.controller.progress
         if p.state == STATE_PLAYING and p.symbol:
-            return f"{p.index} / {p.total} · {p.symbol.label}"
+            text = f"{p.index} / {p.total} · {p.symbol.label}"
+            return f"{text} ({p.symbol.detail})" if p.symbol.detail else text
         return STATE_TEXT.get(p.state, "—")
 
     @property

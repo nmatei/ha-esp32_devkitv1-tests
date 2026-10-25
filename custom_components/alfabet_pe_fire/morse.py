@@ -115,6 +115,11 @@ class MorseSymbol:
         """Readable form; the word break is shown as ␣."""
         return "␣" if self.is_word_break else self.char
 
+    @property
+    def detail(self) -> str:
+        """Dots and dashes, spaced so they read well, e.g. ``· - · ·``; empty for a word break."""
+        return " ".join("·" if element == "." else "-" for element in self.code)
+
 
 WORD_BREAK = MorseSymbol(" ", "")
 

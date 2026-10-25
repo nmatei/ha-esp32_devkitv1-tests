@@ -57,7 +57,7 @@ async def test_play_stop_and_finish(hass):
     await _call(hass, "button", "press", "button.test_start")
     await asyncio.sleep(0.6)  # past the 0.4 s gap
     assert _lamps(hass) == [True, False, True, False, True]  # V = 21 = 10101
-    assert hass.states.get("sensor.test_progres").state == "1 / 2 · V"
+    assert hass.states.get("sensor.test_progres").state == "1 / 2 · V (10101 · 21)"
     await asyncio.sleep(1.0)
     assert _lamps(hass) == [True] * 5  # . = 31
 
@@ -95,7 +95,7 @@ async def test_morse_on_the_chosen_lamp(hass):
     assert _lamps(hass) == [False] * 5
     await asyncio.sleep(0.5)
     assert _lamps(hass) == [False, False, False, False, True]
-    assert hass.states.get("sensor.test_progres").state == "2 / 2 · T"
+    assert hass.states.get("sensor.test_progres").state == "2 / 2 · T (-)"
     await asyncio.sleep(0.7)
     await hass.async_block_till_done()
     assert _lamps(hass) == [False] * 5
