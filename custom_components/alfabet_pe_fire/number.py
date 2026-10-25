@@ -1,4 +1,4 @@
-"""Interval in ms, one value per message type.
+"""Interval in ms, one value per message type; and the repeat pause.
 
 Colored letters: the time per symbol (dark gap included). Morse: the length of
 a dot. The entity shows the current mode's value and keeps both in its
@@ -18,9 +18,11 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import (
     INTERVAL_STEP,
     MAX_INTERVAL,
+    MAX_REPEAT,
     MIN_INTERVAL,
     MODE_COLORS,
     MODES,
+    REPEAT_STEP,
 )
 from .entity import AlfabetEntity
 
@@ -30,16 +32,28 @@ def _attr(mode: str) -> str:
     return "interval_" + mode.lower().replace(" ", "_")
 
 
-def _to_step(ms: float) -> int:
+def _to_step(
+    ms: float, step: int = INTERVAL_STEP, low: int = MIN_INTERVAL, high: int = MAX_INTERVAL
+) -> int:
     """Round to the step (half up) and clamp to the limits."""
-    ms = int(ms / INTERVAL_STEP + 0.5) * INTERVAL_STEP
-    return min(max(ms, MIN_INTERVAL), MAX_INTERVAL)
+    ms = int(ms / step + 0.5) * step
+    return min(max(ms, low), high)
+
+
+def _repeat_step(ms: float) -> int:
+    return _to_step(ms, REPEAT_STEP, 0, MAX_REPEAT)
 
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    async_add_entities([IntervalNumber(entry.runtime_data, "interval", "Interval")])
+    controller = entry.runtime_data
+    async_add_entities(
+        [
+            IntervalNumber(controller, "interval", "Interval"),
+            RepeatNumber(controller, "repeta_dupa", "Repetă după"),
+        ]
+    )
 
 
 class IntervalNumber(AlfabetEntity, RestoreNumber):
@@ -81,4 +95,32 @@ class IntervalNumber(AlfabetEntity, RestoreNumber):
 
     async def async_set_native_value(self, value: float) -> None:
         self.controller.interval = _to_step(value)
+        self.async_write_ha_state()
+
+
+class RepeatNumber(AlfabetEntity, RestoreNumber):
+    """Pause in ms before the message starts again; 0 = play once."""
+
+    _attr_icon = "mdi:repeat"
+    _attr_mode = NumberMode.BOX
+    _attr_native_min_value = 0
+    _attr_native_max_value = MAX_REPEAT
+    _attr_native_step = REPEAT_STEP
+    _attr_native_unit_of_measurement = UnitOfTime.MILLISECONDS
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        last = await self.async_get_last_number_data()
+        if last and last.native_value is not None:
+            ms = last.native_value
+            if last.native_unit_of_measurement == UnitOfTime.SECONDS:
+                ms *= 1000  # 0.2.3 had it in seconds
+            self.controller.repeat = _repeat_step(ms)
+
+    @property
+    def native_value(self) -> int:
+        return self.controller.repeat
+
+    async def async_set_native_value(self, value: float) -> None:
+        self.controller.repeat = _repeat_step(value)
         self.async_write_ha_state()

@@ -45,9 +45,16 @@ INTERVAL_STEP: Final = 200
 
 MAX_MESSAGE: Final = 255  # HA state length limit
 
+# Repeat: ms of pause before the message starts again; 0 = play once.
+# Short pauses make looping animations (see README).
+DEFAULT_REPEAT: Final = 0
+MAX_REPEAT: Final = 3_600_000  # 1 hour
+REPEAT_STEP: Final = 200
+
 # Progress states -------------------------------------------------------------
 STATE_IDLE: Final = "idle"
 STATE_PLAYING: Final = "playing"
 STATE_DONE: Final = "done"
+STATE_WAITING: Final = "waiting"  # pause before the next repetition
 STATE_STOPPED: Final = "stopped"
 STATE_ERROR: Final = "error"

@@ -9,6 +9,8 @@ cards:
       - entity: select.esp32_devkitv1_tip_mesaj
       # ms; each message type keeps its own value (letter time / Morse dot)
       - entity: number.esp32_devkitv1_interval
+      # seconds before the message starts again; 0 = play once
+      - entity: number.esp32_devkitv1_repeta_dupa
       # The Morse lamp is shown only in Morse mode.
       - type: conditional
         conditions:

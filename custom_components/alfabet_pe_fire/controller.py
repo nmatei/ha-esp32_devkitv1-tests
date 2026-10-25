@@ -15,11 +15,14 @@ from .const import (
     CONF_LIGHTS,
     DEFAULT_INTERVALS,
     DEFAULT_MORSE_COLOR,
+    DEFAULT_REPEAT,
     MODE_COLORS,
     MODE_MORSE,
     MORSE_COLORS,
     STATE_ERROR,
+    STATE_DONE,
     STATE_STOPPED,
+    STATE_WAITING,
 )
 from .encoding import OFF, encode
 from .player import Progress, play, play_morse
@@ -37,6 +40,7 @@ class AlfabetController:
         self.mode = MODE_COLORS
         self.intervals = dict(DEFAULT_INTERVALS)  # ms, per mode
         self.morse_color = DEFAULT_MORSE_COLOR
+        self.repeat = DEFAULT_REPEAT  # ms, 0 = play once
         self.progress = Progress()
         self._task: asyncio.Task | None = None
         self._listeners: set[Callable[[], None]] = set()
@@ -90,24 +94,40 @@ class AlfabetController:
                 "homeassistant", "turn_on", {ATTR_ENTITY_ID: on}, blocking=True
             )
 
+    async def _play_once(self) -> None:
+        if self.mode == MODE_MORSE:
+            await play_morse(
+                morse.encode(self.message),
+                self.interval / 1000,
+                MORSE_COLORS.index(self.morse_color),
+                self._set_lights,
+                self._set_progress,
+                clock=self.hass.loop.time,
+            )
+        else:
+            await play(
+                encode(self.message),
+                self.interval / 1000,
+                self._set_lights,
+                self._set_progress,
+            )
+
     async def _run(self) -> None:
+        """Play, then, while Repeat is > 0, pause that long and play again.
+
+        Every repetition reads the settings again, so the message, the type,
+        the interval and the pause can be changed while it repeats.
+        """
         try:
-            if self.mode == MODE_MORSE:
-                await play_morse(
-                    morse.encode(self.message),
-                    self.interval / 1000,
-                    MORSE_COLORS.index(self.morse_color),
-                    self._set_lights,
-                    self._set_progress,
-                    clock=self.hass.loop.time,
-                )
-            else:
-                await play(
-                    encode(self.message),
-                    self.interval / 1000,
-                    self._set_lights,
-                    self._set_progress,
-                )
+            await self._play_once()
+            while self.repeat > 0:
+                p = self.progress
+                self._set_progress(Progress(STATE_WAITING, p.index, p.total))
+                await asyncio.sleep(self.repeat / 1000)
+                if self.repeat <= 0:  # turned off during the pause
+                    self._set_progress(Progress(STATE_DONE, p.index, p.total))
+                    break
+                await self._play_once()
         except asyncio.CancelledError:
             raise
         except Exception:  # noqa: BLE001 - a missing lamp must not leave it half-lit silently

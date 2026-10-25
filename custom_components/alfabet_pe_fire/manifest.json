@@ -8,5 +8,5 @@
   "iot_class": "calculated",
   "issue_tracker": "https://github.com/nmatei/ha-esp32_devkitv1-tests/issues",
   "requirements": [],
-  "version": "0.2.2"
+  "version": "0.2.4"
 }

@@ -78,12 +78,62 @@ One device per entry, with:
 | `select.<name>_tip_mesaj`       | `Litere colorate` (5 wires) or `Morse`            |
 | `number.<name>_interval`        | ms, 200–60000, step 200; **one value per message type**: time per symbol for colored letters (default 5000), dot length for Morse (default 400). Switching the type shows its value. |
 | `select.<name>_culoare_morse`   | Morse: the lamp (`galben` … `alb`, wire 1 … 5)    |
+| `number.<name>_repeta_dupa`     | ms, 0–3600000, step 200: **0 = play once**; above 0 the message starts again after that pause, forever, until Stop (or until set back to 0). Each repetition reads the settings again, so they can be changed while it repeats. |
 | `button.<name>_start`           | plays from the beginning (restarts if running)    |
 | `button.<name>_stop`            | stops and turns all lamps off                     |
-| `sensor.<name>_progres`         | `2 / 3 · L (01100 · 12)`, in Morse `2 / 3 · L (· - · ·)`, then `gata` / `oprit`; attributes `index`, `total`, `symbol`, `code` (`21`, or `.-` in Morse), `binary` (colored letters only) |
+| `sensor.<name>_progres`         | `2 / 3 · L (01100 · 12)`, in Morse `2 / 3 · L (· - · ·)`, `pauză, reia după 1000 ms` between repetitions, then `gata` / `oprit`; attributes `index`, `total`, `symbol`, `code` (`21`, or `.-` in Morse), `binary` (colored letters only) |
 
 A ready dashboard card: [examples/dashboard-card.yaml](examples/dashboard-card.yaml)
 (Edit dashboard → Add card → Manual).
+
+## 🔁 Looping animations
+
+With **Repetă după** above 0 the message plays forever, so a few chosen letters
+make the lamps "move". In **Litere colorate** every letter lights its 5-bit
+code, so pick the letters whose codes have the lamps you want:
+
+| Code | 16 | 8 | 4 | 2 | 1 | 24 (16+8) | 12 (8+4) | 6 (4+2) | 3 (2+1) |
+| ---- | -- | - | - | - | - | --------- | -------- | ------- | ------- |
+| Letter | P | H | D | B | A | Ă | L | F | C |
+| Lamps | `10000` | `01000` | `00100` | `00010` | `00001` | `11000` | `01100` | `00110` | `00011` |
+
+**One lamp at a time, left to right, forever** (yellow → white), set on the card:
+
+| Entity | Value |
+| ------ | ----- |
+| Mesaj | `PHDBA` |
+| Tip mesaj | `Litere colorate` |
+| Interval | `800` ms |
+| Repetă după | `200` ms |
+
+Right to left: `ABDHP`. Back and forth: `PHDBABDH`.
+
+**Two lamps at a time, left to right, forever** (yellow+red → green+white):
+the same settings with Mesaj = `ĂLFC`. Right to left: `CFLĂ`.
+
+As an automation action (e.g. on a button or at a given time):
+
+```yaml
+- action: text.set_value
+  target: { entity_id: text.esp32_devkitv1_mesaj }
+  data: { value: PHDBA }
+- action: select.select_option
+  target: { entity_id: select.esp32_devkitv1_tip_mesaj }
+  data: { option: Litere colorate }
+- action: number.set_value
+  target: { entity_id: number.esp32_devkitv1_interval }
+  data: { value: 800 }
+- action: number.set_value
+  target: { entity_id: number.esp32_devkitv1_repeta_dupa }
+  data: { value: 200 }
+- action: button.press
+  target: { entity_id: button.esp32_devkitv1_start }
+```
+
+Timing: every letter starts with all lamps off for 0.4 s, then its code stays
+lit for the rest of the Interval (at least 0.4 s), so 800 ms = 0.4 s off +
+0.4 s on — the fastest step; a smaller Interval does not go faster. Between two rounds there is also the Repetă după pause (200 ms is the
+shortest above 0). **Stop** ends the animation.
 
 ## 🧪 Development
 

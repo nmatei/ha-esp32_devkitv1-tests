@@ -51,12 +51,13 @@ this one; `tests/test_encoding.py` pins codes produced by `wires.js`.
   clock. Stop = cancel the task.
 - `controller.py` — `AlfabetController`, one per config entry
   (`entry.runtime_data`): message, mode, `intervals` (ms, one per mode;
-  `interval` is the current mode's), Morse color, progress
+  `interval` is the current mode's), Morse color, `repeat` (ms, step 200, 0 = once), progress
   listeners, runs `play()` or `play_morse()` (by mode) as a background task,
+  looping with a `STATE_WAITING` pause while `repeat` > 0 (settings re-read each time),
   drives lamps with `homeassistant.turn_on/turn_off` (works for `light` and
   `switch`).
 - `text.py` / `number.py` / `select.py` / `button.py` / `sensor.py` — Mesaj,
-  Interval (ms, follows the mode; both values in its attributes, restored),
+  Interval (ms, follows the mode; both values in its attributes, restored), Repetă după (ms; a seconds value from 0.2.3 is restored ×1000),
   Tip mesaj + Culoare Morse, Start/Stop,
   Progres. Names are hardcoded Romanian on purpose: they make the entity ids
   used by `examples/dashboard-card.yaml`, whatever HA's language.

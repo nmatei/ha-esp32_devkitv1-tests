@@ -9,7 +9,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import STATE_DONE, STATE_ERROR, STATE_PLAYING, STATE_STOPPED
+from .const import STATE_DONE, STATE_ERROR, STATE_PLAYING, STATE_STOPPED, STATE_WAITING
 from .entity import AlfabetEntity
 
 STATE_TEXT = {
@@ -38,6 +38,8 @@ class ProgressSensor(AlfabetEntity, SensorEntity):
         if p.state == STATE_PLAYING and p.symbol:
             text = f"{p.index} / {p.total} · {p.symbol.label}"
             return f"{text} ({p.symbol.detail})" if p.symbol.detail else text
+        if p.state == STATE_WAITING:
+            return f"pauză, reia după {self.controller.repeat} ms"
         return STATE_TEXT.get(p.state, "—")
 
     @property
