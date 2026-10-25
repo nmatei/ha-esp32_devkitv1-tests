@@ -41,7 +41,7 @@ DEFAULT_MORSE_COLOR: Final = "galben"
 DEFAULT_INTERVALS: Final = {MODE_COLORS: 5000, MODE_MORSE: 400}
 MIN_INTERVAL: Final = 200
 MAX_INTERVAL: Final = 60000
-INTERVAL_STEP: Final = 200
+INTERVAL_STEP: Final = 100
 
 MAX_MESSAGE: Final = 255  # HA state length limit
 
@@ -49,7 +49,7 @@ MAX_MESSAGE: Final = 255  # HA state length limit
 # Short pauses make looping animations (see README).
 DEFAULT_REPEAT: Final = 0
 MAX_REPEAT: Final = 3_600_000  # 1 hour
-REPEAT_STEP: Final = 200
+REPEAT_STEP: Final = 100
 
 # Progress states -------------------------------------------------------------
 STATE_IDLE: Final = "idle"

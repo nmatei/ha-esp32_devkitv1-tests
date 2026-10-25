@@ -51,7 +51,7 @@ this one; `tests/test_encoding.py` pins codes produced by `wires.js`.
   clock. Stop = cancel the task.
 - `controller.py` — `AlfabetController`, one per config entry
   (`entry.runtime_data`): message, mode, `intervals` (ms, one per mode;
-  `interval` is the current mode's), Morse color, `repeat` (ms, step 200, 0 = once), progress
+  `interval` is the current mode's), Morse color, `repeat` (ms, step 100, 0 = once), progress
   listeners, runs `play()` or `play_morse()` (by mode) as a background task,
   looping with a `STATE_WAITING` pause while `repeat` > 0 (settings re-read each time),
   drives lamps with `homeassistant.turn_on/turn_off` (works for `light` and

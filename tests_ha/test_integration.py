@@ -141,7 +141,7 @@ async def test_restore_keeps_both_intervals_and_migrates_seconds(hass):
 async def test_restore_migrates_the_old_seconds_interval(hass):
     mock_restore_cache(hass, [State("number.test_interval", "2.5", {"unit_of_measurement": "s"})])
     entry = await _setup(hass)
-    assert float(hass.states.get("number.test_interval").state) == 2600  # 2500 → step 200
+    assert float(hass.states.get("number.test_interval").state) == 2500  # 2.5 s → 2500 ms (step 100)
     assert await hass.config_entries.async_unload(entry.entry_id)
 
 
