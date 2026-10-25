@@ -35,6 +35,7 @@ async def test_flow_defaults_create_the_card_entities(hass):
         "text.esp32_devkitv1_mesaj",
         "number.esp32_devkitv1_interval",
         "number.esp32_devkitv1_repeta_dupa",
+        "number.esp32_devkitv1_pauza_intre_litere",
         "select.esp32_devkitv1_tip_mesaj",
         "select.esp32_devkitv1_culoare_morse",
         "button.esp32_devkitv1_start",
@@ -218,5 +219,25 @@ async def test_chaser_animation_loops(hass):
             seen.append(lamps)
     one_hot = [[i == n for i in range(5)] for n in range(5)]
     assert seen[:6] == one_hot + one_hot[:1]  # second round starts again on the left
+    await _call(hass, "button", "press", "button.test_stop")
+    assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_fast_chaser_without_letter_gap(hass):
+    """Pauză între litere = 0 and Interval 300 ms: a lamp moves every 0.3 s, never all dark."""
+    entry = await _setup(hass)
+    assert float(hass.states.get("number.test_pauza_intre_litere").state) == 400
+    await _call(hass, "text", "set_value", "text.test_mesaj", value="PHDBA")
+    await _call(hass, "number", "set_value", "number.test_interval", value=300)
+    await _call(hass, "number", "set_value", "number.test_pauza_intre_litere", value=0)
+    await _call(hass, "button", "press", "button.test_start")
+    seen = []
+    for _ in range(14):  # 1.5 s per round, sampled every 0.1 s
+        await asyncio.sleep(0.1)
+        lamps = _lamps(hass)
+        assert any(lamps)  # never all dark (on goes before off, so a hand-over may show 2)
+        if sum(lamps) == 1 and (not seen or seen[-1] != lamps):
+            seen.append(lamps)
+    assert seen[:5] == [[i == n for i in range(5)] for n in range(5)]
     await _call(hass, "button", "press", "button.test_stop")
     assert await hass.config_entries.async_unload(entry.entry_id)

@@ -9,8 +9,15 @@ cards:
       - entity: select.esp32_devkitv1_tip_mesaj
       # ms; each message type keeps its own value (letter time / Morse dot)
       - entity: number.esp32_devkitv1_interval
-      # seconds before the message starts again; 0 = play once
+      # ms before the message starts again; 0 = play once
       - entity: number.esp32_devkitv1_repeta_dupa
+      # Colored letters only: ms all lamps stay dark before each letter
+      - type: conditional
+        conditions:
+          - entity: select.esp32_devkitv1_tip_mesaj
+            state: Litere colorate
+        row:
+          entity: number.esp32_devkitv1_pauza_intre_litere
       # The Morse lamp is shown only in Morse mode.
       - type: conditional
         conditions:

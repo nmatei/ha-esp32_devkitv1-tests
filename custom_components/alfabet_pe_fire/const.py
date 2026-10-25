@@ -22,8 +22,14 @@ DEFAULT_LIGHTS: Final = tuple(
 )
 
 # All lights go dark for this long between two symbols, so a repeated letter
-# is still visible as two letters (GAP_MS in the browser app).
+# is still visible as two letters (GAP_MS in the browser app). Colored letters
+# can change it with "Pauză între litere" (0 = no dark gap, for fast animations).
 GAP: Final = 0.4  # seconds
+DEFAULT_GAP_MS: Final = 400
+MAX_GAP_MS: Final = 5000
+GAP_STEP: Final = 100
+# the shortest time a symbol stays lit, whatever the Interval
+MIN_HOLD: Final = 0.1  # seconds
 
 # Message type -----------------------------------------------------------------
 # The options of the "Tip mesaj" select (shown as they are).

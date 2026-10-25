@@ -13,6 +13,7 @@ from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from . import morse
 from .const import (
     CONF_LIGHTS,
+    DEFAULT_GAP_MS,
     DEFAULT_INTERVALS,
     DEFAULT_MORSE_COLOR,
     DEFAULT_REPEAT,
@@ -41,6 +42,7 @@ class AlfabetController:
         self.intervals = dict(DEFAULT_INTERVALS)  # ms, per mode
         self.morse_color = DEFAULT_MORSE_COLOR
         self.repeat = DEFAULT_REPEAT  # ms, 0 = play once
+        self.gap = DEFAULT_GAP_MS  # ms dark between colored letters
         self.progress = Progress()
         self._task: asyncio.Task | None = None
         self._listeners: set[Callable[[], None]] = set()
@@ -85,13 +87,15 @@ class AlfabetController:
         lights = self.lights
         off = [e for e, on in zip(lights, bits) if not on]
         on = [e for e, on in zip(lights, bits) if on]
-        if off:
-            await self.hass.services.async_call(
-                "homeassistant", "turn_off", {ATTR_ENTITY_ID: off}, blocking=True
-            )
+        # on first, then off: going from code to code without a dark gap, the
+        # lamps hand over instead of all blinking dark between the two calls
         if on:
             await self.hass.services.async_call(
                 "homeassistant", "turn_on", {ATTR_ENTITY_ID: on}, blocking=True
+            )
+        if off:
+            await self.hass.services.async_call(
+                "homeassistant", "turn_off", {ATTR_ENTITY_ID: off}, blocking=True
             )
 
     async def _play_once(self) -> None:
@@ -110,6 +114,7 @@ class AlfabetController:
                 self.interval / 1000,
                 self._set_lights,
                 self._set_progress,
+                gap=self.gap / 1000,
             )
 
     async def _run(self) -> None:

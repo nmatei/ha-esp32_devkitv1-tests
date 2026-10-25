@@ -12,7 +12,7 @@ import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 
-from .const import GAP, STATE_DONE, STATE_IDLE, STATE_PLAYING, WIRE_COUNT
+from .const import GAP, MIN_HOLD, STATE_DONE, STATE_IDLE, STATE_PLAYING, WIRE_COUNT
 from .encoding import OFF, Symbol
 from .morse import (
     DASH,
@@ -40,7 +40,7 @@ class Progress:
 
 def hold_time(interval: float, gap: float = GAP) -> float:
     """How long a symbol stays lit: the interval includes the dark gap."""
-    return max(interval - gap, gap)
+    return max(interval - gap, MIN_HOLD)
 
 
 async def play(
@@ -51,13 +51,18 @@ async def play(
     sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
     gap: float = GAP,
 ) -> None:
-    """For each symbol: all lamps off for ``gap``, then its code until the next one."""
+    """For each symbol: all lamps off for ``gap``, then its code until the next one.
+
+    With ``gap`` 0 the codes follow each other without going dark (smooth
+    animations), but two equal letters in a row then look like one.
+    """
     total = len(symbols)
     hold = hold_time(interval, gap)
     for index, symbol in enumerate(symbols, 1):
         on_progress(Progress(STATE_PLAYING, index, total, symbol))
-        await set_lights(OFF)
-        await sleep(gap)
+        if gap > 0:
+            await set_lights(OFF)
+            await sleep(gap)
         await set_lights(symbol.bits)
         await sleep(hold)
     await set_lights(OFF)

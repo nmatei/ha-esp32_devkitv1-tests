@@ -41,8 +41,9 @@ this one; `tests/test_encoding.py` pins codes produced by `wires.js`.
   `MORSE` table, `MorseSymbol`, `encode()` (one `WORD_BREAK` between words;
   Ă Â Î Ș Ț fold to A A I S T), unit counts `DOT` 1, `DASH` 3, `ELEMENT_GAP` 1,
   `LETTER_GAP` 3, `WORD_GAP` 7, `LEAD_IN` 3, `MIN_PART` 0.5.
-- `player.py` — **pure**, HA-free: `play()` (per symbol: all off, `GAP` 0.4 s,
-  code, hold `interval - GAP`), `play_morse()` (one lamp, waits to deadlines on
+- `player.py` — **pure**, HA-free: `play()` (per symbol: all off for `gap` —
+  "Pauză între litere", default 0.4 s, 0 = skip —, code, hold
+  `max(interval - gap, MIN_HOLD 0.1 s)`), `play_morse()` (one lamp, waits to deadlines on
   an injected clock so lamp latency doesn't stretch the rhythm; `LEAD_IN` 3
   units off before the first letter; a late switch never cuts an element
   below `MIN_PART` = half — without that the slow first ESP32 call swallowed
@@ -57,7 +58,7 @@ this one; `tests/test_encoding.py` pins codes produced by `wires.js`.
   drives lamps with `homeassistant.turn_on/turn_off` (works for `light` and
   `switch`).
 - `text.py` / `number.py` / `select.py` / `button.py` / `sensor.py` — Mesaj,
-  Interval (ms, follows the mode; both values in its attributes, restored), Repetă după (ms; a seconds value from 0.2.3 is restored ×1000),
+  Interval (ms, follows the mode; both values in its attributes, restored), Repetă după (ms; a seconds value from 0.2.3 is restored ×1000), Pauză între litere (ms),
   Tip mesaj + Culoare Morse, Start/Stop,
   Progres. Names are hardcoded Romanian on purpose: they make the entity ids
   used by `examples/dashboard-card.yaml`, whatever HA's language.

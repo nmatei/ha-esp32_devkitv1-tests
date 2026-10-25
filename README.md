@@ -21,8 +21,9 @@ Each symbol is a 5-bit code, wire 1 (yellow) being the most significant bit:
 | 30      | comma (`11110`)                                |
 | 31      | full stop = STOP (`11111`)                     |
 
-For every symbol: all lamps off for 0.4 s, then the code stays lit until the
-next one (the interval includes the 0.4 s). Lowercase becomes uppercase,
+For every symbol: all lamps off for **Pauză între litere** (default 400 ms),
+then the code stays lit until the next one. The Interval includes that pause;
+a code stays lit at least 100 ms. Lowercase becomes uppercase,
 ş/ţ (cedilla) become ș/ț, `! ?` → full stop, `: ;` → comma, `-` → space;
 everything else that is not in the code (Q, W, Y, quotes, digits) is skipped.
 
@@ -78,6 +79,7 @@ One device per entry, with:
 | `select.<name>_tip_mesaj`       | `Litere colorate` (5 wires) or `Morse`            |
 | `number.<name>_interval`        | ms, 100–60000, step 100; **one value per message type**: time per symbol for colored letters (default 5000), dot length for Morse (default 400). Switching the type shows its value. |
 | `select.<name>_culoare_morse`   | Morse: the lamp (`galben` … `alb`, wire 1 … 5)    |
+| `number.<name>_pauza_intre_litere` | colored letters: ms all lamps stay dark before each letter, 0–5000, step 100, default 400. **0 = no dark gap** (smooth, fast animations; two equal letters in a row then look like one). |
 | `number.<name>_repeta_dupa`     | ms, 0–3600000, step 100: **0 = play once**; above 0 the message starts again after that pause, forever, until Stop (or until set back to 0). Each repetition reads the settings again, so they can be changed while it repeats. |
 | `button.<name>_start`           | plays from the beginning (restarts if running)    |
 | `button.<name>_stop`            | stops and turns all lamps off                     |
@@ -98,7 +100,11 @@ left … wire 5 white on the right).
 | ----------- | ----------------- |
 | Tip mesaj   | `Litere colorate` |
 | Interval    | `800` ms          |
+| Pauză între litere | `400` ms   |
 | Repetă după | `100` ms          |
+
+Faster and smooth, without the dark blink between steps: Interval `300` ms,
+Pauză între litere `0` ms (a lamp moves every 0.3 s).
 
 **2. Copy a message** into **Mesaj**, then press **Start** (**Stop** ends it):
 
@@ -132,6 +138,9 @@ The same as an automation action (e.g. on a button or at a given time); change
   target: { entity_id: number.esp32_devkitv1_interval }
   data: { value: 800 }
 - action: number.set_value
+  target: { entity_id: number.esp32_devkitv1_pauza_intre_litere }
+  data: { value: 400 }
+- action: number.set_value
   target: { entity_id: number.esp32_devkitv1_repeta_dupa }
   data: { value: 100 }
 - action: text.set_value
@@ -141,11 +150,12 @@ The same as an automation action (e.g. on a button or at a given time); change
   target: { entity_id: button.esp32_devkitv1_start }
 ```
 
-Timing: every letter starts with all lamps off for 0.4 s, then its code stays
-lit for the rest of the Interval (at least 0.4 s), so 800 ms = 0.4 s off +
-0.4 s on — the fastest step; a smaller Interval does not go faster, a bigger
-one slows the animation down. Between two rounds there is also the Repetă după
-pause.
+Timing: every letter starts with all lamps off for Pauză între litere, then
+its code stays lit for the rest of the Interval (at least 100 ms), so 800 ms
+with a 400 ms pause = 0.4 s off + 0.4 s on. With pause 0 each step is just the
+Interval (from 100 ms). When going from code to code, lamps are turned on
+before the others go off, so they hand over instead of all blinking dark.
+Between two rounds there is also the Repetă după pause.
 
 ## 🧪 Development
 

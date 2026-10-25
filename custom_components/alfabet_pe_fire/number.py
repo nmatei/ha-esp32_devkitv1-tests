@@ -1,4 +1,4 @@
-"""Interval in ms, one value per message type; and the repeat pause.
+"""Interval in ms, one value per message type; the repeat pause; the letter gap.
 
 Colored letters: the time per symbol (dark gap included). Morse: the length of
 a dot. The entity shows the current mode's value and keeps both in its
@@ -16,6 +16,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
+    GAP_STEP,
+    MAX_GAP_MS,
     INTERVAL_STEP,
     MAX_INTERVAL,
     MAX_REPEAT,
@@ -52,6 +54,7 @@ async def async_setup_entry(
         [
             IntervalNumber(controller, "interval", "Interval"),
             RepeatNumber(controller, "repeta_dupa", "Repetă după"),
+            GapNumber(controller, "pauza_intre_litere", "Pauză între litere"),
         ]
     )
 
@@ -123,4 +126,29 @@ class RepeatNumber(AlfabetEntity, RestoreNumber):
 
     async def async_set_native_value(self, value: float) -> None:
         self.controller.repeat = _repeat_step(value)
+        self.async_write_ha_state()
+
+
+class GapNumber(AlfabetEntity, RestoreNumber):
+    """Colored letters: ms all lamps stay dark before each letter; 0 = none."""
+
+    _attr_icon = "mdi:timer-pause-outline"
+    _attr_mode = NumberMode.BOX
+    _attr_native_min_value = 0
+    _attr_native_max_value = MAX_GAP_MS
+    _attr_native_step = GAP_STEP
+    _attr_native_unit_of_measurement = UnitOfTime.MILLISECONDS
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        last = await self.async_get_last_number_data()
+        if last and last.native_value is not None:
+            self.controller.gap = _to_step(last.native_value, GAP_STEP, 0, MAX_GAP_MS)
+
+    @property
+    def native_value(self) -> int:
+        return self.controller.gap
+
+    async def async_set_native_value(self, value: float) -> None:
+        self.controller.gap = _to_step(value, GAP_STEP, 0, MAX_GAP_MS)
         self.async_write_ha_state()
