@@ -6,7 +6,16 @@ cards:
     title: 💡 Alfabetul pe fire
     entities:
       - entity: text.esp32_devkitv1_mesaj
+      - entity: select.esp32_devkitv1_tip_mesaj
+      # ms; each message type keeps its own value (letter time / Morse dot)
       - entity: number.esp32_devkitv1_interval
+      # The Morse lamp is shown only in Morse mode.
+      - type: conditional
+        conditions:
+          - entity: select.esp32_devkitv1_tip_mesaj
+            state: Morse
+        row:
+          entity: select.esp32_devkitv1_culoare_morse
       - entity: sensor.esp32_devkitv1_progres
   - type: horizontal-stack
     cards:

@@ -13,7 +13,13 @@ from homeassistant.core import HomeAssistant
 
 from .controller import AlfabetController
 
-PLATFORMS = [Platform.TEXT, Platform.NUMBER, Platform.BUTTON, Platform.SENSOR]
+PLATFORMS = [
+    Platform.TEXT,
+    Platform.NUMBER,
+    Platform.SELECT,
+    Platform.BUTTON,
+    Platform.SENSOR,
+]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

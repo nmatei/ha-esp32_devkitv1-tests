@@ -37,25 +37,36 @@ this one; `tests/test_encoding.py` pins codes produced by `wires.js`.
 
 - `encoding.py` — **pure**, HA-free: `SYMBOLS`, `REPLACEMENTS`, `Symbol`
   (`code`, `binary`, `bits` wire 1 first), `encode()`.
+- `morse.py` — **pure**, HA-free: international Morse (ITU-R M.1677-1)
+  `MORSE` table, `MorseSymbol`, `encode()` (one `WORD_BREAK` between words;
+  Ă Â Î Ș Ț fold to A A I S T), unit counts `DOT` 1, `DASH` 3, `ELEMENT_GAP` 1,
+  `LETTER_GAP` 3, `WORD_GAP` 7.
 - `player.py` — **pure**, HA-free: `play()` (per symbol: all off, `GAP` 0.4 s,
-  code, hold `interval - GAP`), `Progress`. Lamps / progress / sleep are
-  injected, so it is tested with a fake clock. Stop = cancel the task.
+  code, hold `interval - GAP`), `play_morse()` (one lamp, waits to deadlines on
+  an injected clock so lamp latency doesn't stretch the rhythm), `Progress`.
+  Lamps / progress / sleep / clock are injected, so it is tested with a fake
+  clock. Stop = cancel the task.
 - `controller.py` — `AlfabetController`, one per config entry
-  (`entry.runtime_data`): message, interval, progress listeners, runs `play()`
-  as a background task, drives lamps with `homeassistant.turn_on/turn_off`
-  (works for `light` and `switch`).
-- `text.py` / `number.py` / `button.py` / `sensor.py` — Mesaj, Interval,
-  Start/Stop, Progres. Names are hardcoded Romanian on purpose: they make the
-  entity ids used by `examples/dashboard-card.yaml`, whatever HA's language.
+  (`entry.runtime_data`): message, mode, `intervals` (ms, one per mode;
+  `interval` is the current mode's), Morse color, progress
+  listeners, runs `play()` or `play_morse()` (by mode) as a background task,
+  drives lamps with `homeassistant.turn_on/turn_off` (works for `light` and
+  `switch`).
+- `text.py` / `number.py` / `select.py` / `button.py` / `sensor.py` — Mesaj,
+  Interval (ms, follows the mode; both values in its attributes, restored),
+  Tip mesaj + Culoare Morse, Start/Stop,
+  Progres. Names are hardcoded Romanian on purpose: they make the entity ids
+  used by `examples/dashboard-card.yaml`, whatever HA's language.
 - `config_flow.py` — name + 5 entity selectors (`fir_1` … `fir_5`); the options
   flow changes the lamps. `translations/` has `en` and `ro`.
-- `const.py` — keys, defaults (`DEFAULT_LIGHTS`), interval limits, `GAP`.
+- `const.py` — keys, defaults (`DEFAULT_LIGHTS`), interval limits, `GAP`,
+  `MODES` (select options), `MORSE_COLORS`, `DEFAULT_INTERVALS` per mode.
 - `brand/` — icons (`icon.png` 256, `icon@2x.png` 512, + `dark_` variants).
 
 ## Development
 
 - Pure tests: `.venv/bin/python -m pytest` (`pytest.ini` limits to `tests/`;
-  `conftest.py` loads `const`/`encoding`/`player` without HA).
+  `conftest.py` loads `const`/`encoding`/`morse`/`player` without HA).
 - HA tests: `.venv-ha/bin/python -m pytest tests_ha` (real HA core via
   `pytest-homeassistant-custom-component`; lamps are `input_boolean`s).
   `tests_ha/conftest.py` must import our `custom_components` **before** the

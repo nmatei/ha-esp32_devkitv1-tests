@@ -10,21 +10,33 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import ATTR_ENTITY_ID
 from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 
-from .const import CONF_LIGHTS, DEFAULT_INTERVAL, STATE_ERROR, STATE_STOPPED
+from . import morse
+from .const import (
+    CONF_LIGHTS,
+    DEFAULT_INTERVALS,
+    DEFAULT_MORSE_COLOR,
+    MODE_COLORS,
+    MODE_MORSE,
+    MORSE_COLORS,
+    STATE_ERROR,
+    STATE_STOPPED,
+)
 from .encoding import OFF, encode
-from .player import Progress, play
+from .player import Progress, play, play_morse
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class AlfabetController:
-    """Holds the message, the interval and the progress; starts and stops playback."""
+    """Holds the message, the settings and the progress; starts and stops playback."""
 
     def __init__(self, hass: HomeAssistant, entry: ConfigEntry) -> None:
         self.hass = hass
         self.entry = entry
         self.message = ""
-        self.interval = DEFAULT_INTERVAL
+        self.mode = MODE_COLORS
+        self.intervals = dict(DEFAULT_INTERVALS)  # ms, per mode
+        self.morse_color = DEFAULT_MORSE_COLOR
         self.progress = Progress()
         self._task: asyncio.Task | None = None
         self._listeners: set[Callable[[], None]] = set()
@@ -34,17 +46,36 @@ class AlfabetController:
         """The 5 lamp entities, wire 1 first (options override the initial data)."""
         return list({**self.entry.data, **self.entry.options}[CONF_LIGHTS])
 
+    @property
+    def interval(self) -> int:
+        """Interval of the current mode, in ms."""
+        return self.intervals[self.mode]
+
+    @interval.setter
+    def interval(self, value: int) -> None:
+        self.intervals[self.mode] = value
+
     @callback
     def add_listener(self, listener: Callable[[], None]) -> CALLBACK_TYPE:
-        """Get called whenever the progress changes."""
+        """Get called whenever the progress or the mode changes."""
         self._listeners.add(listener)
         return lambda: self._listeners.discard(listener)
 
     @callback
-    def _set_progress(self, progress: Progress) -> None:
-        self.progress = progress
+    def _notify(self) -> None:
         for listener in list(self._listeners):
             listener()
+
+    @callback
+    def set_mode(self, mode: str) -> None:
+        """Switch the message type; the Interval entity then shows that mode's value."""
+        self.mode = mode
+        self._notify()
+
+    @callback
+    def _set_progress(self, progress: Progress) -> None:
+        self.progress = progress
+        self._notify()
 
     async def _set_lights(self, bits: tuple[bool, ...]) -> None:
         lights = self.lights
@@ -60,9 +91,23 @@ class AlfabetController:
             )
 
     async def _run(self) -> None:
-        symbols = encode(self.message)
         try:
-            await play(symbols, self.interval, self._set_lights, self._set_progress)
+            if self.mode == MODE_MORSE:
+                await play_morse(
+                    morse.encode(self.message),
+                    self.interval / 1000,
+                    MORSE_COLORS.index(self.morse_color),
+                    self._set_lights,
+                    self._set_progress,
+                    clock=self.hass.loop.time,
+                )
+            else:
+                await play(
+                    encode(self.message),
+                    self.interval / 1000,
+                    self._set_lights,
+                    self._set_progress,
+                )
         except asyncio.CancelledError:
             raise
         except Exception:  # noqa: BLE001 - a missing lamp must not leave it half-lit silently
