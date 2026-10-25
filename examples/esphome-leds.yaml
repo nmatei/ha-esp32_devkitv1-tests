@@ -1,6 +1,12 @@
 # ESPHome: the 5 LEDs of the ESP32 devkitv1 (add to the device config).
 # Wire order: 1 yellow GPIO23, 2 red GPIO22, 3 blue GPIO21, 4 green GPIO19, 5 white GPIO18.
 
+# Keep the WiFi radio awake. With the default power saving ("light") the ESP32
+# sleeps between packets, so an "on" and the "off" 400 ms later can arrive
+# together and a Morse dot is never seen. Merge into the existing wifi: block.
+wifi:
+  power_save_mode: none
+
 output:
   - platform: gpio
     pin: GPIO23

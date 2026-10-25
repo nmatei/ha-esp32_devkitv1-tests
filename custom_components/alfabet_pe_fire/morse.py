@@ -14,6 +14,9 @@ DASH = 3  # lamp on
 ELEMENT_GAP = 1  # off, between the dots/dashes of one letter
 LETTER_GAP = 3  # off, between letters
 WORD_GAP = 7  # off, between words
+LEAD_IN = 3  # off, before the first letter (lets the lamp link wake up)
+# a late lamp switch may shorten an element, but never below this part of it
+MIN_PART = 0.5
 
 MORSE = {
     # letters

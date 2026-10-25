@@ -43,7 +43,14 @@ one, in units of **Interval** (the length of a dot, default 400 ms):
 Letters A–Z, digits 0–9 and `. , : ? ' - / ( ) " = + @` (ITU), plus the common
 `! ; & _ $`. Ă Â Î Ș Ț have no Morse code and are sent as A A I S T; anything
 else is skipped. Waits run to deadlines, so the time a lamp takes to switch
-does not stretch the rhythm.
+does not stretch the rhythm; a very late switch never cuts a dot, dash or gap
+below half its length. The lamps stay off for 3 units before the first letter,
+while the link to the ESP32 wakes up.
+
+> If dots still go missing (often the first one), set
+> `wifi: power_save_mode: none` on the ESP32 — see
+> [examples/esphome-leds.yaml](examples/esphome-leds.yaml). With the default
+> power saving, commands can be delayed and arrive bunched together.
 
 ## 📥 Installation
 

@@ -14,7 +14,16 @@ from dataclasses import dataclass
 
 from .const import GAP, STATE_DONE, STATE_IDLE, STATE_PLAYING, WIRE_COUNT
 from .encoding import OFF, Symbol
-from .morse import DASH, DOT, ELEMENT_GAP, LETTER_GAP, WORD_GAP, MorseSymbol
+from .morse import (
+    DASH,
+    DOT,
+    ELEMENT_GAP,
+    LEAD_IN,
+    LETTER_GAP,
+    MIN_PART,
+    WORD_GAP,
+    MorseSymbol,
+)
 
 SetLights = Callable[[tuple[bool, ...]], Awaitable[None]]
 
@@ -67,7 +76,11 @@ async def play_morse(
     """Morse on one lamp (``wire``, 0-based); ``unit`` is the dot length in seconds.
 
     Waits run to deadlines on ``clock``, so the time a lamp takes to switch is
-    absorbed instead of stretching every dot and gap.
+    absorbed instead of stretching every dot and gap. A switch that is very late
+    (the first one, while the ESP32 wakes up) must not swallow an element, so
+    each one lasts at least ``MIN_PART`` of its length; the rhythm resumes from
+    there. The first call turns everything off and is followed by a
+    ``LEAD_IN``, so the first dot goes over a link that is already awake.
     """
     total = len(symbols)
     lit = tuple(i == wire for i in range(WIRE_COUNT))
@@ -76,8 +89,11 @@ async def play_morse(
 
     async def wait(units: int) -> None:
         nonlocal deadline
-        deadline += units * unit
+        span = units * unit
+        deadline = max(deadline + span, clock() + span * MIN_PART)
         await sleep(max(deadline - clock(), 0))
+
+    await wait(LEAD_IN)
 
     previous: MorseSymbol | None = None
     for index, symbol in enumerate(symbols, 1):

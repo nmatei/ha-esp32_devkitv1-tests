@@ -85,8 +85,10 @@ async def test_morse_on_the_chosen_lamp(hass):
     await _call(hass, "number", "set_value", "number.test_interval", value=200)
     await _call(hass, "button", "press", "button.test_start")
 
-    # E = . (0-0.2 s), letter gap 3 units (0.2-0.8 s), T = - (0.8-1.4 s)
-    await asyncio.sleep(0.1)
+    # lead-in 3 units (0-0.6 s), E = . (0.6-0.8 s), letter gap (0.8-1.4 s), T = - (1.4-2.0 s)
+    await asyncio.sleep(0.3)
+    assert _lamps(hass) == [False] * 5
+    await asyncio.sleep(0.4)
     assert _lamps(hass) == [False, False, False, False, True]
     assert hass.states.get("sensor.test_progres").attributes["code"] == "."
     await asyncio.sleep(0.4)

@@ -40,10 +40,13 @@ this one; `tests/test_encoding.py` pins codes produced by `wires.js`.
 - `morse.py` — **pure**, HA-free: international Morse (ITU-R M.1677-1)
   `MORSE` table, `MorseSymbol`, `encode()` (one `WORD_BREAK` between words;
   Ă Â Î Ș Ț fold to A A I S T), unit counts `DOT` 1, `DASH` 3, `ELEMENT_GAP` 1,
-  `LETTER_GAP` 3, `WORD_GAP` 7.
+  `LETTER_GAP` 3, `WORD_GAP` 7, `LEAD_IN` 3, `MIN_PART` 0.5.
 - `player.py` — **pure**, HA-free: `play()` (per symbol: all off, `GAP` 0.4 s,
   code, hold `interval - GAP`), `play_morse()` (one lamp, waits to deadlines on
-  an injected clock so lamp latency doesn't stretch the rhythm), `Progress`.
+  an injected clock so lamp latency doesn't stretch the rhythm; `LEAD_IN` 3
+  units off before the first letter; a late switch never cuts an element
+  below `MIN_PART` = half — without that the slow first ESP32 call swallowed
+  the first dot of SOS), `Progress`.
   Lamps / progress / sleep / clock are injected, so it is tested with a fake
   clock. Stop = cancel the task.
 - `controller.py` — `AlfabetController`, one per config entry
