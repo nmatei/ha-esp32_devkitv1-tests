@@ -21,6 +21,10 @@ Each symbol is a 5-bit code, wire 1 (yellow) being the most significant bit:
 | 30      | comma (`11110`)                                |
 | 31      | full stop = STOP (`11111`)                     |
 
+# Full letter transmission
+
+`ABCDEFGHIJKLMNOPQRSTUVWXYZĂÂÎȘȚ ,.`
+
 For every symbol: all lamps off for **Pauză între litere** (default 400 ms),
 then the code stays lit until the next one. The Interval includes that pause;
 a code stays lit at least 100 ms. Lowercase becomes uppercase,
