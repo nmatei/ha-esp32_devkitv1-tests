@@ -16,7 +16,7 @@ depanare) e în [esp32-devkitv1-home-assistant.md](esp32-devkitv1-home-assistant
 - **GPIO34-39** sunt doar intrări și nu au pull-up intern.
 - Evită GPIO0, 12, 15 (pini de boot).
 
-**Pini ocupați acum:** 2, 18, 19, 21, 22, 23 (LED-uri), 25, 26 (buzzere), 33 (buton),
+**Pini ocupați acum:** 2, 18, 19, 21, 22, 23 (LED-uri; pe 19, 21, 22 sunt și LED-urile RGB), 25, 26 (buzzere), 33 (buton),
 34, 35 (senzori analogici).
 **Încă liberi și siguri:** 4, 5, 13, 14, 16, 17, 27, 32 (intrare/ieșire), 36, 39
 (doar intrare, analogic).
@@ -58,8 +58,8 @@ Pozele sunt la aceeași scară (aprox. 4 px = 1 mm, măsurat după pasul de 2.54
 | **HW-489** (KY-005)<br>Emițător infraroșu | <img src="sensors/HW-489.jpg" width="102" style="min-width:102px"> | LED IR care trimite coduri de telecomandă (TV, aer condiționat). `S` → GPIO4. ESPHome: `remote_transmitter`. |
 | **HW-490** (KY-022)<br>Receptor infraroșu | <img src="sensors/HW-490.jpg" width="103" style="min-width:103px"> | Citește codurile unei telecomenzi. `S` → GPIO16. ESPHome: `remote_receiver` (în log se văd codurile primite). |
 | **HW-481** (KY-034)<br>LED cu flash automat în 7 culori | <img src="sensors/HW-481.jpg" width="108" style="min-width:108px"> | Își schimbă singur culorile cât timp e alimentat. `S` → GPIO17 (`switch` sau `light: binary`). |
-| **HW-479** (KY-016)<br>LED RGB | <img src="sensors/HW-479.jpg" width="100" style="min-width:100px"> | Un LED cu 3 culori, amestecate în orice nuanță. Pini `R` / `G` / `B` / `−`. `R` → GPIO13, `G` → GPIO14, `B` → GPIO27, `−` → GND. ESPHome: 3 × `output: platform: ledc` + `light: platform: rgb` (în HA apare cu selector de culoare). |
-| **HW-478** (KY-009)<br>LED RGB SMD (scrie „3_Clor” pe plăcuță) | <img src="sensors/HW-478.jpg" width="91" style="min-width:91px"> | La fel ca HW-479, cu un LED plat (SMD). Aceleași legături și același ESPHome. *(De verificat: dacă are rezistențe pe plăcuță; dacă nu, pune câte una de ~220 Ω pe fiecare culoare.)* |
+| ✅ **HW-479** (KY-016)<br>LED RGB | <img src="sensors/HW-479.jpg" width="100" style="min-width:100px"> | Un LED cu 3 culori. Pini `R` / `G` / `B` / `−`. **Legat în paralel cu LED-urile de pe fire:** `R` → **D22** (GPIO22, roșu), `G` → **D19** (GPIO19, verde), `B` → **D21** (GPIO21, albastru), `−` → GND. Se aprinde odată cu firele 2, 4 și 3, deci nu are configurație ESPHome proprie. Pentru culori amestecate separat ar trebui mutat pe pini liberi, cu 3 × `output: platform: ledc` + `light: platform: rgb`. |
+| ✅ **HW-478** (KY-009)<br>LED RGB SMD (scrie „3_Clor” pe plăcuță) | <img src="sensors/HW-478.jpg" width="91" style="min-width:91px"> | La fel ca HW-479, cu un LED plat (SMD). **Legat la fel**, în paralel pe GPIO22 / GPIO19 / GPIO21. *(De verificat: dacă are rezistențe pe plăcuță; dacă nu, pune câte una de ~220 Ω pe fiecare culoare.)* |
 | **HW-493** (KY-008)<br>Laser | <img src="sensors/HW-493.jpg" width="118" style="min-width:118px"> | Dioda laser roșie, aprinsă sau stinsă. `S` → GPIO5 (`light: binary`). Nu îl îndrepta spre ochi. |
 | **HW-482** (KY-019)<br>Releu 5V (10 A) | <img src="sensors/HW-482.jpg" width="161" style="min-width:161px"> | Un comutator comandat: închide un circuit separat (bornele cu șurub). Bobina e de 5V, deci `+` → **VIN** (5V), `−` → GND, `S` → GPIO32 (`switch: platform: gpio`). *(De verificat: dacă releul comută cu doar 3.3V pe `S`.)* Nu lega 230V fără să știi ce faci. |
 | **HW-040** (KY-040)<br>Encoder rotativ cu buton | <img src="sensors/HW-040.jpg" width="134" style="min-width:134px"> | Butonul se rotește fără capăt (pași stânga/dreapta) și se poate apăsa, de exemplu pentru volum sau intervalul mesajului. `CLK` → GPIO16, `DT` → GPIO17, `SW` → GPIO27, `+` → 3V3, `GND`. ESPHome: `sensor: platform: rotary_encoder` + `binary_sensor` pentru `SW`. |

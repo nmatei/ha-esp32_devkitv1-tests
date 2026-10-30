@@ -65,6 +65,8 @@ Circuit per LED: **GPIO → rezistență → anod (picior lung) → catod (picio
 Toate catozii pe linia comună (−) a breadboard-ului, legată la un GND al plăcii.
 Polaritate: picior lung = + (spre pin), picior scurt = − (spre GND). Invers conectat nu se strică, doar nu luminează.
 
+LED-urile RGB **HW-479** și **HW-478** sunt legate în paralel cu LED-urile roșu, verde și albastru: `R` → D22, `G` → D19, `B` → D21, `−` → GND. Se aprind odată cu acestea, fără configurație ESPHome proprie.
+
 ### Senzori și module (alimentare din 3V3 + GND, colțul dreapta-jos al plăcii)
 
 | Modul | Ce e | Pin S | Note |
