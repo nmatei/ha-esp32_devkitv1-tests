@@ -92,6 +92,9 @@ One device per entry, with:
 A ready dashboard card: [examples/dashboard-card.yaml](examples/dashboard-card.yaml)
 (Edit dashboard → Add card → Manual).
 
+The sensors on the board and the full device setup (ESPHome, dashboard, automations):
+[examples/sensors.md](examples/sensors.md).
+
 ## 🔁 Looping animations
 
 With **Repetă după** above 0 the message plays forever, so a few chosen letters

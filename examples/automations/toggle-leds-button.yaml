@@ -1,0 +1,30 @@
+# Automatizare: butonul fizic HW-483 pornește / oprește mesajul, cu 3 note pe buzzerul pasiv.
+# Settings → Automations → Create → ⋮ → Edit in YAML → lipește.
+# Serviciul esphome.esphome_web_3053a0_play_rtttl poartă numele API al plăcii;
+# pe altă placă verifică numele în Developer Tools → Actions.
+alias: Toggle LEDs
+description: Toggle LEDs
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.office_esphome_esp32_devkitv1_buton_hw_483
+    to: "on"
+actions:
+  - if:
+      - condition: state
+        entity_id: sensor.esp32_devkitv1_progres
+        state: oprit
+    then:
+      - action: esphome.esphome_web_3053a0_play_rtttl
+        data:
+          song_str: "start:d=16,o=5,b=140:c6,e6,g6"
+      - action: button.press
+        target:
+          entity_id: button.esp32_devkitv1_start
+    else:
+      - action: esphome.esphome_web_3053a0_play_rtttl
+        data:
+          song_str: "stop:d=16,o=5,b=140:g6,e6,c6"
+      - action: button.press
+        target:
+          entity_id: button.esp32_devkitv1_stop
+mode: single

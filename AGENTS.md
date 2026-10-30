@@ -62,7 +62,10 @@ prove the commands, not a fresh-clone install. `pytest.ini` limits a bare `pytes
   under a synthetic package so HA is never imported.
 - `tests_ha/` — integration tests against a real HA core; lamps are `input_boolean`s.
 - `examples/` — `dashboard-card.yaml` (Lovelace card) and `esphome-leds.yaml` (the
-  device side: 5 GPIO binary lights).
+  device side: 5 GPIO binary lights), plus the whole board setup, in Romanian:
+  `sensors.md` (module inventory, crops in `sensors/`), `esphome-full.yaml`,
+  `dashboard-leds.yaml`, `automations/`, and the setup notes
+  `esp32-devkitv1-home-assistant.md`.
 
 ## Integrations
 Downstream: the 5 configured lamp entities, switched through the

@@ -1,0 +1,186 @@
+# Dashboard → Edit → Add card → Manual.
+# Necesită din HACS: button-card și card-mod.
+# Cele 5 becuri + LED-ul plăcii (comutare la apăsare) și senzorul Progres.
+# Entitățile au prefixul office_esphome_esp32_devkitv1 (ESPHome) și
+# esp32_devkitv1 (integrarea Alfabetul pe fire, intrarea "ESP32 devkitv1").
+type: grid
+square: false
+columns: 1
+cards:
+  - type: custom:mod-card
+    card_mod:
+      style: |
+        ha-card {
+          background: var(--ha-card-background, var(--card-background-color));
+          border-radius: var(--ha-card-border-radius, 12px);
+          box-shadow: var(--ha-card-box-shadow, none);
+          border: 1px solid var(--divider-color);
+          padding: 8px;
+        }
+    card:
+      type: grid
+      columns: 5
+      square: false
+      cards:
+        - type: custom:button-card
+          entity: light.office_esphome_esp32_devkitv1_led_galben
+          show_name: false
+          icon: mdi:lightbulb
+          tap_action:
+            action: toggle
+          styles:
+            card:
+              - background: none
+              - box-shadow: none
+              - border: none
+              - height: 40px
+            icon:
+              - width: 22px
+              - color: rgba(255, 200, 0, 0.3)
+          state:
+            - value: "on"
+              styles:
+                icon:
+                  - color: rgb(255, 200, 0)
+                  - filter: drop-shadow(0 0 8px rgb(255, 200, 0))
+        - type: custom:button-card
+          entity: light.office_esphome_esp32_devkitv1_led_rosu
+          show_name: false
+          icon: mdi:lightbulb
+          tap_action:
+            action: toggle
+          styles:
+            card:
+              - background: none
+              - box-shadow: none
+              - border: none
+              - height: 40px
+            icon:
+              - width: 22px
+              - color: rgba(244, 67, 54, 0.3)
+          state:
+            - value: "on"
+              styles:
+                icon:
+                  - color: rgb(244, 67, 54)
+                  - filter: drop-shadow(0 0 8px rgb(244, 67, 54))
+        - type: custom:button-card
+          entity: light.office_esphome_esp32_devkitv1_led_albastru
+          show_name: false
+          icon: mdi:lightbulb
+          tap_action:
+            action: toggle
+          styles:
+            card:
+              - background: none
+              - box-shadow: none
+              - border: none
+              - height: 40px
+            icon:
+              - width: 22px
+              - color: rgba(33, 150, 243, 0.3)
+          state:
+            - value: "on"
+              styles:
+                icon:
+                  - color: rgb(33, 150, 243)
+                  - filter: drop-shadow(0 0 8px rgb(33, 150, 243))
+        - type: custom:button-card
+          entity: light.office_esphome_esp32_devkitv1_led_verde
+          show_name: false
+          icon: mdi:lightbulb
+          tap_action:
+            action: toggle
+          styles:
+            card:
+              - background: none
+              - box-shadow: none
+              - border: none
+              - height: 40px
+            icon:
+              - width: 22px
+              - color: rgba(76, 175, 80, 0.3)
+          state:
+            - value: "on"
+              styles:
+                icon:
+                  - color: rgb(76, 175, 80)
+                  - filter: drop-shadow(0 0 8px rgb(76, 175, 80))
+        - type: custom:button-card
+          entity: light.office_esphome_esp32_devkitv1_led_alb
+          show_name: false
+          icon: mdi:lightbulb
+          tap_action:
+            action: toggle
+          styles:
+            card:
+              - background: none
+              - box-shadow: none
+              - border: none
+              - height: 40px
+            icon:
+              - width: 22px
+              - color: rgba(200, 200, 200, 0.35)
+          state:
+            - value: "on"
+              styles:
+                icon:
+                  - color: rgb(255, 255, 255)
+                  - filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9))
+  - type: custom:mod-card
+    card_mod:
+      style: |
+        ha-card {
+          background: var(--ha-card-background, var(--card-background-color));
+          border-radius: var(--ha-card-border-radius, 12px);
+          box-shadow: var(--ha-card-box-shadow, none);
+          border: 1px solid var(--divider-color);
+          padding: 8px;
+        }
+    card:
+      type: grid
+      columns: 5
+      square: false
+      cards:
+        - type: custom:button-card
+          entity: light.office_esphome_esp32_devkitv1_led_placa
+          show_name: false
+          icon: mdi:lightbulb
+          tap_action:
+            action: toggle
+          styles:
+            card:
+              - background: none
+              - box-shadow: none
+              - border: none
+              - height: 40px
+            icon:
+              - width: 22px
+              - color: rgba(0, 150, 255, 0.3)
+          state:
+            - value: "on"
+              styles:
+                icon:
+                  - color: rgb(0, 150, 255)
+                  - filter: drop-shadow(0 0 8px rgb(0, 150, 255))
+        - type: custom:button-card
+          entity: sensor.esp32_devkitv1_progres
+          show_name: false
+          show_icon: false
+          show_state: true
+          tap_action:
+            action: more-info
+          card_mod:
+            style: |
+              :host {
+                grid-column: span 3;
+              }
+          styles:
+            card:
+              - background: none
+              - box-shadow: none
+              - border: none
+              - height: 40px
+            state:
+              - font-size: 13px
+              - color: var(--secondary-text-color)

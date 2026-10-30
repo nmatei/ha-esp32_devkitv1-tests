@@ -1,0 +1,122 @@
+# ESPHome: configurația completă a plăcii ESP32 DevKit V1 (octombrie 2026).
+# Se adaugă peste secțiunile generate la ADOPT (esphome:, esp32:, wifi:, api:, ota:):
+# păstrează-le pe acelea (cheile de criptare / parolele nu sunt aici) și unește
+# blocurile api: și wifi: de mai jos cu cele existente.
+# Cablare și explicații: esp32-devkitv1-home-assistant.md, sensors.md.
+
+# WiFi fără economie de energie: altfel comenzile rapide (punctele Morse) pot
+# ajunge grupate și unele se pierd. Vezi esphome-leds.yaml.
+wifi:
+  power_save_mode: none
+
+# ---------- API: serviciu pentru buzzer-ul pasiv ----------
+api:
+  # ... encryption etc. generate automat ...
+  actions:
+    - action: play_rtttl
+      variables:
+        song_str: string
+      then:
+        - rtttl.play: !lambda "return song_str;"
+
+# ---------- Iesiri ----------
+output:
+  - platform: gpio
+    pin: GPIO23
+    id: out_galben
+  - platform: gpio
+    pin: GPIO22
+    id: out_rosu
+  - platform: gpio
+    pin: GPIO21
+    id: out_albastru
+  - platform: gpio
+    pin: GPIO19
+    id: out_verde
+  - platform: gpio
+    pin: GPIO18
+    id: out_alb
+  - platform: gpio
+    pin: GPIO2
+    id: out_onboard
+  # buzzer pasiv (PWM)
+  - platform: ledc
+    pin: GPIO26
+    id: buzzer_pasiv
+
+# ---------- LED-uri ----------
+light:
+  - platform: binary
+    name: "LED Galben"
+    output: out_galben
+  - platform: binary
+    name: "LED Rosu"
+    output: out_rosu
+  - platform: binary
+    name: "LED Albastru"
+    output: out_albastru
+  - platform: binary
+    name: "LED Verde"
+    output: out_verde
+  - platform: binary
+    name: "LED Alb"
+    output: out_alb
+  - platform: binary
+    name: "LED Placa"
+    output: out_onboard
+
+# ---------- Senzori analogici ----------
+sensor:
+  # Lumina
+  - platform: adc
+    pin: GPIO34
+    name: "Senzor Lumina (HW-486)"
+    attenuation: 12db
+    update_interval: 2s
+
+  # Temperatura - lant de 3 pasi: volti -> rezistenta -> grade
+  - platform: adc
+    pin: GPIO35
+    id: temp_raw
+    attenuation: 12db
+    update_interval: 2s
+    internal: true
+  - platform: resistance
+    sensor: temp_raw
+    configuration: DOWNSTREAM   # daca valorile sunt absurde/inverse: UPSTREAM
+    resistor: 10kOhm
+    reference_voltage: 3.3V
+    id: temp_resistance
+    internal: true
+  - platform: ntc
+    sensor: temp_resistance
+    calibration:
+      b_constant: 3950
+      reference_temperature: 25°C
+      reference_resistance: 10kOhm
+    name: "Temperatura (HW-498)"
+
+# ---------- Buton fizic ----------
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO33
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    name: "Buton (HW-483)"
+    filters:
+      - delayed_on: 10ms    # debounce
+      - delayed_off: 10ms
+
+# ---------- Buzzer activ ----------
+switch:
+  - platform: gpio
+    pin: GPIO25
+    name: "Buzzer (HW-512)"
+    icon: "mdi:bullhorn"
+
+# ---------- Buzzer pasiv: player de melodii ----------
+rtttl:
+  output: buzzer_pasiv
