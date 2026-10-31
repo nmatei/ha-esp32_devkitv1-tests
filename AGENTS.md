@@ -61,11 +61,13 @@ prove the commands, not a fresh-clone install. `pytest.ini` limits a bare `pytes
 - `tests/` — pure tests; root `conftest.py` loads `const`/`encoding`/`morse`/`player`
   under a synthetic package so HA is never imported.
 - `tests_ha/` — integration tests against a real HA core; lamps are `input_boolean`s.
-- `examples/` — `dashboard/dashboard-card.yaml` (Lovelace card) and `esphome-leds.yaml` (the
+- `examples/` — `dashboard/dashboard-card.yaml` (Lovelace card: the settings) and `esphome-leds.yaml` (the
   device side: 5 GPIO binary lights), plus the whole board setup, in Romanian:
   `sensors.md` (module inventory, crops in `sensors/`), `esphome-full.yaml`,
-  `dashboard/dashboard-leds.yaml`, `automations/`, and the setup notes
-  `esp32-devkitv1-home-assistant.md`.
+  `device-builder.yaml` (the whole config saved from the Device Builder),
+  `dashboard/dashboard-leds.yaml` (lamps, Start/Stop, Mesaj, Progres),
+  `dashboard/dashboard-sensors.yaml`, `automations/`, and the setup notes
+  `examples/README.md` (it links the YAML files instead of copying them).
 
 ## Integrations
 Downstream: the 5 configured lamp entities, switched through the

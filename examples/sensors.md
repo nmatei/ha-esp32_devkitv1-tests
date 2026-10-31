@@ -3,7 +3,7 @@
 
 Inventarul modulelor din cutie: ce face fiecare și cum s-ar lega la placă, ca să
 alegi ce conectezi mai departe. Povestea completă a setup-ului (ESPHome, cablare,
-depanare) e în [esp32-devkitv1-home-assistant.md](esp32-devkitv1-home-assistant.md).
+depanare) e în [README.md](README.md).
 
 <img src="sensors/ESP32-DEVKITV1.jpg" width="160" alt="ESP32 DevKit V1">
 
@@ -70,8 +70,9 @@ Pozele sunt la aceeași scară (aprox. 4 px = 1 mm, măsurat după pasul de 2.54
 |---|---|
 | [esphome-full.yaml](esphome-full.yaml) | Configurația ESPHome completă de acum (LED-uri, senzori, buton, buzzere) |
 | [esphome-leds.yaml](esphome-leds.yaml) | Doar cele 5 LED-uri, minimul pentru integrarea Alfabetul pe fire |
-| [dashboard-leds.yaml](dashboard/dashboard-leds.yaml) | Cardul cu becuri colorate (button-card + card-mod) |
-| [dashboard-card.yaml](dashboard/dashboard-card.yaml) | Cardul de control al mesajului (Mesaj, Interval, Start/Stop) |
+| [dashboard/dashboard-leds.yaml](dashboard/dashboard-leds.yaml) | Cardul cu becuri colorate, Start/Stop, Mesaj și Progres (button-card + card-mod) |
+| [dashboard/dashboard-card.yaml](dashboard/dashboard-card.yaml) | Setările mesajului (Interval, Pauză între litere, Repetă după, Tip mesaj, Culoare Morse) |
+| [dashboard/dashboard-sensors.yaml](dashboard/dashboard-sensors.yaml) | Senzorii: lumină, temperatură, buton, buzzer |
 | [automations/toggle-leds-button.yaml](automations/toggle-leds-button.yaml) | Butonul pornește/oprește mesajul, cu sunet |
 
 Pozele originale: `sensors/sensors-colection-1 (v2).jpeg`, `sensors/sensors-colection-2 (v2).jpeg`.

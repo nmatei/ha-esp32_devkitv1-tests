@@ -2,7 +2,7 @@
 # Se adaugă peste secțiunile generate la ADOPT (esphome:, esp32:, wifi:, api:, ota:):
 # păstrează-le pe acelea (cheile de criptare / parolele nu sunt aici) și unește
 # blocurile api: și wifi: de mai jos cu cele existente.
-# Cablare și explicații: esp32-devkitv1-home-assistant.md, sensors.md.
+# Cablare și explicații: README.md, sensors.md.
 
 # WiFi fără economie de energie: altfel comenzile rapide (punctele Morse) pot
 # ajunge grupate și unele se pierd. Vezi esphome-leds.yaml.

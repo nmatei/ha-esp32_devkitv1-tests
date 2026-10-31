@@ -89,11 +89,13 @@ One device per entry, with:
 | `button.<name>_stop`            | stops and turns all lamps off                     |
 | `sensor.<name>_progres`         | `2 / 3 · L (01100 · 12)`, in Morse `2 / 3 · L (· - · ·)`, `pauză, reia după 1000 ms` between repetitions, then `gata` / `oprit`; attributes `index`, `total`, `symbol`, `code` (`21`, or `.-` in Morse), `binary` (colored letters only) |
 
-A ready dashboard card: [examples/dashboard/dashboard-card.yaml](examples/dashboard/dashboard-card.yaml)
-(Edit dashboard → Add card → Manual).
+Ready dashboard cards (Edit dashboard → Add card → Manual):
+[examples/dashboard/dashboard-leds.yaml](examples/dashboard/dashboard-leds.yaml) (the lamps,
+Start/Stop, Mesaj and Progres; needs `button-card` and `card-mod` from HACS) and
+[examples/dashboard/dashboard-card.yaml](examples/dashboard/dashboard-card.yaml) (the settings).
 
-The sensors on the board and the full device setup (ESPHome, dashboard, automations):
-[examples/sensors.md](examples/sensors.md).
+The full device setup (ESPHome, wiring, dashboard, automations), in Romanian:
+[examples/](examples/README.md); the sensors on the board: [examples/sensors.md](examples/sensors.md).
 
 ## 🔁 Looping animations
 

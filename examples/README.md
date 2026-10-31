@@ -116,125 +116,31 @@ La LED-urile albastre/albe tensiunea de deschidere (~3V) e aproape de 3.3V → l
 
 ---
 
-## 4. Configurația ESPHome completă (YAML)
+## 4. Configurația ESPHome
 
-> Secțiunile `esphome:`, `esp32:`, `wifi:`, `api:` (cheia de criptare), `ota:` sunt cele generate la ADOPT — mai jos e doar ce s-a adăugat peste ele. Indentarea contează: `output:`, `light:` etc. încep de la marginea din stânga.
+| Fișier | Ce e |
+|---|---|
+| [esphome-full.yaml](esphome-full.yaml) | Ce s-a adăugat peste secțiunile generate la ADOPT (`esphome:`, `esp32:`, `wifi:`, `api:`, `ota:`): LED-uri, senzori, buton, buzzere |
+| [device-builder.yaml](device-builder.yaml) | Configurația întreagă, salvată din ESPHome Device Builder (parolele sunt `!secret`) |
+| [esphome-leds.yaml](esphome-leds.yaml) | Doar cele 5 LED-uri, minimul pentru integrarea Alfabetul pe fire |
+
+Fiecare LED e o ieșire GPIO plus o lumină `binary` care o folosește:
 
 ```yaml
-# ---------- API: serviciu pentru buzzer-ul pasiv ----------
-api:
-  # ... encryption etc. generate automat ...
-  actions:
-    - action: play_rtttl
-      variables:
-        song_str: string
-      then:
-        - rtttl.play: !lambda "return song_str;"
-
-# ---------- Iesiri ----------
 output:
   - platform: gpio
     pin: GPIO23
     id: out_galben
-  - platform: gpio
-    pin: GPIO22
-    id: out_rosu
-  - platform: gpio
-    pin: GPIO21
-    id: out_albastru
-  - platform: gpio
-    pin: GPIO19
-    id: out_verde
-  - platform: gpio
-    pin: GPIO18
-    id: out_alb
-  - platform: gpio
-    pin: GPIO2
-    id: out_onboard
-  # buzzer pasiv (PWM)
-  - platform: ledc
-    pin: GPIO26
-    id: buzzer_pasiv
 
-# ---------- LED-uri ----------
 light:
   - platform: binary
     name: "LED Galben"
     output: out_galben
-  - platform: binary
-    name: "LED Rosu"
-    output: out_rosu
-  - platform: binary
-    name: "LED Albastru"
-    output: out_albastru
-  - platform: binary
-    name: "LED Verde"
-    output: out_verde
-  - platform: binary
-    name: "LED Alb"
-    output: out_alb
-  - platform: binary
-    name: "LED Placa"
-    output: out_onboard
-
-# ---------- Senzori analogici ----------
-sensor:
-  # Lumina
-  - platform: adc
-    pin: GPIO34
-    name: "Senzor Lumina (HW-486)"
-    attenuation: 12db
-    update_interval: 2s
-
-  # Temperatura - lant de 3 pasi: volti -> rezistenta -> grade
-  - platform: adc
-    pin: GPIO35
-    id: temp_raw
-    attenuation: 12db
-    update_interval: 2s
-    internal: true
-  - platform: resistance
-    sensor: temp_raw
-    configuration: DOWNSTREAM   # daca valorile sunt absurde/inverse: UPSTREAM
-    resistor: 10kOhm
-    reference_voltage: 3.3V
-    id: temp_resistance
-    internal: true
-  - platform: ntc
-    sensor: temp_resistance
-    calibration:
-      b_constant: 3950
-      reference_temperature: 25°C
-      reference_resistance: 10kOhm
-    name: "Temperatura (HW-498)"
-
-# ---------- Buton fizic ----------
-binary_sensor:
-  - platform: gpio
-    pin:
-      number: GPIO33
-      mode:
-        input: true
-        pullup: true
-      inverted: true
-    name: "Buton (HW-483)"
-    filters:
-      - delayed_on: 10ms    # debounce
-      - delayed_off: 10ms
-
-# ---------- Buzzer activ ----------
-switch:
-  - platform: gpio
-    pin: GPIO25
-    name: "Buzzer (HW-512)"
-    icon: "mdi:bullhorn"
-
-# ---------- Buzzer pasiv: player de melodii ----------
-rtttl:
-  output: buzzer_pasiv
 ```
 
-Note:
+Indentarea contează: `output:`, `light:` etc. încep de la marginea din stânga.
+
+Note despre [esphome-full.yaml](esphome-full.yaml):
 
 - `attenuation: 12db` extinde domeniul ADC la 0-3.3V (fără el saturează la ~1.1V).
 - `internal: true` ascunde senzorii intermediari (volți, ohmi) din HA — ajunge doar temperatura în °C.
@@ -249,191 +155,13 @@ Note:
 
 Necesită: **button-card** și **card_mod** (HACS). Entitățile au prefixul `esphome_esp32_devkitv1`.
 
-Structura: o casetă cu chenar (mod-card) cu cele 5 becuri pe un rând (grid cu 5 coloane, icon 22px, înălțime 40px), plus o a doua casetă cu LED-ul plăcii pe 1/5 din lățime și senzorul de progres întins pe 3 coloane (`grid-column: span 3`).
+Cardurile, salvate din dashboard (Edit dashboard → Add card → Manual):
 
-```yaml
-type: grid
-square: false
-columns: 1
-cards:
-  - type: custom:mod-card
-    card_mod:
-      style: |
-        ha-card {
-          background: var(--ha-card-background, var(--card-background-color));
-          border-radius: var(--ha-card-border-radius, 12px);
-          box-shadow: var(--ha-card-box-shadow, none);
-          border: 1px solid var(--divider-color);
-          padding: 8px;
-        }
-    card:
-      type: grid
-      columns: 5
-      square: false
-      cards:
-        - type: custom:button-card
-          entity: light.esphome_esp32_devkitv1_led_galben
-          show_name: false
-          icon: mdi:lightbulb
-          tap_action:
-            action: toggle
-          styles:
-            card:
-              - background: none
-              - box-shadow: none
-              - border: none
-              - height: 40px
-            icon:
-              - width: 22px
-              - color: rgba(255, 200, 0, 0.3)
-          state:
-            - value: "on"
-              styles:
-                icon:
-                  - color: rgb(255, 200, 0)
-                  - filter: drop-shadow(0 0 8px rgb(255, 200, 0))
-        - type: custom:button-card
-          entity: light.esphome_esp32_devkitv1_led_rosu
-          show_name: false
-          icon: mdi:lightbulb
-          tap_action:
-            action: toggle
-          styles:
-            card:
-              - background: none
-              - box-shadow: none
-              - border: none
-              - height: 40px
-            icon:
-              - width: 22px
-              - color: rgba(244, 67, 54, 0.3)
-          state:
-            - value: "on"
-              styles:
-                icon:
-                  - color: rgb(244, 67, 54)
-                  - filter: drop-shadow(0 0 8px rgb(244, 67, 54))
-        - type: custom:button-card
-          entity: light.esphome_esp32_devkitv1_led_albastru
-          show_name: false
-          icon: mdi:lightbulb
-          tap_action:
-            action: toggle
-          styles:
-            card:
-              - background: none
-              - box-shadow: none
-              - border: none
-              - height: 40px
-            icon:
-              - width: 22px
-              - color: rgba(33, 150, 243, 0.3)
-          state:
-            - value: "on"
-              styles:
-                icon:
-                  - color: rgb(33, 150, 243)
-                  - filter: drop-shadow(0 0 8px rgb(33, 150, 243))
-        - type: custom:button-card
-          entity: light.esphome_esp32_devkitv1_led_verde
-          show_name: false
-          icon: mdi:lightbulb
-          tap_action:
-            action: toggle
-          styles:
-            card:
-              - background: none
-              - box-shadow: none
-              - border: none
-              - height: 40px
-            icon:
-              - width: 22px
-              - color: rgba(76, 175, 80, 0.3)
-          state:
-            - value: "on"
-              styles:
-                icon:
-                  - color: rgb(76, 175, 80)
-                  - filter: drop-shadow(0 0 8px rgb(76, 175, 80))
-        - type: custom:button-card
-          entity: light.esphome_esp32_devkitv1_led_alb
-          show_name: false
-          icon: mdi:lightbulb
-          tap_action:
-            action: toggle
-          styles:
-            card:
-              - background: none
-              - box-shadow: none
-              - border: none
-              - height: 40px
-            icon:
-              - width: 22px
-              - color: rgba(200, 200, 200, 0.35)
-          state:
-            - value: "on"
-              styles:
-                icon:
-                  - color: rgb(255, 255, 255)
-                  - filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9))
-  - type: custom:mod-card
-    card_mod:
-      style: |
-        ha-card {
-          background: var(--ha-card-background, var(--card-background-color));
-          border-radius: var(--ha-card-border-radius, 12px);
-          box-shadow: var(--ha-card-box-shadow, none);
-          border: 1px solid var(--divider-color);
-          padding: 8px;
-        }
-    card:
-      type: grid
-      columns: 5
-      square: false
-      cards:
-        - type: custom:button-card
-          entity: light.esphome_esp32_devkitv1_led_placa
-          show_name: false
-          icon: mdi:lightbulb
-          tap_action:
-            action: toggle
-          styles:
-            card:
-              - background: none
-              - box-shadow: none
-              - border: none
-              - height: 40px
-            icon:
-              - width: 22px
-              - color: rgba(0, 150, 255, 0.3)
-          state:
-            - value: "on"
-              styles:
-                icon:
-                  - color: rgb(0, 150, 255)
-                  - filter: drop-shadow(0 0 8px rgb(0, 150, 255))
-        - type: custom:button-card
-          entity: sensor.esp32_devkitv1_progres
-          show_name: false
-          show_icon: false
-          show_state: true
-          tap_action:
-            action: more-info
-          card_mod:
-            style: |
-              :host {
-                grid-column: span 3;
-              }
-          styles:
-            card:
-              - background: none
-              - box-shadow: none
-              - border: none
-              - height: 40px
-            state:
-              - font-size: 13px
-              - color: var(--secondary-text-color)
-```
+| Fișier | Ce e |
+|---|---|
+| [dashboard/dashboard-leds.yaml](dashboard/dashboard-leds.yaml) | Caseta cu chenar (mod-card): cele 5 becuri, LED-ul plăcii, Start și Stop (grid cu 6 coloane, icon 22px, înălțime 40px), plus Mesaj și Progres dedesubt |
+| [dashboard/dashboard-card.yaml](dashboard/dashboard-card.yaml) | Setările mesajului: Interval, Pauză între litere, Repetă după, Tip mesaj, Culoare Morse |
+| [dashboard/dashboard-sensors.yaml](dashboard/dashboard-sensors.yaml) | Senzorii: lumină (HW-486), temperatură (HW-498), buton (HW-483), buzzer (HW-512) |
 
 Lecții de layout (ce NU a mers):
 
