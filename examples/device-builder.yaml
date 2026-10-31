@@ -1,0 +1,127 @@
+esphome:
+  name: esphome-web-3053a0
+  friendly_name: esphome-web-3053a0
+  min_version: 2026.4.0
+  name_add_mac_suffix: false
+
+esp32:
+  variant: esp32
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  actions:
+    - action: play_rtttl
+      variables:
+        song_str: string
+      then:
+        - rtttl.play: !lambda "return song_str;"
+
+# Allow Over-The-Air updates
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO33
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    name: "Buton (HW-483)"
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+
+sensor:
+  # Lumina - ramane cum era
+  - platform: adc
+    pin: GPIO34
+    name: "Senzor Lumina (HW-486)"
+    attenuation: 12db
+    update_interval: 2s
+
+  # Temperatura - lantul de 3 pasi
+  - platform: adc
+    pin: GPIO35
+    id: temp_raw
+    attenuation: 12db
+    update_interval: 2s
+    internal: true
+  - platform: resistance
+    sensor: temp_raw
+    configuration: DOWNSTREAM
+    resistor: 10kOhm
+    reference_voltage: 3.3V
+    id: temp_resistance
+    internal: true
+  - platform: ntc
+    sensor: temp_resistance
+    calibration:
+      b_constant: 3950
+      reference_temperature: 25°C
+      reference_resistance: 10kOhm
+    name: "Temperatura (HW-498)"
+
+output:
+  - platform: gpio
+    pin: GPIO2
+    id: out_onboard
+  - platform: gpio
+    pin: GPIO23
+    id: out_galben
+  - platform: gpio
+    pin: GPIO22
+    id: out_rosu
+  - platform: gpio
+    pin: GPIO21
+    id: out_albastru
+  - platform: gpio
+    pin: GPIO19
+    id: out_verde
+  - platform: gpio
+    pin: GPIO18
+    id: out_alb
+  # Buzzer pasiv - cu suport de melodii
+  - platform: ledc
+    pin: GPIO26
+    id: buzzer_pasiv
+
+rtttl:
+  output: buzzer_pasiv
+
+light:
+  - platform: binary
+    name: "LED Placa"
+    output: out_onboard
+  - platform: binary
+    name: "LED Galben"
+    output: out_galben
+  - platform: binary
+    name: "LED Rosu"
+    output: out_rosu
+  - platform: binary
+    name: "LED Albastru"
+    output: out_albastru
+  - platform: binary
+    name: "LED Verde"
+    output: out_verde
+  - platform: binary
+    name: "LED Alb"
+    output: out_alb
+
+# Buzzer activ - ca un switch simplu
+switch:
+  - platform: gpio
+    pin: GPIO25
+    name: "Buzzer (HW-512)"
+    icon: "mdi:bullhorn"
