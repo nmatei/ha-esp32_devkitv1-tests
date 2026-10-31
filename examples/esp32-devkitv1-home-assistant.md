@@ -1,6 +1,6 @@
 # ESP32 DevKit V1 + Home Assistant (ESPHome)
 
-Documentația completă a proiectului, rezultată din conversația de setup (octombrie 2026).
+Documentația completă a proiectului pentru configurarea și utilizarea ESP32 DevKit V1 cu Home Assistant prin ESPHome.
 Placă: **ESP32 DevKit V1** (`esp32doit-devkit-v1`), integrare prin **ESPHome**.
 
 ---
@@ -33,16 +33,41 @@ Două componente, cu roluri diferite:
 
 | Componentă | Rol |
 |---|---|
-| **ESPHome Device Builder** (add-on) | Atelierul: editezi YAML, compilezi, instalezi firmware (OTA prin WiFi) |
+| **ESPHome Device Builder** (app, fost add-on) | Atelierul: editezi YAML, compilezi, instalezi firmware (OTA prin WiFi) |
 | **ESPHome** (integrarea) | Puntea: HA vorbește cu placa și afișează entitățile |
 
-Pași:
+### 2.1 ESPHome Device Builder (app)
 
-1. Settings → Add-ons → Add-on Store → **ESPHome Device Builder** → Install → Start → Show in sidebar.
+Link direct (deschide pagina app-ului în Home Assistant-ul tău prin My Home Assistant; la prima folosire cere adresa instanței, ex. `http://homeassistant.local:8123`):
+[Instalează ESPHome Device Builder](https://my.home-assistant.io/redirect/supervisor_addon/?addon=5c53de3b_esphome&repository_url=https%3A%2F%2Fgithub.com%2Fesphome%2Fhome-assistant-addon)
+
+Sau manual:
+
+1. Settings → Apps → Install app → **ESPHome Device Builder** → Install → Start → Show in sidebar.
 2. Prima flash-are prin USB: **https://web.esphome.io** (Chrome, nu Safari) sau din Builder → New Device → "Plug into this computer".
 3. Dacă placa a fost instalată prin web.esphome.io, în Builder apare ca *discovered* → **ADOPT** → se creează configurația editabilă.
 4. Orice modificare de YAML: **SAVE + INSTALL → Wirelessly**. Save doar salvează fișierul; Install compilează și trimite firmware-ul pe placă.
-5. Integrarea ESPHome preia automat entitățile noi după repornirea plăcii.
+
+App-urile există doar pe Home Assistant OS / Supervised. Pe HA Container/Core, Device Builder rulează separat (ex. Docker `ghcr.io/esphome/esphome`, port 6052).
+
+### 2.2 ESPHome (integrarea)
+
+Link direct (pornește adăugarea integrării):
+[Adaugă integrarea ESPHome](https://my.home-assistant.io/redirect/config_flow_start/?domain=esphome)
+
+De obicei HA găsește singur placa după prima flash-are (mDNS, aceeași rețea):
+
+1. Settings → Devices & services → secțiunea **Discovered** → **ESPHome** (numele plăcii) → **Add** / Configure → Submit.
+2. Dacă cere **encryption key**: e cheia din YAML-ul plăcii, `api:` → `encryption:` → `key:` (în Builder → placa → Edit).
+3. Alege zona (Area) → Finish. Entitățile (LED-uri, senzori, buton, buzzer) apar sub dispozitiv.
+
+Dacă placa nu apare la Discovered:
+
+1. Settings → Devices & services → **Add integration** → caută **ESPHome**.
+2. Host: IP-ul plăcii (din router sau din logurile din Builder) sau `<nume>.local`; Port: `6053`.
+3. Encryption key ca mai sus → Submit.
+
+După un Install wireless, integrarea preia automat entitățile noi la repornirea plăcii. Ca device-ul să poată apela acțiuni HA (`homeassistant.action`), activează în integrare: Configure → **Allow the device to perform Home Assistant actions**.
 
 Notă: device-ul a rămas înregistrat în API ca `esphome-web-3053a0`, deci serviciile expuse au prefixul `esphome.esphome_web_3053a0_...` (chiar dacă entitățile au prefixul "office"). Redenumirea (`name:` din secțiunea `esphome:`) ar rupe entitățile și automatizările existente — nu merită.
 
