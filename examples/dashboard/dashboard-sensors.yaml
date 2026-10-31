@@ -1,0 +1,11 @@
+type: entities
+entities:
+  - entity: sensor.esphome_esp32_devkitv1_senzor_lumina_hw_486
+    name: Senzor Lumina (HW-486)
+  - entity: sensor.esphome_esp32_devkitv1_temperatura_hw_498
+    name: Temperatura (HW-498)
+  - entity: binary_sensor.esphome_esp32_devkitv1_buton_hw_483
+    name: Buton (HW-843)
+  - entity: switch.esphome_esp32_devkitv1_buzzer_hw_512
+    name: Buzzer (HW-512)
+title: 🖲️ ESP32

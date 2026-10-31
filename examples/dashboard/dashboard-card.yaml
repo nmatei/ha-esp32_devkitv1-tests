@@ -1,61 +1,13 @@
-# Dashboard → Edit → Add card → Manual.
-# Entity ids assume the entry is named "ESP32 devkitv1" (the default).
-type: vertical-stack
-cards:
-  - type: entities
-    title: 💡 Alfabetul pe fire
-    entities:
-      - entity: text.esp32_devkitv1_mesaj
-      - entity: select.esp32_devkitv1_tip_mesaj
-      # ms; each message type keeps its own value (letter time / Morse dot)
-      - entity: number.esp32_devkitv1_interval
-      # ms before the message starts again; 0 = play once
-      - entity: number.esp32_devkitv1_repeta_dupa
-      # Colored letters only: ms all lamps stay dark before each letter
-      - type: conditional
-        conditions:
-          - entity: select.esp32_devkitv1_tip_mesaj
-            state: Litere colorate
-        row:
-          entity: number.esp32_devkitv1_pauza_intre_litere
-      # The Morse lamp is shown only in Morse mode.
-      - type: conditional
-        conditions:
-          - entity: select.esp32_devkitv1_tip_mesaj
-            state: Morse
-        row:
-          entity: select.esp32_devkitv1_culoare_morse
-      - entity: sensor.esp32_devkitv1_progres
-  - type: horizontal-stack
-    cards:
-      - type: button
-        entity: button.esp32_devkitv1_start
-        name: Start
-        icon: mdi:play
-        tap_action:
-          action: perform-action
-          perform_action: button.press
-          target:
-            entity_id: button.esp32_devkitv1_start
-      - type: button
-        entity: button.esp32_devkitv1_stop
-        name: Stop
-        icon: mdi:stop
-        tap_action:
-          action: perform-action
-          perform_action: button.press
-          target:
-            entity_id: button.esp32_devkitv1_stop
-  - type: glance
-    title: Becurile (fir 1 → fir 5)
-    entities:
-      - entity: light.esphome_esp32_devkitv1_led_galben
-        name: "1"
-      - entity: light.esphome_esp32_devkitv1_led_rosu
-        name: "2"
-      - entity: light.esphome_esp32_devkitv1_led_albastru
-        name: "3"
-      - entity: light.esphome_esp32_devkitv1_led_verde
-        name: "4"
-      - entity: light.esphome_esp32_devkitv1_led_alb
-        name: "5"
+type: entities
+entities:
+  - entity: number.esp32_devkitv1_interval
+    name: Interval
+  - entity: number.office_esp32_devkitv1_pauza_intre_litere
+    name: Pauză între litere
+  - entity: number.office_esp32_devkitv1_repeta_dupa
+    name: Repetă după
+  - entity: select.office_esp32_devkitv1_tip_mesaj
+    name: Tip mesaj
+  - entity: select.office_esp32_devkitv1_culoare_morse
+    name: Culoare Morse
+title: 🖲️ ESP32 Config
