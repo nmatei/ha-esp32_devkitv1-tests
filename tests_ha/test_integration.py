@@ -28,9 +28,9 @@ async def test_flow_defaults_create_the_card_entities(hass):
     r = await hass.config_entries.flow.async_configure(r["flow_id"], {})
     assert r["type"] == "create_entry"
     assert r["title"] == "ESP32 devkitv1"
-    assert r["data"]["lights"][4] == "light.office_esphome_esp32_devkitv1_led_alb"
+    assert r["data"]["lights"][4] == "light.esphome_esp32_devkitv1_led_alb"
     await hass.async_block_till_done()
-    # the ids used by examples/dashboard-card.yaml
+    # the ids used by examples/dashboard/dashboard-card.yaml
     for e in (
         "text.esp32_devkitv1_mesaj",
         "number.esp32_devkitv1_interval",

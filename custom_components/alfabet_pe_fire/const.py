@@ -18,7 +18,7 @@ WIRE_NAMES: Final = ("galben", "rosu", "albastru", "verde", "alb")
 # Defaults --------------------------------------------------------------------
 DEFAULT_NAME: Final = "ESP32 devkitv1"
 DEFAULT_LIGHTS: Final = tuple(
-    f"light.office_esphome_esp32_devkitv1_led_{color}" for color in WIRE_NAMES
+    f"light.esphome_esp32_devkitv1_led_{color}" for color in WIRE_NAMES
 )
 
 # All lights go dark for this long between two symbols, so a repeated letter

@@ -69,7 +69,7 @@ Dacă placa nu apare la Discovered:
 
 După un Install wireless, integrarea preia automat entitățile noi la repornirea plăcii. Ca device-ul să poată apela acțiuni HA (`homeassistant.action`), activează în integrare: Configure → **Allow the device to perform Home Assistant actions**.
 
-Notă: device-ul a rămas înregistrat în API ca `esphome-web-3053a0`, deci serviciile expuse au prefixul `esphome.esphome_web_3053a0_...` (chiar dacă entitățile au prefixul "office"). Redenumirea (`name:` din secțiunea `esphome:`) ar rupe entitățile și automatizările existente — nu merită.
+Notă: device-ul a rămas înregistrat în API ca `esphome-web-3053a0`, deci serviciile expuse au prefixul `esphome.esphome_web_3053a0_...` (chiar dacă entitățile au prefixul `esphome_esp32_devkitv1`, dat manual în HA). Redenumirea (`name:` din secțiunea `esphome:`) ar rupe entitățile și automatizările existente — nu merită.
 
 ---
 
@@ -247,7 +247,7 @@ Note:
 
 ## 5. Dashboard (Lovelace)
 
-Necesită: **button-card** și **card_mod** (HACS). Entitățile au prefixul `office_esphome_esp32_devkitv1`.
+Necesită: **button-card** și **card_mod** (HACS). Entitățile au prefixul `esphome_esp32_devkitv1`.
 
 Structura: o casetă cu chenar (mod-card) cu cele 5 becuri pe un rând (grid cu 5 coloane, icon 22px, înălțime 40px), plus o a doua casetă cu LED-ul plăcii pe 1/5 din lățime și senzorul de progres întins pe 3 coloane (`grid-column: span 3`).
 
@@ -272,7 +272,7 @@ cards:
       square: false
       cards:
         - type: custom:button-card
-          entity: light.office_esphome_esp32_devkitv1_led_galben
+          entity: light.esphome_esp32_devkitv1_led_galben
           show_name: false
           icon: mdi:lightbulb
           tap_action:
@@ -293,7 +293,7 @@ cards:
                   - color: rgb(255, 200, 0)
                   - filter: drop-shadow(0 0 8px rgb(255, 200, 0))
         - type: custom:button-card
-          entity: light.office_esphome_esp32_devkitv1_led_rosu
+          entity: light.esphome_esp32_devkitv1_led_rosu
           show_name: false
           icon: mdi:lightbulb
           tap_action:
@@ -314,7 +314,7 @@ cards:
                   - color: rgb(244, 67, 54)
                   - filter: drop-shadow(0 0 8px rgb(244, 67, 54))
         - type: custom:button-card
-          entity: light.office_esphome_esp32_devkitv1_led_albastru
+          entity: light.esphome_esp32_devkitv1_led_albastru
           show_name: false
           icon: mdi:lightbulb
           tap_action:
@@ -335,7 +335,7 @@ cards:
                   - color: rgb(33, 150, 243)
                   - filter: drop-shadow(0 0 8px rgb(33, 150, 243))
         - type: custom:button-card
-          entity: light.office_esphome_esp32_devkitv1_led_verde
+          entity: light.esphome_esp32_devkitv1_led_verde
           show_name: false
           icon: mdi:lightbulb
           tap_action:
@@ -356,7 +356,7 @@ cards:
                   - color: rgb(76, 175, 80)
                   - filter: drop-shadow(0 0 8px rgb(76, 175, 80))
         - type: custom:button-card
-          entity: light.office_esphome_esp32_devkitv1_led_alb
+          entity: light.esphome_esp32_devkitv1_led_alb
           show_name: false
           icon: mdi:lightbulb
           tap_action:
@@ -392,7 +392,7 @@ cards:
       square: false
       cards:
         - type: custom:button-card
-          entity: light.office_esphome_esp32_devkitv1_led_placa
+          entity: light.esphome_esp32_devkitv1_led_placa
           show_name: false
           icon: mdi:lightbulb
           tap_action:
@@ -453,7 +453,7 @@ alias: Toggle LEDs
 description: Toggle LEDs
 triggers:
   - trigger: state
-    entity_id: binary_sensor.office_esphome_esp32_devkitv1_buton_hw_483
+    entity_id: binary_sensor.esphome_esp32_devkitv1_buton_hw_483
     to: "on"
 actions:
   - if:

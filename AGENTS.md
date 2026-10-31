@@ -61,18 +61,18 @@ prove the commands, not a fresh-clone install. `pytest.ini` limits a bare `pytes
 - `tests/` — pure tests; root `conftest.py` loads `const`/`encoding`/`morse`/`player`
   under a synthetic package so HA is never imported.
 - `tests_ha/` — integration tests against a real HA core; lamps are `input_boolean`s.
-- `examples/` — `dashboard-card.yaml` (Lovelace card) and `esphome-leds.yaml` (the
+- `examples/` — `dashboard/dashboard-card.yaml` (Lovelace card) and `esphome-leds.yaml` (the
   device side: 5 GPIO binary lights), plus the whole board setup, in Romanian:
   `sensors.md` (module inventory, crops in `sensors/`), `esphome-full.yaml`,
-  `dashboard-leds.yaml`, `automations/`, and the setup notes
+  `dashboard/dashboard-leds.yaml`, `automations/`, and the setup notes
   `esp32-devkitv1-home-assistant.md`.
 
 ## Integrations
 Downstream: the 5 configured lamp entities, switched through the
 `homeassistant.turn_on` / `turn_off` services (`controller.py`). By default these are
-`light.office_esphome_esp32_devkitv1_led_*`, ESPHome lights on an ESP32.
+`light.esphome_esp32_devkitv1_led_*`, ESPHome lights on an ESP32.
 
-Upstream: `examples/dashboard-card.yaml` and the automation examples in the README
+Upstream: `examples/dashboard/dashboard-card.yaml` and the automation examples in the README
 address entities by id (`text.<name>_mesaj`, `number.<name>_interval`, …). Renaming an
 entity changes its id and breaks them.
 
@@ -86,7 +86,7 @@ per the owner. Not a runtime dependency.
   timing goes in `player.py` with lamps, progress, sleep and clock injected, so it is
   tested with a fake clock (see `tests/test_player.py`, `tests/test_morse.py`).
 - Entity names are hardcoded Romanian on purpose: they make the entity ids used by
-  `examples/dashboard-card.yaml`, whatever HA's language. Don't route them through
+  `examples/dashboard/dashboard-card.yaml`, whatever HA's language. Don't route them through
   translations.
 - Intervals are stored in ms. A unit change needs a restore migration, as the seconds
   → ms one for Repetă după (see `test_restore_*` in `tests_ha/test_integration.py`).

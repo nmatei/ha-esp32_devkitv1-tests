@@ -41,7 +41,7 @@ Pozele sunt la aceeași scară (aprox. 4 px = 1 mm, măsurat după pasul de 2.54
 |---|---|---|
 | ✅ **HW-486** (KY-018)<br>Senzor de lumină (fotorezistor) | <img src="sensors/HW-486.jpg" width="99" style="min-width:99px"> | Tensiune analogică ce variază cu lumina. **Legat:** `S` → **D34** (GPIO34), mijloc → 3V3, `−` → GND. ESPHome: `sensor: platform: adc`, `attenuation: 12db`. |
 | ✅ **HW-498** (KY-013)<br>Senzor de temperatură analogic (termistor NTC) | <img src="sensors/HW-498.jpg" width="102" style="min-width:102px"> | Rezistența scade când crește temperatura. **Legat:** `S` → **D35** (GPIO35), mijloc → 3V3, `−` → GND. ESPHome: lanțul `adc` → `resistance` (10 kΩ) → `ntc` (B 3950) dă °C. |
-| ✅ **HW-483** (KY-004)<br>Buton apăsabil | <img src="sensors/HW-483.jpg" width="97" style="min-width:97px"> | Trage `S` la GND când e apăsat. **Legat:** `S` → **D33** (GPIO33), `−` → GND. ESPHome: `binary_sensor` cu `pullup: true` + `inverted: true`, debounce 10 ms. Pornește/oprește mesajul: [automations/toggle-leds-button.yaml](automations/toggle-leds-button.yaml). Entitatea: `binary_sensor.office_esphome_esp32_devkitv1_buton_hw_483` (până în octombrie 2026 numită greșit `…_buton_hw_843`). |
+| ✅ **HW-483** (KY-004)<br>Buton apăsabil | <img src="sensors/HW-483.jpg" width="97" style="min-width:97px"> | Trage `S` la GND când e apăsat. **Legat:** `S` → **D33** (GPIO33), `−` → GND. ESPHome: `binary_sensor` cu `pullup: true` + `inverted: true`, debounce 10 ms. Pornește/oprește mesajul: [automations/toggle-leds-button.yaml](automations/toggle-leds-button.yaml). Entitatea: `binary_sensor.esphome_esp32_devkitv1_buton_hw_483`. |
 | ✅ **HW-512** (KY-012)<br>Buzzer activ | <img src="sensors/HW-512.jpg" width="108" style="min-width:108px"> | Sună singur cât timp primește tensiune (un singur ton). **Legat:** `S` → **D25** (GPIO25), `−` → GND. ESPHome: `switch: platform: gpio`. |
 | ✅ **HW-508** (KY-006)<br>Buzzer pasiv | <img src="sensors/HW-508.jpg" width="108" style="min-width:108px"> | Are nevoie de semnal PWM, așa că poate cânta note și melodii. **Legat:** `S` → **D26** (GPIO26), `−` → GND. ESPHome: `output: platform: ledc` + `rtttl`, apelat din HA cu `play_rtttl`. |
 | **HW-503** (KY-028)<br>Senzor digital de temperatură | <img src="sensors/HW-503.jpg" width="181" style="min-width:181px"> | Termistor + comparator: `D0` devine activ peste un prag de temperatură. `D0` → GPIO27 (`binary_sensor`) sau `A0` → GPIO32 (`adc`, valoare brută, necalibrată). |
@@ -70,8 +70,8 @@ Pozele sunt la aceeași scară (aprox. 4 px = 1 mm, măsurat după pasul de 2.54
 |---|---|
 | [esphome-full.yaml](esphome-full.yaml) | Configurația ESPHome completă de acum (LED-uri, senzori, buton, buzzere) |
 | [esphome-leds.yaml](esphome-leds.yaml) | Doar cele 5 LED-uri, minimul pentru integrarea Alfabetul pe fire |
-| [dashboard-leds.yaml](dashboard-leds.yaml) | Cardul cu becuri colorate (button-card + card-mod) |
-| [dashboard-card.yaml](dashboard-card.yaml) | Cardul de control al mesajului (Mesaj, Interval, Start/Stop) |
+| [dashboard-leds.yaml](dashboard/dashboard-leds.yaml) | Cardul cu becuri colorate (button-card + card-mod) |
+| [dashboard-card.yaml](dashboard/dashboard-card.yaml) | Cardul de control al mesajului (Mesaj, Interval, Start/Stop) |
 | [automations/toggle-leds-button.yaml](automations/toggle-leds-button.yaml) | Butonul pornește/oprește mesajul, cu sunet |
 
 Pozele originale: `sensors/sensors-colection-1 (v2).jpeg`, `sensors/sensors-colection-2 (v2).jpeg`.

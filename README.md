@@ -67,7 +67,7 @@ while the link to the ESP32 wakes up.
 
 Then **Settings → Devices & Services → + Add Integration → Alfabetul pe fire**:
 a name (default `ESP32 devkitv1`) and the 5 lamps, prefilled with
-`light.office_esphome_esp32_devkitv1_led_{galben,rosu,albastru,verde,alb}`.
+`light.esphome_esp32_devkitv1_led_{galben,rosu,albastru,verde,alb}`.
 **Configure** changes the lamps later (e.g. `light.sanctuar_randul1…5`).
 
 The ESPHome side (5 GPIO outputs as binary lights) is in
@@ -89,7 +89,7 @@ One device per entry, with:
 | `button.<name>_stop`            | stops and turns all lamps off                     |
 | `sensor.<name>_progres`         | `2 / 3 · L (01100 · 12)`, in Morse `2 / 3 · L (· - · ·)`, `pauză, reia după 1000 ms` between repetitions, then `gata` / `oprit`; attributes `index`, `total`, `symbol`, `code` (`21`, or `.-` in Morse), `binary` (colored letters only) |
 
-A ready dashboard card: [examples/dashboard-card.yaml](examples/dashboard-card.yaml)
+A ready dashboard card: [examples/dashboard/dashboard-card.yaml](examples/dashboard/dashboard-card.yaml)
 (Edit dashboard → Add card → Manual).
 
 The sensors on the board and the full device setup (ESPHome, dashboard, automations):

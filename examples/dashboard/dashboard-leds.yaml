@@ -1,7 +1,7 @@
 # Dashboard → Edit → Add card → Manual.
 # Necesită din HACS: button-card și card-mod.
 # Cele 5 becuri + LED-ul plăcii (comutare la apăsare) și senzorul Progres.
-# Entitățile au prefixul office_esphome_esp32_devkitv1 (ESPHome) și
+# Entitățile au prefixul esphome_esp32_devkitv1 (ESPHome) și
 # esp32_devkitv1 (integrarea Alfabetul pe fire, intrarea "ESP32 devkitv1").
 type: grid
 square: false
@@ -23,7 +23,7 @@ cards:
       square: false
       cards:
         - type: custom:button-card
-          entity: light.office_esphome_esp32_devkitv1_led_galben
+          entity: light.esphome_esp32_devkitv1_led_galben
           show_name: false
           icon: mdi:lightbulb
           tap_action:
@@ -44,7 +44,7 @@ cards:
                   - color: rgb(255, 200, 0)
                   - filter: drop-shadow(0 0 8px rgb(255, 200, 0))
         - type: custom:button-card
-          entity: light.office_esphome_esp32_devkitv1_led_rosu
+          entity: light.esphome_esp32_devkitv1_led_rosu
           show_name: false
           icon: mdi:lightbulb
           tap_action:
@@ -65,7 +65,7 @@ cards:
                   - color: rgb(244, 67, 54)
                   - filter: drop-shadow(0 0 8px rgb(244, 67, 54))
         - type: custom:button-card
-          entity: light.office_esphome_esp32_devkitv1_led_albastru
+          entity: light.esphome_esp32_devkitv1_led_albastru
           show_name: false
           icon: mdi:lightbulb
           tap_action:
@@ -86,7 +86,7 @@ cards:
                   - color: rgb(33, 150, 243)
                   - filter: drop-shadow(0 0 8px rgb(33, 150, 243))
         - type: custom:button-card
-          entity: light.office_esphome_esp32_devkitv1_led_verde
+          entity: light.esphome_esp32_devkitv1_led_verde
           show_name: false
           icon: mdi:lightbulb
           tap_action:
@@ -107,7 +107,7 @@ cards:
                   - color: rgb(76, 175, 80)
                   - filter: drop-shadow(0 0 8px rgb(76, 175, 80))
         - type: custom:button-card
-          entity: light.office_esphome_esp32_devkitv1_led_alb
+          entity: light.esphome_esp32_devkitv1_led_alb
           show_name: false
           icon: mdi:lightbulb
           tap_action:
@@ -143,7 +143,7 @@ cards:
       square: false
       cards:
         - type: custom:button-card
-          entity: light.office_esphome_esp32_devkitv1_led_placa
+          entity: light.esphome_esp32_devkitv1_led_placa
           show_name: false
           icon: mdi:lightbulb
           tap_action:
