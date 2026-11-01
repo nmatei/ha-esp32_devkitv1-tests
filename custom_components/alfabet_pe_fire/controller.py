@@ -54,6 +54,7 @@ class AlfabetController:
         self.repeat = DEFAULT_REPEAT  # ms, 0 = play once
         self.gap = DEFAULT_GAP_MS  # ms dark between colored letters
         self.sound = SOUND_NONE  # how Morse sounds while its lamp is lit
+        self._warned: set[str] = set()  # missing RTTTL actions already logged
         self.progress = Progress()
         self._task: asyncio.Task | None = None
         self._listeners: set[Callable[[], None]] = set()
@@ -136,10 +137,30 @@ class AlfabetController:
                 {ATTR_ENTITY_ID: self.buzzer},
                 blocking=True,
             )
-        elif sound == SOUND_RTTTL:
+        elif sound == SOUND_RTTTL and self._has_rtttl():
             domain, service = (self.rtttl_play if on else self.rtttl_stop).split(".", 1)
             data = {"song_str": MORSE_TONE} if on else {}
             await self.hass.services.async_call(domain, service, data, blocking=True)
+
+    def _has_rtttl(self) -> bool:
+        """Both RTTTL actions exist: a tone that cannot be stopped would ring 8 s.
+
+        Without them (e.g. firmware not reinstalled with ``stop_rtttl``) Morse
+        plays silently instead of failing, with one warning per missing action.
+        """
+        missing = [
+            a for a in (self.rtttl_play, self.rtttl_stop)
+            if not self.hass.services.has_service(*a.split(".", 1))
+        ]
+        for action in missing:
+            if action not in self._warned:
+                self._warned.add(action)
+                _LOGGER.warning(
+                    "Sunet Morse RTTTL is off: action %s not found (add it to the "
+                    "ESPHome config and reinstall, or change it in the options)",
+                    action,
+                )
+        return not missing
 
     async def _set_morse(self, bits: tuple[bool, ...]) -> None:
         # the lamp and the sound together, so the sound lasts exactly as the lamp

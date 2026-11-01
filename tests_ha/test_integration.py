@@ -381,3 +381,28 @@ async def test_pause_sound_example_ticks_once_per_letter_even_without_a_gap(hass
     await hass.async_block_till_done()
     assert ticks == []
     assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_morse_plays_silently_when_the_rtttl_stop_action_is_missing(hass, caplog):
+    """Firmware not reinstalled with stop_rtttl: no tone that can't be stopped, no failure."""
+    calls = []
+
+    async def record(call):
+        calls.append(call.service)
+
+    hass.services.async_register("esphome", "x_play_rtttl", record)
+    entry = await _play_morse_e(
+        hass, "RTTTL", rtttl_play="esphome.x_play_rtttl", rtttl_stop="esphome.x_stop_rtttl"
+    )
+    await asyncio.sleep(0.7)  # in the dot
+    assert _lamps(hass)[0]
+    await asyncio.sleep(0.3)
+    await hass.async_block_till_done()
+    assert hass.states.get("sensor.test_progres").state == "gata"
+    assert calls == []  # play_rtttl not called either
+    assert caplog.text.count("esphome.x_stop_rtttl not found") == 1
+    await _call(hass, "button", "press", "button.test_start")
+    await _call(hass, "button", "press", "button.test_stop")  # no error
+    assert hass.states.get("sensor.test_progres").state == "oprit"
+    assert caplog.text.count("esphome.x_stop_rtttl not found") == 1
+    assert await hass.config_entries.async_unload(entry.entry_id)

@@ -7,7 +7,7 @@
 # Pentru sunet pe toată durata pauzei, folosește binary_sensor.esp32_devkitv1_pauza (on/off).
 # Serviciul esphome.esphome_web_3053a0_play_rtttl poartă numele API al plăcii;
 # pe altă placă verifică numele în Developer Tools → Actions.
-alias: Sunet pauză
+alias: ESP32 Sunet pauză LEDs
 description: Tic pe buzzerul pasiv la fiecare literă colorată (și cu pauza 0)
 triggers:
   - trigger: state
