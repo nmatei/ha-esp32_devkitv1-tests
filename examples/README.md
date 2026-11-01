@@ -13,13 +13,14 @@ Placă: **ESP32 DevKit V1** (`esp32doit-devkit-v1`), integrare prin **ESPHome**.
 - Senzor de temperatură **HW-498** (termistor NTC, analogic, convertit în °C)
 - Buton fizic **HW-483** cu toggle inteligent (start/stop în funcție de stare)
 - Buzzer activ **HW-512** (on/off) și buzzer pasiv **HW-508** (melodii RTTTL)
+- Receptor IR **HW-490** (citește codurile unei telecomenzi) și emițător IR **HW-489** (le trimite)
 - Dashboard custom cu `button-card` + `card_mod`
 
 ### Puncte cheie învățate
 
 - **GPIO-urile ESP32 scot 3.3V, nu 5V.** LED-urile cu rezistențe calculate pentru 5V luminează mai slab la 3.3V, dar funcționează. Nu conecta niciodată 5V la un pin GPIO — pinii nu sunt toleranți la 5V.
 - Pinul **VIN** dă ~5V (de la USB), dar e alimentare fixă, necontrolabilă din software.
-- Notația de pe placă: **D16 = GPIO16** etc. GPIO16/17 apar pe placă drept **RX2/TX2**.
+- Notația de pe placă: **D23 = GPIO23** etc. Excepție: GPIO16/17 apar pe placă drept **RX2/TX2** (nu scrie D16/D17).
 - Pini de evitat ca ieșiri: GPIO0, 2*, 12, 15 (boot/strapping), GPIO34-39 (doar intrare). (*GPIO2 e ok pentru LED-ul onboard.)
 - Pentru citiri analogice cu WiFi activ: **doar ADC1** (GPIO32-39). ADC2 nu funcționează cu WiFi pornit.
 - Senzorii se alimentează din **3V3**, nu din VIN — altfel ieșirea analogică poate depăși 3.3V și arde ADC-ul.
@@ -75,6 +76,10 @@ Notă: device-ul a rămas înregistrat în API ca `esphome-web-3053a0`, deci ser
 
 ## 3. Cablare
 
+<img src="sensors/ESP32-DEVKITV1.jpg" width="160" alt="ESP32 DevKit V1"> <img src="sensors/terminal-adapter.jpeg" width="331" alt="Adaptor cu borne pentru ESP32 cu 30 de pini">
+
+**Adaptorul cu borne** (*Terminal adapter for ESP32 30PIN*): placa se înfige în baretele negre din mijloc, iar firele modulelor se strâng în bornele cu șurub, fără breadboard. Etichetele bornelor sunt aceleași ca pe placă (inclusiv **RX2** = GPIO16 și **TX2** = GPIO17); are și borne pentru **3V3**, **GND** și **VIN**.
+
 ### LED-uri (toate pe rândul din dreapta)
 
 | Pin placă | GPIO | LED |
@@ -101,6 +106,8 @@ LED-urile RGB **HW-479** și **HW-478** sunt legate în paralel cu LED-urile ro�
 | HW-483 | Buton apăsabil | **D33** (GPIO33) | pullup intern + inverted |
 | HW-512 | Buzzer activ (sună singur la ON) | **D25** (GPIO25) | S + GND |
 | HW-508 | Buzzer pasiv (PWM/melodii) | **D26** (GPIO26) | S + GND |
+| HW-490 | Receptor IR | **RX2** (GPIO16) | 3 pini: S / mijloc=VCC / −; `inverted: true` |
+| HW-489 | Emițător IR | **D4** (GPIO4) | 3 pini: S / mijloc=VCC / − |
 
 Diferența buzzere: conectat direct la 3V3+GND, **activul sună continuu**, pasivul tace (sau un "tic").
 
@@ -120,7 +127,7 @@ La LED-urile albastre/albe tensiunea de deschidere (~3V) e aproape de 3.3V → l
 
 | Fișier | Ce e |
 |---|---|
-| [device-builder.yaml](device-builder.yaml) | Configurația întreagă, salvată din ESPHome Device Builder (parolele sunt `!secret`): LED-uri, senzori, buton, buzzere. Pe o placă nouă păstrează secțiunile generate la ADOPT (`esphome:`, `esp32:`, `api:`, `ota:`, `wifi:`) și adaugă restul |
+| [device-builder.yaml](device-builder.yaml) | Configurația întreagă, salvată din ESPHome Device Builder (parolele sunt `!secret`): LED-uri, senzori, buton, buzzere, IR. Pe o placă nouă păstrează secțiunile generate la ADOPT (`esphome:`, `esp32:`, `api:`, `ota:`, `wifi:`) și adaugă restul |
 | [esphome-leds.yaml](esphome-leds.yaml) | Doar cele 5 LED-uri, minimul pentru integrarea Alfabetul pe fire |
 
 Fiecare LED e o ieșire GPIO plus o lumină `binary` care o folosește:
@@ -154,6 +161,15 @@ Note despre [device-builder.yaml](device-builder.yaml):
   altfel comanda de oprire se pierde și buzzerul activ (HW-512) sună continuu.
 - Placa cântă singură pe buzzerul pasiv starea WiFi: `c,g` în sus la conectare (și la pornire),
   `g,c` în jos la pierderea rețelei (`wifi: on_connect` / `on_disconnect`, merge și fără HA).
+- IR: receptorul HW-490 scrie ultimul cod citit în „Cod IR primit (HW-490)” ca `PROTOCOL număr număr`:
+  `NEC adresă comandă`, `SAMSUNG date biți`, `SONY date biți`, `RC5 adresă comandă`, `LG date biți`
+  (ex. `NEC 0x00FF 0x45`). Emițătorul HW-489 primește același format: scrie-l în „Cod IR de trimis (HW-489)”
+  și apasă „Trimite IR”, sau apelează acțiunea `esphome.esphome_web_3053a0_trimite_ir` cu `cod: "NEC 0x00FF 0x45"`.
+  Codurile Sony sunt trimise de 3 ori (așa le cer televizoarele Sony).
+  „Retrimite ultimul cod IR” trimite înapoi ce s-a citit: învață o tastă de pe telecomandă, apoi o repetă.
+  Alte protocoale (aer condiționat etc.) nu ajung în senzor, dar apar în log (`dump: all`).
+  Dacă emițătorul stă cu fața spre receptor, receptorul citește și ce trimite placa — un test bun.
+  `trimite_ir` e o acțiune nouă: după Install, integrarea ESPHome o preia la repornirea plăcii.
 - Diagnostic în HA: Semnal WiFi, Uptime, Retea WiFi, IP, Motiv repornire (`debug:`); cardul: [dashboard/dashboard-diagnostic.yaml](dashboard/dashboard-diagnostic.yaml).
 
 ---
@@ -170,6 +186,8 @@ Cardurile, salvate din dashboard (Edit dashboard → Add card → Manual):
 | [dashboard/dashboard-card.yaml](dashboard/dashboard-card.yaml) | Setările mesajului: Interval, Pauză între litere, Repetă după, Tip mesaj, Culoare Morse, Sunet Morse |
 | [dashboard/dashboard-sensors.yaml](dashboard/dashboard-sensors.yaml) | Senzorii: lumină (HW-486), temperatură (HW-498), buton (HW-483), buzzer (HW-512), on/off pentru sunetul de pauză și semnalul Pauză |
 | [dashboard/dashboard-diagnostic.yaml](dashboard/dashboard-diagnostic.yaml) | Diagnostic WiFi: semnal, rețea, IP, uptime, motiv repornire |
+| [dashboard/dashboard-ir.yaml](dashboard/dashboard-ir.yaml) | Telecomanda IR (HW-489; carduri standard + card_mod pentru locurile goale): sus telecomanda TV-ului Sony KD-65XF7096 așezată ca o telecomandă (Power, Mute, Home, Return; volum în stânga, program în dreapta, săgețile în cruce în jurul lui OK; Play, Pause), dedesubt un cod oarecare de trimis. Codurile Sony vin din listele publice SIRC (Volum +/− verificate); dacă o tastă nu merge, citește-o de pe telecomanda ta cu HW-490 |
+| [dashboard/dashboard-ir-citite.yaml](dashboard/dashboard-ir-citite.yaml) | Coduri IR citite (HW-490): ultimul cod, „Retrimite ultimul cod” și istoricul (logbook) |
 
 Lecții de layout (ce NU a mers):
 
@@ -248,6 +266,8 @@ Capcane evitate:
 | Icon nou nu apare | Override local în HA (golește câmpul Icon al entității), Install nefăcut, cache browser (Cmd+Shift+R), sau typo în numele `mdi:` |
 | Placa dispare din HA pe o rețea cu mulți clienți și nu revine | Router plin (limită de clienți / adrese DHCP): rezervare IP; placa repornește singură după 5 min fără WiFi sau HA |
 | Buzzerul sună continuu după o deconectare | Comanda de oprire s-a pierdut; `on_disconnect` / `on_client_disconnected` din device-builder.yaml îl opresc pe placă |
+| „Cod IR primit” nu se schimbă la apăsarea telecomenzii | Uită-te în log (`dump: all`): nimic → cablaj / pin S; apar coduri dar alt protocol decât NEC, Samsung, Sony, RC5, LG → nu ajung în senzor |
+| Aparatul nu reacționează la „Trimite IR” | Prea departe sau neîndreptat (LED-ul e slab la 3.3V); în log trebuie să apară `Trimis: ...`, altfel formatul codului e greșit (`Cod IR necunoscut`) |
 | Serviciul rtttl nu e găsit | Numele real e după numele API al device-ului: `esphome.esphome_web_3053a0_play_rtttl` (verifică în Developer Tools → Actions) |
 
 ## 8. Idei de continuare

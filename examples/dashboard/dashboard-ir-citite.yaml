@@ -1,0 +1,19 @@
+# Coduri IR citite de receptorul HW-490 (RX2/GPIO16, device-builder.yaml): ultimul cod
+# și istoricul. Formatul („SONY 0x490 12”) e cel primit și de dashboard-ir.yaml.
+type: vertical-stack
+cards:
+  - type: entities
+    title: 📡 Coduri IR citite (HW-490)
+    show_header_toggle: false
+    entities:
+      - entity: sensor.esphome_esp32_devkitv1_cod_ir_primit_hw_490
+        name: Ultimul cod
+        secondary_info: last-changed
+      - entity: button.esphome_esp32_devkitv1_retrimite_ultimul_cod_ir
+        name: Retrimite ultimul cod
+  # istoricul: un cod apare din nou doar după alt cod (aceeași tastă de 2 ori = o intrare)
+  - type: logbook
+    title: Istoric coduri citite
+    hours_to_show: 24
+    target:
+      entity_id: sensor.esphome_esp32_devkitv1_cod_ir_primit_hw_490

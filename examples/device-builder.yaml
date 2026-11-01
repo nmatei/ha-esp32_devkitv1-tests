@@ -34,6 +34,15 @@ api:
     - action: stop_rtttl
       then:
         - rtttl.stop
+    # trimite un cod IR pe HW-489, ex. cod: "NEC 0x00FF 0x45" (formatul din „Cod IR primit”).
+    # string, nu int: codurile Samsung/LG depășesc int32
+    - action: trimite_ir
+      variables:
+        cod: string
+      then:
+        - script.execute:
+            id: trimite_ir
+            cod: !lambda "return cod;"
 
 # Allow Over-The-Air updates
 ota:
@@ -121,6 +130,11 @@ debug:
   update_interval: 60s
 
 text_sensor:
+  # ultimul cod citit de HW-490, în formatul pe care îl primește și trimite_ir
+  - platform: template
+    id: ir_primit
+    name: "Cod IR primit (HW-490)"
+    icon: "mdi:remote"
   - platform: wifi_info
     ssid:
       name: "Retea WiFi"
@@ -185,3 +199,127 @@ switch:
     name: "Buzzer (HW-512)"
     restore_mode: ALWAYS_OFF  # după o repornire, tăcut
     icon: "mdi:bullhorn"
+
+# Receptor IR (HW-490), pe pinul marcat RX2 (GPIO16): ieșirea modulului e activă pe 0, deci inverted.
+# Codul citit ajunge în „Cod IR primit” ca „PROTOCOL număr număr”, ex. „NEC 0x00FF 0x45”,
+# „SAMSUNG 0xE0E040BF 32” (date + nr. de biți). Toate protocoalele apar și în log (dump).
+remote_receiver:
+  id: ir_rx
+  pin:
+    number: GPIO16
+    inverted: true
+    mode:
+      input: true
+      pullup: true
+  dump: all
+  tolerance: 25%
+  filter: 50us
+  idle: 10ms
+  on_nec:
+    - text_sensor.template.publish:
+        id: ir_primit
+        state: !lambda |-
+          char buf[40];
+          snprintf(buf, sizeof(buf), "NEC 0x%04X 0x%04X", x.address, x.command);
+          return std::string(buf);
+  on_samsung:
+    - text_sensor.template.publish:
+        id: ir_primit
+        state: !lambda |-
+          char buf[40];
+          snprintf(buf, sizeof(buf), "SAMSUNG 0x%llX %u", (unsigned long long) x.data, x.nbits);
+          return std::string(buf);
+  on_sony:
+    - text_sensor.template.publish:
+        id: ir_primit
+        state: !lambda |-
+          char buf[40];
+          snprintf(buf, sizeof(buf), "SONY 0x%X %u", (unsigned) x.data, x.nbits);
+          return std::string(buf);
+  on_rc5:
+    - text_sensor.template.publish:
+        id: ir_primit
+        state: !lambda |-
+          char buf[40];
+          snprintf(buf, sizeof(buf), "RC5 0x%02X 0x%02X", x.address, x.command);
+          return std::string(buf);
+  on_lg:
+    - text_sensor.template.publish:
+        id: ir_primit
+        state: !lambda |-
+          char buf[40];
+          snprintf(buf, sizeof(buf), "LG 0x%08X %u", (unsigned) x.data, x.nbits);
+          return std::string(buf);
+
+# Emițător IR (HW-489), pe pinul D4 (GPIO4). Bătaia e mică (LED-ul e alimentat direct din pin, 3.3V):
+# ține-l la 1-2 m de aparat, îndreptat spre el.
+remote_transmitter:
+  id: ir_tx
+  pin: GPIO4
+  carrier_duty_percent: 50%
+
+# codul de trimis, scris din HA (se păstrează după repornire)
+text:
+  - platform: template
+    id: ir_de_trimis
+    name: "Cod IR de trimis (HW-489)"
+    icon: "mdi:remote"
+    mode: text
+    optimistic: true
+    restore_value: true
+    initial_value: "NEC 0x00FF 0x45"
+    max_length: 40
+
+button:
+  - platform: template
+    name: "Trimite IR (HW-489)"
+    icon: "mdi:remote"
+    on_press:
+      - script.execute:
+          id: trimite_ir
+          cod: !lambda "return id(ir_de_trimis).state;"
+  # trimite înapoi ce a citit HW-490: învață o tastă de pe telecomandă, apoi o repetă
+  - platform: template
+    name: "Retrimite ultimul cod IR"
+    icon: "mdi:repeat"
+    on_press:
+      - script.execute:
+          id: trimite_ir
+          cod: !lambda "return id(ir_primit).state;"
+
+# „PROTOCOL a b” → cod IR pe HW-489. Numerele: hex (0x..) sau zecimal.
+# NEC adresă comandă | SAMSUNG date biți | SONY date biți | RC5 adresă comandă | LG date biți
+script:
+  - id: trimite_ir
+    parameters:
+      cod: string
+    then:
+      - lambda: |-
+          char proto[16];
+          long long a = 0, b = 0;
+          if (sscanf(cod.c_str(), "%15s %lli %lli", proto, &a, &b) != 3) {
+            ESP_LOGW("ir", "Cod IR necunoscut: '%s' (ex. NEC 0x00FF 0x45)", cod.c_str());
+            return;
+          }
+          auto call = id(ir_tx).transmit();
+          auto *data = call.get_data();
+          std::string p = proto;
+          if (p == "NEC") {
+            remote_base::NECProtocol().encode(data, {(uint16_t) a, (uint16_t) b, 1});
+          } else if (p == "SAMSUNG") {
+            remote_base::SamsungProtocol().encode(data, {(uint64_t) a, (uint8_t) b});
+          } else if (p == "SONY") {
+            remote_base::SonyProtocol().encode(data, {(uint32_t) a, (uint8_t) b});
+            // televizoarele Sony reacționează doar dacă primesc codul de 3 ori
+            call.set_send_times(3);
+            call.set_send_wait(25000);  // µs
+          } else if (p == "RC5") {
+            remote_base::RC5Protocol().encode(data, {(uint8_t) a, (uint8_t) b});
+          } else if (p == "LG") {
+            remote_base::LGProtocol().encode(data, {(uint32_t) a, (uint8_t) b});
+          } else {
+            ESP_LOGW("ir", "Protocol IR necunoscut: '%s' (NEC, SAMSUNG, SONY, RC5, LG)", proto);
+            return;
+          }
+          ESP_LOGI("ir", "Trimis: %s", cod.c_str());
+          call.perform();

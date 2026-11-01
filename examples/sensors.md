@@ -5,7 +5,9 @@ Inventarul modulelor din cutie: ce face fiecare și cum s-ar lega la placă, ca 
 alegi ce conectezi mai departe. Povestea completă a setup-ului (ESPHome, cablare,
 depanare) e în [README.md](README.md).
 
-<img src="sensors/ESP32-DEVKITV1.jpg" width="160" alt="ESP32 DevKit V1">
+<img src="sensors/ESP32-DEVKITV1.jpg" width="160" alt="ESP32 DevKit V1"> <img src="sensors/terminal-adapter.jpeg" width="331" alt="Adaptor cu borne pentru ESP32 cu 30 de pini">
+
+**Adaptorul cu borne** (*Terminal adapter for ESP32 30PIN*): placa se înfige în baretele negre din mijloc, iar firele modulelor se strâng în bornele cu șurub, fără breadboard. Etichetele bornelor sunt aceleași ca pe placă (inclusiv **RX2** = GPIO16 și **TX2** = GPIO17); are și borne pentru **3V3**, **GND** și **VIN**.
 
 ## Reguli de legare (pe scurt)
 
@@ -17,8 +19,8 @@ depanare) e în [README.md](README.md).
 - Evită GPIO0, 12, 15 (pini de boot).
 
 **Pini ocupați acum:** 2, 18, 19, 21, 22, 23 (LED-uri; pe 19, 21, 22 sunt și LED-urile RGB), 25, 26 (buzzere), 33 (buton),
-34, 35 (senzori analogici).
-**Încă liberi și siguri:** 4, 5, 13, 14, 16, 17, 27, 32 (intrare/ieșire), 36, 39
+34, 35 (senzori analogici), 4, 16 (emițător și receptor IR).
+**Încă liberi și siguri:** 5, 13, 14, 17 (marcat TX2 pe placă), 27, 32 (intrare/ieșire), 36, 39
 (doar intrare, analogic).
 
 Pe modulele negre cu 3 pini, `S` = semnal, `+` = 3V3, `−` = GND. Pe modulele roșii cu
@@ -55,24 +57,26 @@ Pozele sunt la aceeași scară (aprox. 4 px = 1 mm, măsurat după pasul de 2.54
 | **HW-497** (KY-021)<br>Contact magnetic (reed) *(de verificat: cifra din mijloc e acoperită)* | <img src="sensors/HW-497.jpg" width="102" style="min-width:102px"> | Fiola de sticlă se închide lângă un magnet, ca un senzor de ușă. `S` → GPIO13 (`binary_sensor`, `pullup: true`). |
 | **HW-511** (KY-033)<br>Senzor de urmărire linie | <img src="sensors/HW-511.jpg" width="193" style="min-width:193px"> | LED IR + receptor orientate în jos: deosebesc o suprafață neagră de una albă, ca la roboții care urmăresc o linie. Pini `G` / `V+` / `S`. `S` → GPIO14 (`binary_sensor`). Sensibilitatea se reglează din potențiometru. |
 | **HW-488** (KY-032)<br>Senzor de obstacole IR *(codul nu se vede în poză, de verificat)* | <img src="sensors/HW-488.jpg" width="179" style="min-width:179px"> | LED IR + receptor: semnalează un obiect în față (distanța se reglează din potențiometre). Pini `GND` / `+` / `OUT` / `EN`. `OUT` → GPIO14 (`binary_sensor`, de obicei `inverted: true`). `EN` rămâne neconectat (jumperul îl ține activ). |
-| **HW-489** (KY-005)<br>Emițător infraroșu | <img src="sensors/HW-489.jpg" width="102" style="min-width:102px"> | LED IR care trimite coduri de telecomandă (TV, aer condiționat). `S` → GPIO4. ESPHome: `remote_transmitter`. |
-| **HW-490** (KY-022)<br>Receptor infraroșu | <img src="sensors/HW-490.jpg" width="103" style="min-width:103px"> | Citește codurile unei telecomenzi. `S` → GPIO16. ESPHome: `remote_receiver` (în log se văd codurile primite). |
-| **HW-481** (KY-034)<br>LED cu flash automat în 7 culori | <img src="sensors/HW-481.jpg" width="108" style="min-width:108px"> | Își schimbă singur culorile cât timp e alimentat. `S` → GPIO17 (`switch` sau `light: binary`). |
+| ✅ **HW-489** (KY-005)<br>Emițător infraroșu | <img src="sensors/HW-489.jpg" width="102" style="min-width:102px"> | LED IR care trimite coduri de telecomandă (TV, aer condiționat). **Legat:** `S` → **D4** (GPIO4), mijloc → 3V3, `−` → GND. ESPHome: `remote_transmitter` + scriptul `trimite_ir`. Entitățile: `text.esphome_esp32_devkitv1_cod_ir_de_trimis_hw_489`, `button.esphome_esp32_devkitv1_trimite_ir_hw_489`. Bătaie mică (LED alimentat direct din pin): 1-2 m, îndreptat spre aparat. |
+| ✅ **HW-490** (KY-022)<br>Receptor infraroșu | <img src="sensors/HW-490.jpg" width="103" style="min-width:103px"> | Citește codurile unei telecomenzi. **Legat:** `S` → **RX2** (GPIO16; pe placă nu scrie D16), mijloc → 3V3, `−` → GND. ESPHome: `remote_receiver` cu `inverted: true` (ieșirea e activă pe 0); codul citit apare în `sensor.esphome_esp32_devkitv1_cod_ir_primit_hw_490` (ex. `NEC 0x00FF 0x45`) și în log. Dashboard: [dashboard/dashboard-ir-citite.yaml](dashboard/dashboard-ir-citite.yaml). |
+| **HW-481** (KY-034)<br>LED cu flash automat în 7 culori | <img src="sensors/HW-481.jpg" width="108" style="min-width:108px"> | Își schimbă singur culorile cât timp e alimentat. `S` → GPIO17 (TX2) (`switch` sau `light: binary`). |
 | ✅ **HW-479** (KY-016)<br>LED RGB | <img src="sensors/HW-479.jpg" width="100" style="min-width:100px"> | Un LED cu 3 culori. Pini `R` / `G` / `B` / `−`. **Legat în paralel cu LED-urile de pe fire:** `R` → **D22** (GPIO22, roșu), `G` → **D19** (GPIO19, verde), `B` → **D21** (GPIO21, albastru), `−` → GND. Se aprinde odată cu firele 2, 4 și 3, deci nu are configurație ESPHome proprie. Pentru culori amestecate separat ar trebui mutat pe pini liberi, cu 3 × `output: platform: ledc` + `light: platform: rgb`. |
 | ✅ **HW-478** (KY-009)<br>LED RGB SMD (scrie „3_Clor” pe plăcuță) | <img src="sensors/HW-478.jpg" width="91" style="min-width:91px"> | La fel ca HW-479, cu un LED plat (SMD). **Legat la fel**, în paralel pe GPIO22 / GPIO19 / GPIO21. *(De verificat: dacă are rezistențe pe plăcuță; dacă nu, pune câte una de ~220 Ω pe fiecare culoare.)* |
 | **HW-493** (KY-008)<br>Laser | <img src="sensors/HW-493.jpg" width="118" style="min-width:118px"> | Dioda laser roșie, aprinsă sau stinsă. `S` → GPIO5 (`light: binary`). Nu îl îndrepta spre ochi. |
 | **HW-482** (KY-019)<br>Releu 5V (10 A) | <img src="sensors/HW-482.jpg" width="161" style="min-width:161px"> | Un comutator comandat: închide un circuit separat (bornele cu șurub). Bobina e de 5V, deci `+` → **VIN** (5V), `−` → GND, `S` → GPIO32 (`switch: platform: gpio`). *(De verificat: dacă releul comută cu doar 3.3V pe `S`.)* Nu lega 230V fără să știi ce faci. |
-| **HW-040** (KY-040)<br>Encoder rotativ cu buton | <img src="sensors/HW-040.jpg" width="134" style="min-width:134px"> | Butonul se rotește fără capăt (pași stânga/dreapta) și se poate apăsa, de exemplu pentru volum sau intervalul mesajului. `CLK` → GPIO16, `DT` → GPIO17, `SW` → GPIO27, `+` → 3V3, `GND`. ESPHome: `sensor: platform: rotary_encoder` + `binary_sensor` pentru `SW`. |
+| **HW-040** (KY-040)<br>Encoder rotativ cu buton | <img src="sensors/HW-040.jpg" width="134" style="min-width:134px"> | Butonul se rotește fără capăt (pași stânga/dreapta) și se poate apăsa, de exemplu pentru volum sau intervalul mesajului. `CLK` → GPIO13 (GPIO16 e luat de receptorul IR), `DT` → GPIO17 (TX2), `SW` → GPIO27, `+` → 3V3, `GND`. ESPHome: `sensor: platform: rotary_encoder` + `binary_sensor` pentru `SW`. |
 
 ## Fișiere de copiat
 
 | Fișier | Ce e |
 |---|---|
-| [device-builder.yaml](device-builder.yaml) | Configurația ESPHome completă de acum (LED-uri, senzori, buton, buzzere), salvată din Device Builder |
+| [device-builder.yaml](device-builder.yaml) | Configurația ESPHome completă de acum (LED-uri, senzori, buton, buzzere, IR), salvată din Device Builder |
 | [esphome-leds.yaml](esphome-leds.yaml) | Doar cele 5 LED-uri, minimul pentru integrarea Alfabetul pe fire |
 | [dashboard/dashboard-leds.yaml](dashboard/dashboard-leds.yaml) | Cardul cu becuri colorate, Start/Stop, Mesaj și Progres (button-card + card-mod) |
 | [dashboard/dashboard-card.yaml](dashboard/dashboard-card.yaml) | Setările mesajului (Interval, Pauză între litere, Repetă după, Tip mesaj, Culoare Morse) |
 | [dashboard/dashboard-sensors.yaml](dashboard/dashboard-sensors.yaml) | Senzorii: lumină, temperatură, buton, buzzer |
+| [dashboard/dashboard-ir.yaml](dashboard/dashboard-ir.yaml) | Telecomanda IR: butoanele TV-ului Sony și un cod oarecare de trimis (HW-489) |
+| [dashboard/dashboard-ir-citite.yaml](dashboard/dashboard-ir-citite.yaml) | Codurile IR citite (HW-490) și istoricul lor |
 | [automations/toggle-leds-button.yaml](automations/toggle-leds-button.yaml) | Butonul pornește/oprește mesajul, cu sunet |
 
 Pozele originale: `sensors/sensors-colection-1 (v2).jpeg`, `sensors/sensors-colection-2 (v2).jpeg`.
