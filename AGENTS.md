@@ -72,8 +72,8 @@ prove the commands, not a fresh-clone install. `pytest.ini` limits a bare `pytes
 - `tests_ha/` — integration tests against a real HA core; lamps are `input_boolean`s.
 - `examples/` — `dashboard/dashboard-card.yaml` (Lovelace card: the settings) and `esphome-leds.yaml` (the
   device side: 5 GPIO binary lights), plus the whole board setup, in Romanian:
-  `sensors.md` (module inventory, crops in `sensors/`), `esphome-full.yaml`,
-  `device-builder.yaml` (the whole config saved from the Device Builder),
+  `sensors.md` (module inventory, crops in `sensors/`), `device-builder.yaml` (the whole board
+  config saved from the Device Builder, commented; the only full ESPHome example),
   `dashboard/dashboard-leds.yaml` (lamps, Start/Stop, Mesaj, Progres),
   `dashboard/dashboard-sensors.yaml`, `automations/` (incl. `sunet-pauza.yaml`), and the setup notes
   `examples/README.md` (it links the YAML files instead of copying them).
@@ -83,7 +83,7 @@ Downstream: the 5 configured lamp entities, switched through the
 `homeassistant.turn_on` / `turn_off` services (`controller.py`). By default these are
 `light.esphome_esp32_devkitv1_led_*`, ESPHome lights on an ESP32. With a Morse sound
 chosen, also the buzzer switch or the ESPHome `play_rtttl` / `stop_rtttl` actions
-(`stop_rtttl` must be in the firmware, see `examples/esphome-full.yaml`).
+(`stop_rtttl` must be in the firmware, see `examples/device-builder.yaml`).
 
 Upstream: `examples/dashboard/dashboard-card.yaml` and the automation examples in the README
 address entities by id (`text.<name>_mesaj`, `number.<name>_interval`, …). Renaming an

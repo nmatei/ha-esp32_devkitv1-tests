@@ -24,7 +24,7 @@ DEFAULT_LIGHTS: Final = tuple(
     f"light.esphome_esp32_devkitv1_led_{color}" for color in WIRE_NAMES
 )
 
-# The board's buzzers (examples/esphome-full.yaml); the actions are named
+# The board's buzzers (examples/device-builder.yaml); the actions are named
 # after the ESPHome device's API name.
 DEFAULT_BUZZER: Final = "switch.esphome_esp32_devkitv1_buzzer_hw_512"
 DEFAULT_RTTTL_PLAY: Final = "esphome.esphome_web_3053a0_play_rtttl"

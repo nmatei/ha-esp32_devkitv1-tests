@@ -1,3 +1,7 @@
+# ESPHome: configurația completă a plăcii ESP32 DevKit V1, salvată din Device Builder.
+# Pe o placă nouă: păstrează secțiunile generate la ADOPT (esphome:, esp32:, api: cu cheia
+# de criptare, ota:, wifi:) și adaugă restul de aici; unește blocurile api: și wifi:.
+# Parolele sunt !secret (secrets.yaml din Device Builder). Cablare și explicații: README.md, sensors.md.
 esphome:
   name: esphome-web-3053a0
   friendly_name: esphome-web-3053a0
@@ -20,6 +24,7 @@ api:
         song_str: string
       then:
         - rtttl.play: !lambda "return song_str;"
+    # oprește melodia: „Sunet Morse” = RTTTL o pornește cu LED-ul și o oprește când se stinge
     - action: stop_rtttl
       then:
         - rtttl.stop
@@ -29,6 +34,8 @@ ota:
   - platform: esphome
 
 wifi:
+  # fără economie de energie: altfel comenzile rapide (punctele Morse) pot
+  # ajunge grupate și unele se pierd. Vezi esphome-leds.yaml.
   power_save_mode: none
   networks:
     - ssid: !secret wifi_ssid
@@ -54,7 +61,7 @@ binary_sensor:
       inverted: true
     name: "Buton (HW-483)"
     filters:
-      - delayed_on: 10ms
+      - delayed_on: 10ms    # debounce
       - delayed_off: 10ms
 
 sensor:
@@ -74,7 +81,7 @@ sensor:
     internal: true
   - platform: resistance
     sensor: temp_raw
-    configuration: DOWNSTREAM
+    configuration: DOWNSTREAM   # daca valorile sunt absurde/inverse: UPSTREAM
     resistor: 10kOhm
     reference_voltage: 3.3V
     id: temp_resistance

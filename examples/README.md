@@ -120,8 +120,7 @@ La LED-urile albastre/albe tensiunea de deschidere (~3V) e aproape de 3.3V → l
 
 | Fișier | Ce e |
 |---|---|
-| [esphome-full.yaml](esphome-full.yaml) | Ce s-a adăugat peste secțiunile generate la ADOPT (`esphome:`, `esp32:`, `wifi:`, `api:`, `ota:`): LED-uri, senzori, buton, buzzere |
-| [device-builder.yaml](device-builder.yaml) | Configurația întreagă, salvată din ESPHome Device Builder (parolele sunt `!secret`) |
+| [device-builder.yaml](device-builder.yaml) | Configurația întreagă, salvată din ESPHome Device Builder (parolele sunt `!secret`): LED-uri, senzori, buton, buzzere. Pe o placă nouă păstrează secțiunile generate la ADOPT (`esphome:`, `esp32:`, `api:`, `ota:`, `wifi:`) și adaugă restul |
 | [esphome-leds.yaml](esphome-leds.yaml) | Doar cele 5 LED-uri, minimul pentru integrarea Alfabetul pe fire |
 
 Fiecare LED e o ieșire GPIO plus o lumină `binary` care o folosește:
@@ -140,7 +139,7 @@ light:
 
 Indentarea contează: `output:`, `light:` etc. încep de la marginea din stânga.
 
-Note despre [esphome-full.yaml](esphome-full.yaml):
+Note despre [device-builder.yaml](device-builder.yaml):
 
 - `attenuation: 12db` extinde domeniul ADC la 0-3.3V (fără el saturează la ~1.1V).
 - `internal: true` ascunde senzorii intermediari (volți, ohmi) din HA — ajunge doar temperatura în °C.

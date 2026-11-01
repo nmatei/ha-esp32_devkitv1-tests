@@ -32,7 +32,7 @@ nu sunt sigur, scrie *(de verificat)*.
 ## Toate modulele
 
 Cele marcate ✅ sunt deja legate. Configurația lor ESPHome e în
-[esphome-full.yaml](esphome-full.yaml). Pinii propuși pentru celelalte sunt doar o
+[device-builder.yaml](device-builder.yaml). Pinii propuși pentru celelalte sunt doar o
 sugestie: dacă legi mai multe module odată, dă-i fiecăruia alt pin din lista de pini liberi.
 
 Pozele sunt la aceeași scară (aprox. 4 px = 1 mm, măsurat după pasul de 2.54 mm al pinilor), deci lungimile se pot compara.
@@ -68,7 +68,7 @@ Pozele sunt la aceeași scară (aprox. 4 px = 1 mm, măsurat după pasul de 2.54
 
 | Fișier | Ce e |
 |---|---|
-| [esphome-full.yaml](esphome-full.yaml) | Configurația ESPHome completă de acum (LED-uri, senzori, buton, buzzere) |
+| [device-builder.yaml](device-builder.yaml) | Configurația ESPHome completă de acum (LED-uri, senzori, buton, buzzere), salvată din Device Builder |
 | [esphome-leds.yaml](esphome-leds.yaml) | Doar cele 5 LED-uri, minimul pentru integrarea Alfabetul pe fire |
 | [dashboard/dashboard-leds.yaml](dashboard/dashboard-leds.yaml) | Cardul cu becuri colorate, Start/Stop, Mesaj și Progres (button-card + card-mod) |
 | [dashboard/dashboard-card.yaml](dashboard/dashboard-card.yaml) | Setările mesajului (Interval, Pauză între litere, Repetă după, Tip mesaj, Culoare Morse) |
