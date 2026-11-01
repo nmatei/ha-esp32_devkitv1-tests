@@ -406,3 +406,30 @@ async def test_morse_plays_silently_when_the_rtttl_stop_action_is_missing(hass, 
     assert hass.states.get("sensor.test_progres").state == "oprit"
     assert caplog.text.count("esphome.x_stop_rtttl not found") == 1
     assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_a_failed_playback_turns_the_lamp_and_the_sound_off(hass):
+    """The tone starts, then a call fails (link lost): the stop is still tried."""
+    from homeassistant.exceptions import HomeAssistantError
+
+    calls = []
+
+    async def play(call):
+        calls.append(call.service)
+
+    async def stop(call):
+        calls.append(call.service)
+        if calls.count("x_stop_rtttl") == 2:  # the one after the dot
+            raise HomeAssistantError("disconnected")
+
+    hass.services.async_register("esphome", "x_play_rtttl", play)
+    hass.services.async_register("esphome", "x_stop_rtttl", stop)
+    entry = await _play_morse_e(
+        hass, "RTTTL", rtttl_play="esphome.x_play_rtttl", rtttl_stop="esphome.x_stop_rtttl"
+    )
+    await asyncio.sleep(1.0)
+    await hass.async_block_till_done()
+    assert hass.states.get("sensor.test_progres").state == "eroare (vezi log-ul)"
+    assert calls == ["x_stop_rtttl", "x_play_rtttl", "x_stop_rtttl", "x_stop_rtttl"]
+    assert _lamps(hass) == [False] * 5
+    assert await hass.config_entries.async_unload(entry.entry_id)

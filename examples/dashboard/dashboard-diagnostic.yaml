@@ -1,0 +1,16 @@
+# Diagnostic WiFi al plăcii (device-builder.yaml: wifi_signal, uptime, wifi_info, debug):
+# pe ce rețea / IP e placa, cât de bun e semnalul, de când merge și de ce a repornit.
+type: entities
+show_header_toggle: false
+entities:
+  - entity: sensor.esphome_esp32_devkitv1_semnal_wifi
+    name: Semnal WiFi
+  - entity: sensor.esphome_esp32_devkitv1_retea_wifi
+    name: Rețea WiFi
+  - entity: sensor.esphome_esp32_devkitv1_ip
+    name: IP
+  - entity: sensor.esphome_esp32_devkitv1_uptime
+    name: Uptime
+  - entity: sensor.esphome_esp32_devkitv1_motiv_repornire
+    name: Motiv repornire
+title: 📶 ESP32 Diagnostic

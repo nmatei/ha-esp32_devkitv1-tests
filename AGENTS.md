@@ -75,7 +75,7 @@ prove the commands, not a fresh-clone install. `pytest.ini` limits a bare `pytes
   `sensors.md` (module inventory, crops in `sensors/`), `device-builder.yaml` (the whole board
   config saved from the Device Builder, commented; the only full ESPHome example),
   `dashboard/dashboard-leds.yaml` (lamps, Start/Stop, Mesaj, Progres),
-  `dashboard/dashboard-sensors.yaml`, `automations/` (incl. `sunet-pauza.yaml`), and the setup notes
+  `dashboard/dashboard-sensors.yaml`, `dashboard/dashboard-diagnostic.yaml` (WiFi diagnostics), `automations/` (incl. `sunet-pauza.yaml`), and the setup notes
   `examples/README.md` (it links the YAML files instead of copying them).
 
 ## Integrations

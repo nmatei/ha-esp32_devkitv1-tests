@@ -148,6 +148,13 @@ Note despre [device-builder.yaml](device-builder.yaml):
 - Alternativă pentru GPIO2: `status_led: { pin: GPIO2 }` ca indicator de conexiune (clipește când nu e conectat la WiFi/HA) — secțiune separată, fără `output:` pe GPIO2.
 - Test rapid buzzer pasiv: Developer Tools → Actions → `esphome.esphome_web_3053a0_play_rtttl` → `song_str: "beep:d=16,o=5,b=100:c6"`.
 - Acțiunea `stop_rtttl` oprește melodia; o folosește „Sunet Morse” = RTTTL. E nouă: după ce o adaugi, reinstalează firmware-ul (Install).
+- Pe o rețea aglomerată (ex. biserica, ~50 de telefoane): fără hotspot propriu (`ap:` / `captive_portal:`),
+  `reboot_timeout: 5min` la `wifi:` și `api:` (implicit 15min), IP rezervat pe router (DHCP).
+- Sunetul se oprește pe placă la pierderea WiFi (`wifi: on_disconnect`) sau a HA (`api: on_client_disconnected`):
+  altfel comanda de oprire se pierde și buzzerul activ (HW-512) sună continuu.
+- Placa cântă singură pe buzzerul pasiv starea WiFi: `c,g` în sus la conectare (și la pornire),
+  `g,c` în jos la pierderea rețelei (`wifi: on_connect` / `on_disconnect`, merge și fără HA).
+- Diagnostic în HA: Semnal WiFi, Uptime, Retea WiFi, IP, Motiv repornire (`debug:`); cardul: [dashboard/dashboard-diagnostic.yaml](dashboard/dashboard-diagnostic.yaml).
 
 ---
 
@@ -161,7 +168,8 @@ Cardurile, salvate din dashboard (Edit dashboard → Add card → Manual):
 |---|---|
 | [dashboard/dashboard-leds.yaml](dashboard/dashboard-leds.yaml) | Caseta cu chenar (mod-card): cele 5 becuri, LED-ul plăcii, Start și Stop (grid cu 6 coloane, icon 22px, înălțime 40px), plus Mesaj și Progres dedesubt |
 | [dashboard/dashboard-card.yaml](dashboard/dashboard-card.yaml) | Setările mesajului: Interval, Pauză între litere, Repetă după, Tip mesaj, Culoare Morse, Sunet Morse |
-| [dashboard/dashboard-sensors.yaml](dashboard/dashboard-sensors.yaml) | Senzorii: lumină (HW-486), temperatură (HW-498), buton (HW-483), buzzer (HW-512), plus on/off pentru sunetul de pauză și Sunet Morse |
+| [dashboard/dashboard-sensors.yaml](dashboard/dashboard-sensors.yaml) | Senzorii: lumină (HW-486), temperatură (HW-498), buton (HW-483), buzzer (HW-512), on/off pentru sunetul de pauză și semnalul Pauză |
+| [dashboard/dashboard-diagnostic.yaml](dashboard/dashboard-diagnostic.yaml) | Diagnostic WiFi: semnal, rețea, IP, uptime, motiv repornire |
 
 Lecții de layout (ce NU a mers):
 
@@ -238,6 +246,8 @@ Capcane evitate:
 | Temperatura absurdă sau inversată | Schimbă `DOWNSTREAM` ↔ `UPSTREAM` la platforma `resistance` |
 | Binary sensor inversat (ON când e liber) | `inverted: true` pe pin |
 | Icon nou nu apare | Override local în HA (golește câmpul Icon al entității), Install nefăcut, cache browser (Cmd+Shift+R), sau typo în numele `mdi:` |
+| Placa dispare din HA pe o rețea cu mulți clienți și nu revine | Router plin (limită de clienți / adrese DHCP): rezervare IP; placa repornește singură după 5 min fără WiFi sau HA |
+| Buzzerul sună continuu după o deconectare | Comanda de oprire s-a pierdut; `on_disconnect` / `on_client_disconnected` din device-builder.yaml îl opresc pe placă |
 | Serviciul rtttl nu e găsit | Numele real e după numele API al device-ului: `esphome.esphome_web_3053a0_play_rtttl` (verifică în Developer Tools → Actions) |
 
 ## 8. Idei de continuare

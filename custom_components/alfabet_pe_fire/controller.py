@@ -212,6 +212,20 @@ class AlfabetController:
         except Exception:  # noqa: BLE001 - a missing lamp must not leave it half-lit silently
             _LOGGER.exception("Playback of %r failed", self.message)
             self._set_progress(Progress(STATE_ERROR))
+            await self._silence()
+
+    async def _silence(self) -> None:
+        """After a failure, try once to turn the lamps and the sound off.
+
+        The link may be the one that failed (e.g. WiFi lost), so each part is
+        tried on its own and errors are only logged.
+        """
+        parts = [self._set_lights(OFF)]
+        if self.mode == MODE_MORSE:
+            parts.append(self._set_sound(False))
+        for result in await asyncio.gather(*parts, return_exceptions=True):
+            if isinstance(result, Exception):
+                _LOGGER.warning("Could not turn off after the failure: %s", result)
 
     def _cancel(self) -> None:
         if self._task and not self._task.done():
