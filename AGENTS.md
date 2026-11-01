@@ -76,7 +76,7 @@ prove the commands, not a fresh-clone install. `pytest.ini` limits a bare `pytes
   config saved from the Device Builder, commented; the only full ESPHome example),
   `dashboard/dashboard-leds.yaml` (lamps, Start/Stop, Mesaj, Progres),
   `dashboard/dashboard-sensors.yaml`, `dashboard/dashboard-diagnostic.yaml` (WiFi diagnostics),
-  `dashboard/dashboard-ir.yaml` (IR remote, sent by HW-489) + `dashboard/dashboard-ir-citite.yaml` (codes read by HW-490; same text format both ways), `automations/` (incl. `sunet-pauza.yaml`), and the setup notes
+  `dashboard/dashboard-ir.yaml` (the Sony TV remote only, sent by HW-489) + `dashboard/dashboard-ir-citite.yaml` (codes read by HW-490, a free-form code to send, history; same text format both ways), `automations/` (incl. `sunet-pauza.yaml`), and the setup notes
   `examples/README.md` (it links the YAML files instead of copying them).
 
 ## Integrations
@@ -130,6 +130,10 @@ per the owner. Not a runtime dependency.
 - `tests_ha/conftest.py` must import our `custom_components` **before** the plugin,
   or HA finds the plugin's own `testing_config` package and reports "Integration not
   found".
+- The IR emitter HW-489 has its LED between `+` (3V3) and `S`, so the transmitter pin in
+  `examples/device-builder.yaml` must stay `inverted: true`. Without it the LED is lit
+  all the time and the TV gets the signal upside down (it sometimes turns on, but won't
+  turn off or change volume). Verified on the board 2026-11-02.
 - Missing Morse dots (often the first) usually come from the ESP32's WiFi power
   saving, not from this code: set `wifi: power_save_mode: none`
   (`examples/esphome-leds.yaml`).

@@ -107,7 +107,7 @@ LED-urile RGB **HW-479** și **HW-478** sunt legate în paralel cu LED-urile ro�
 | HW-512 | Buzzer activ (sună singur la ON) | **D25** (GPIO25) | S + GND |
 | HW-508 | Buzzer pasiv (PWM/melodii) | **D26** (GPIO26) | S + GND |
 | HW-490 | Receptor IR | **RX2** (GPIO16) | 3 pini: S / mijloc=VCC / −; `inverted: true` |
-| HW-489 | Emițător IR | **D4** (GPIO4) | 3 pini: S / mijloc=VCC / − |
+| HW-489 | Emițător IR | **D4** (GPIO4) | `+` (la capăt) → 3V3; LED-ul e între `+` și S, deci `inverted: true` |
 
 Diferența buzzere: conectat direct la 3V3+GND, **activul sună continuu**, pasivul tace (sau un "tic").
 
@@ -186,8 +186,8 @@ Cardurile, salvate din dashboard (Edit dashboard → Add card → Manual):
 | [dashboard/dashboard-card.yaml](dashboard/dashboard-card.yaml) | Setările mesajului: Interval, Pauză între litere, Repetă după, Tip mesaj, Culoare Morse, Sunet Morse |
 | [dashboard/dashboard-sensors.yaml](dashboard/dashboard-sensors.yaml) | Senzorii: lumină (HW-486), temperatură (HW-498), buton (HW-483), buzzer (HW-512), on/off pentru sunetul de pauză și semnalul Pauză |
 | [dashboard/dashboard-diagnostic.yaml](dashboard/dashboard-diagnostic.yaml) | Diagnostic WiFi: semnal, rețea, IP, uptime, motiv repornire |
-| [dashboard/dashboard-ir.yaml](dashboard/dashboard-ir.yaml) | Telecomanda IR (HW-489; carduri standard + card_mod pentru locurile goale): sus telecomanda TV-ului Sony KD-65XF7096 așezată ca o telecomandă (Power, Mute, Home, Return; volum în stânga, program în dreapta, săgețile în cruce în jurul lui OK; Play, Pause), dedesubt un cod oarecare de trimis. Codurile Sony vin din listele publice SIRC (Volum +/− verificate); dacă o tastă nu merge, citește-o de pe telecomanda ta cu HW-490 |
-| [dashboard/dashboard-ir-citite.yaml](dashboard/dashboard-ir-citite.yaml) | Coduri IR citite (HW-490): ultimul cod, „Retrimite ultimul cod” și istoricul (logbook) |
+| [dashboard/dashboard-ir.yaml](dashboard/dashboard-ir.yaml) | Telecomanda IR (HW-489; carduri standard + card_mod pentru locurile goale): sus telecomanda TV-ului Sony KD-65XF7096 așezată ca o telecomandă (Power, Mute, Home, Return; volum în stânga, program în dreapta, săgețile în cruce în jurul lui OK; YouTube, Play, Pause, Netflix), singură în card. Codurile Sony vin din listele publice SIRC (Volum +/−, Netflix și YouTube citite de pe telecomandă); dacă o tastă nu merge, citește-o de pe telecomanda ta cu HW-490 |
+| [dashboard/dashboard-ir-citite.yaml](dashboard/dashboard-ir-citite.yaml) | Coduri IR: ultimul cod citit (HW-490) și „Retrimite ultimul cod”, un cod oarecare de trimis (HW-489), apoi istoricul codurilor citite (logbook) |
 
 Lecții de layout (ce NU a mers):
 
@@ -267,6 +267,7 @@ Capcane evitate:
 | Placa dispare din HA pe o rețea cu mulți clienți și nu revine | Router plin (limită de clienți / adrese DHCP): rezervare IP; placa repornește singură după 5 min fără WiFi sau HA |
 | Buzzerul sună continuu după o deconectare | Comanda de oprire s-a pierdut; `on_disconnect` / `on_client_disconnected` din device-builder.yaml îl opresc pe placă |
 | „Cod IR primit” nu se schimbă la apăsarea telecomenzii | Uită-te în log (`dump: all`): nimic → cablaj / pin S; apar coduri dar alt protocol decât NEC, Samsung, Sony, RC5, LG → nu ajung în senzor |
+| LED-ul IR (HW-489) se vede prin camera telefonului aprins tot timpul | Pinul de emisie nu e `inverted: true`: semnalul ajunge la TV răsturnat (pornește uneori, dar nu se stinge, nu dă volum) |
 | Aparatul nu reacționează la „Trimite IR” | Prea departe sau neîndreptat (LED-ul e slab la 3.3V); în log trebuie să apară `Trimis: ...`, altfel formatul codului e greșit (`Cod IR necunoscut`) |
 | Serviciul rtttl nu e găsit | Numele real e după numele API al device-ului: `esphome.esphome_web_3053a0_play_rtttl` (verifică în Developer Tools → Actions) |
 

@@ -253,9 +253,13 @@ remote_receiver:
 
 # Emițător IR (HW-489), pe pinul D4 (GPIO4). Bătaia e mică (LED-ul e alimentat direct din pin, 3.3V):
 # ține-l la 1-2 m de aparat, îndreptat spre el.
+# Pe HW-489, LED-ul e între „+” (3V3) și S: se aprinde când S e 0, deci pinul e inverted
+# (fără, LED-ul stă aprins tot timpul și semnalul ajunge la TV răsturnat).
 remote_transmitter:
   id: ir_tx
-  pin: GPIO4
+  pin:
+    number: GPIO4
+    inverted: true
   carrier_duty_percent: 50%
 
 # codul de trimis, scris din HA (se păstrează după repornire)
