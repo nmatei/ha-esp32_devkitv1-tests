@@ -10,4 +10,6 @@ entities:
     name: Tip mesaj
   - entity: select.esp32_devkitv1_culoare_morse
     name: Culoare Morse
+  - entity: select.esp32_devkitv1_sunet_morse
+    name: Sunet Morse
 title: 🖲️ ESP32 Config

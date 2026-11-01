@@ -12,14 +12,24 @@ from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 
 from . import morse
 from .const import (
+    CONF_BUZZER,
     CONF_LIGHTS,
+    CONF_RTTTL_PLAY,
+    CONF_RTTTL_STOP,
+    DEFAULT_BUZZER,
     DEFAULT_GAP_MS,
     DEFAULT_INTERVALS,
     DEFAULT_MORSE_COLOR,
     DEFAULT_REPEAT,
+    DEFAULT_RTTTL_PLAY,
+    DEFAULT_RTTTL_STOP,
     MODE_COLORS,
     MODE_MORSE,
     MORSE_COLORS,
+    MORSE_TONE,
+    SOUND_BUZZER,
+    SOUND_NONE,
+    SOUND_RTTTL,
     STATE_ERROR,
     STATE_DONE,
     STATE_STOPPED,
@@ -43,14 +53,32 @@ class AlfabetController:
         self.morse_color = DEFAULT_MORSE_COLOR
         self.repeat = DEFAULT_REPEAT  # ms, 0 = play once
         self.gap = DEFAULT_GAP_MS  # ms dark between colored letters
+        self.sound = SOUND_NONE  # how Morse sounds while its lamp is lit
         self.progress = Progress()
         self._task: asyncio.Task | None = None
         self._listeners: set[Callable[[], None]] = set()
 
     @property
+    def _settings(self) -> dict:
+        """The config entry data; the options override it."""
+        return {**self.entry.data, **self.entry.options}
+
+    @property
     def lights(self) -> list[str]:
-        """The 5 lamp entities, wire 1 first (options override the initial data)."""
-        return list({**self.entry.data, **self.entry.options}[CONF_LIGHTS])
+        """The 5 lamp entities, wire 1 first."""
+        return list(self._settings[CONF_LIGHTS])
+
+    @property
+    def buzzer(self) -> str:
+        return self._settings.get(CONF_BUZZER) or DEFAULT_BUZZER
+
+    @property
+    def rtttl_play(self) -> str:
+        return self._settings.get(CONF_RTTTL_PLAY) or DEFAULT_RTTTL_PLAY
+
+    @property
+    def rtttl_stop(self) -> str:
+        return self._settings.get(CONF_RTTTL_STOP) or DEFAULT_RTTTL_STOP
 
     @property
     def interval(self) -> int:
@@ -98,13 +126,38 @@ class AlfabetController:
                 "homeassistant", "turn_off", {ATTR_ENTITY_ID: off}, blocking=True
             )
 
+    async def _set_sound(self, on: bool, sound: str | None = None) -> None:
+        """Start or stop the Morse sound (``sound``, the selected one by default)."""
+        sound = sound or self.sound
+        if sound == SOUND_BUZZER:
+            await self.hass.services.async_call(
+                "homeassistant",
+                "turn_on" if on else "turn_off",
+                {ATTR_ENTITY_ID: self.buzzer},
+                blocking=True,
+            )
+        elif sound == SOUND_RTTTL:
+            domain, service = (self.rtttl_play if on else self.rtttl_stop).split(".", 1)
+            data = {"song_str": MORSE_TONE} if on else {}
+            await self.hass.services.async_call(domain, service, data, blocking=True)
+
+    async def _set_morse(self, bits: tuple[bool, ...]) -> None:
+        # the lamp and the sound together, so the sound lasts exactly as the lamp
+        await asyncio.gather(self._set_lights(bits), self._set_sound(any(bits)))
+
+    async def async_set_sound(self, sound: str) -> None:
+        """Change the Morse sound; silence the old one, it may be in the middle of a dash."""
+        old, self.sound = self.sound, sound
+        if old != sound and self._task and not self._task.done():
+            await self._set_sound(False, old)
+
     async def _play_once(self) -> None:
         if self.mode == MODE_MORSE:
             await play_morse(
                 morse.encode(self.message),
                 self.interval / 1000,
                 MORSE_COLORS.index(self.morse_color),
-                self._set_lights,
+                self._set_morse,
                 self._set_progress,
                 clock=self.hass.loop.time,
             )
@@ -153,12 +206,14 @@ class AlfabetController:
         )
 
     async def async_stop(self) -> None:
-        """Stop and turn all lamps off, so the last code does not stay lit."""
+        """Stop and turn all lamps off, so the last code does not stay lit (nor sound)."""
         self._cancel()
         await self._set_lights(OFF)
         self._set_progress(
             Progress(STATE_STOPPED, self.progress.index, self.progress.total)
         )
+        if self.mode == MODE_MORSE:
+            await self._set_sound(False)
 
     @callback
     def async_unload(self) -> None:

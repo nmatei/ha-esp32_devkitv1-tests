@@ -148,6 +148,7 @@ Note despre [esphome-full.yaml](esphome-full.yaml):
 - Dacă temperatura e deplasată cu 2-5°C e normal pentru termistoare ieftine (ajustabil din `b_constant` sau filtru `offset`).
 - Alternativă pentru GPIO2: `status_led: { pin: GPIO2 }` ca indicator de conexiune (clipește când nu e conectat la WiFi/HA) — secțiune separată, fără `output:` pe GPIO2.
 - Test rapid buzzer pasiv: Developer Tools → Actions → `esphome.esphome_web_3053a0_play_rtttl` → `song_str: "beep:d=16,o=5,b=100:c6"`.
+- Acțiunea `stop_rtttl` oprește melodia; o folosește „Sunet Morse” = RTTTL. E nouă: după ce o adaugi, reinstalează firmware-ul (Install).
 
 ---
 
@@ -160,8 +161,8 @@ Cardurile, salvate din dashboard (Edit dashboard → Add card → Manual):
 | Fișier | Ce e |
 |---|---|
 | [dashboard/dashboard-leds.yaml](dashboard/dashboard-leds.yaml) | Caseta cu chenar (mod-card): cele 5 becuri, LED-ul plăcii, Start și Stop (grid cu 6 coloane, icon 22px, înălțime 40px), plus Mesaj și Progres dedesubt |
-| [dashboard/dashboard-card.yaml](dashboard/dashboard-card.yaml) | Setările mesajului: Interval, Pauză între litere, Repetă după, Tip mesaj, Culoare Morse |
-| [dashboard/dashboard-sensors.yaml](dashboard/dashboard-sensors.yaml) | Senzorii: lumină (HW-486), temperatură (HW-498), buton (HW-483), buzzer (HW-512) |
+| [dashboard/dashboard-card.yaml](dashboard/dashboard-card.yaml) | Setările mesajului: Interval, Pauză între litere, Repetă după, Tip mesaj, Culoare Morse, Sunet Morse |
+| [dashboard/dashboard-sensors.yaml](dashboard/dashboard-sensors.yaml) | Senzorii: lumină (HW-486), temperatură (HW-498), buton (HW-483), buzzer (HW-512), plus on/off pentru sunetul de pauză și Sunet Morse |
 
 Lecții de layout (ce NU a mers):
 
@@ -211,6 +212,19 @@ Capcane evitate:
 - Logica if/else se face în `actions:` (cu `if`/`choose`), nu în `conditions:` (alea doar blochează).
 - Entitățile `button.*` nu au stări utile — nu pot fi folosite în condiții.
 - Valoarea `oprit` trebuie să corespundă **literal** cu ce arată senzorul în Developer Tools → States.
+
+### Sunete: pauza dintre litere și Morse
+
+- **Pauza dintre litere** (Litere colorate): automatizarea
+  [automations/sunet-pauza.yaml](automations/sunet-pauza.yaml) cântă un tic pe buzzerul pasiv la
+  începutul fiecărei litere — odată cu pauza, sau la schimbarea literei când „Pauză între litere” e 0;
+  se pornește / oprește din [dashboard-sensors.yaml](dashboard/dashboard-sensors.yaml).
+  Pentru un sunet cât ține toată pauza: `binary_sensor.esp32_devkitv1_pauza` e `on` cât stau becurile
+  stinse înaintea unei litere (cu pauza 0 rămâne `off`).
+- **Morse**: se alege din `select.esp32_devkitv1_sunet_morse` — `Fără`, `Buzzer activ` (HW-512) sau
+  `RTTTL` (HW-508). Îl face integrarea, nu o automatizare: sunetul pornește și se oprește în același
+  moment cu becul, deci ține exact cât e becul aprins. RTTTL are nevoie de acțiunea `stop_rtttl` pe placă
+  (secțiunea 4). Buzzerul și numele acțiunilor se schimbă din opțiunile integrării (Configure).
 
 ---
 

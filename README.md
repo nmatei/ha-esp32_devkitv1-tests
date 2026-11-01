@@ -81,10 +81,12 @@ One device per entry, with:
 | ------------------------------- | ------------------------------------------------- |
 | `text.<name>_mesaj`             | the message (max 255 characters), kept on restart |
 | `select.<name>_tip_mesaj`       | `Litere colorate` (5 wires) or `Morse`            |
-| `number.<name>_interval`        | ms, 100–60000, step 100; **one value per message type**: time per symbol for colored letters (default 5000), dot length for Morse (default 400). Switching the type shows its value. |
+| `number.<name>_interval`        | ms, 100–60000, step 10; **one value per message type**: time per symbol for colored letters (default 5000), dot length for Morse (default 400). Switching the type shows its value. |
 | `select.<name>_culoare_morse`   | Morse: the lamp (`galben` … `alb`, wire 1 … 5)    |
-| `number.<name>_pauza_intre_litere` | colored letters: ms all lamps stay dark before each letter, 0–5000, step 100, default 400. **0 = no dark gap** (smooth, fast animations; two equal letters in a row then look like one). |
-| `number.<name>_repeta_dupa`     | ms, 0–3600000, step 100: **0 = play once**; above 0 the message starts again after that pause, forever, until Stop (or until set back to 0). Each repetition reads the settings again, so they can be changed while it repeats. |
+| `select.<name>_sunet_morse`     | Morse sound, exactly as long as the lamp is lit: `Fără` (none, default), `Buzzer activ` (a switch on/off with the lamp), `RTTTL` (a long tone started on lit, stopped on dark). The buzzer and the two RTTTL actions (`play_rtttl` with `song_str`, `stop_rtttl`) are set in the integration options. |
+| `number.<name>_pauza_intre_litere` | colored letters: ms all lamps stay dark before each letter, 0–5000, step 10, default 400. **0 = no dark gap** (smooth, fast animations; two equal letters in a row then look like one). |
+| `number.<name>_repeta_dupa`     | ms, 0–3600000, step 10: **0 = play once**; above 0 the message starts again after that pause, forever, until Stop (or until set back to 0). Each repetition reads the settings again, so they can be changed while it repeats. |
+| `binary_sensor.<name>_pauza`   | colored letters: `on` while all lamps are dark before a letter (Pauză între litere), to react to it (stays `off` with Pauză între litere = 0). For a sound on every letter, gap or not, see [sunet-pauza.yaml](examples/automations/sunet-pauza.yaml) |
 | `button.<name>_start`           | plays from the beginning (restarts if running)    |
 | `button.<name>_stop`            | stops and turns all lamps off                     |
 | `sensor.<name>_progres`         | `2 / 3 · L (01100 · 12)`, in Morse `2 / 3 · L (· - · ·)`, `pauză, reia după 1000 ms` between repetitions, then `gata` / `oprit`; attributes `index`, `total`, `symbol`, `code` (`21`, or `.-` in Morse), `binary` (colored letters only) |
@@ -127,6 +129,7 @@ Pauză între litere `0` ms (a lamp moves every 0.3 s).
 | Two lamps, back and forth         | `ĂLFCFL`   | `11000` → `01100` → `00110` → `00011` → `00110` → `01100`             |
 | Edges → center                    | `RJD`      | `10001` → `01010` → `00100`                                           |
 | Center → edges                    | `DJR`      | `00100` → `01010` → `10001`                                           |
+| Center ↔ edges, back and forth    | `DJRJ`     | `00100` → `01010` → `10001` → `01010`                                 |
 | All blink                         | `.`        | `11111`                                                               |
 
 The letters behind the codes, to make your own:

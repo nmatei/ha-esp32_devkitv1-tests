@@ -24,8 +24,12 @@
           "fir_2": "Wire 2 (red)",
           "fir_3": "Wire 3 (blue)",
           "fir_4": "Wire 4 (green)",
-          "fir_5": "Wire 5 (white)"
-        }
+          "fir_5": "Wire 5 (white)",
+          "buzzer": "Buzzer for Morse \"Buzzer activ\"",
+          "rtttl_play": "RTTTL play action (domain.service, takes song_str)",
+          "rtttl_stop": "RTTTL stop action (domain.service)"
+        },
+        "description": "The 5 lamps, and how Morse sounds (chosen in the \"Sunet Morse\" select)."
       }
     }
   }

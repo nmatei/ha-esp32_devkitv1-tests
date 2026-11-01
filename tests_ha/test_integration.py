@@ -1,10 +1,12 @@
 """Config flow, entities and a real playback on 5 input_boolean "lamps"."""
 
 import asyncio
+from pathlib import Path
 
 from homeassistant import config_entries
 from homeassistant.setup import async_setup_component
 from homeassistant.core import State
+from homeassistant.util.yaml import load_yaml
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
     mock_restore_cache,
@@ -41,14 +43,38 @@ async def test_flow_defaults_create_the_card_entities(hass):
         "button.esp32_devkitv1_start",
         "button.esp32_devkitv1_stop",
         "sensor.esp32_devkitv1_progres",
+        "binary_sensor.esp32_devkitv1_pauza",
+        "select.esp32_devkitv1_sunet_morse",
     ):
         assert hass.states.get(e) is not None, e
 
 
-async def _setup(hass):
+async def test_options_change_the_lamps_and_the_morse_sound(hass):
+    entry = await _setup(hass)
+    r = await hass.config_entries.options.async_init(entry.entry_id)
+    schema = {str(k): k.default() for k in r["data_schema"].schema}
+    assert schema["buzzer"] == "switch.esphome_esp32_devkitv1_buzzer_hw_512"
+    assert schema["rtttl_stop"] == "esphome.esphome_web_3053a0_stop_rtttl"
+    lights = {f"fir_{i}": f"light.l{i}" for i in range(1, 6)}
+    r = await hass.config_entries.options.async_configure(
+        r["flow_id"],
+        {**schema, **lights, "buzzer": "switch.buzzer", "rtttl_play": "esphome.x_play_rtttl"},
+    )
+    assert r["type"] == "create_entry"
+    controller = entry.runtime_data
+    assert controller.lights == list(lights.values())
+    assert controller.buzzer == "switch.buzzer"
+    assert controller.rtttl_play == "esphome.x_play_rtttl"
+    assert controller.rtttl_stop == "esphome.esphome_web_3053a0_stop_rtttl"
+    assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def _setup(hass, title="Test", **options):
     await async_setup_component(hass, "homeassistant", {})
-    await async_setup_component(hass, "input_boolean", {"input_boolean": {f"l{i}": {} for i in range(1, 6)}})
-    entry = MockConfigEntry(domain=DOMAIN, title="Test", data={"lights": LAMPS})
+    await async_setup_component(
+        hass, "input_boolean", {"input_boolean": {f"l{i}": {} for i in range(1, 6)} | {"buzzer": {}}}
+    )
+    entry = MockConfigEntry(domain=DOMAIN, title=title, data={"lights": LAMPS}, options=options)
     entry.add_to_hass(hass)
     assert await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
@@ -142,7 +168,7 @@ async def test_restore_keeps_both_intervals_and_migrates_seconds(hass):
 async def test_restore_migrates_the_old_seconds_interval(hass):
     mock_restore_cache(hass, [State("number.test_interval", "2.5", {"unit_of_measurement": "s"})])
     entry = await _setup(hass)
-    assert float(hass.states.get("number.test_interval").state) == 2500  # 2.5 s → 2500 ms (step 100)
+    assert float(hass.states.get("number.test_interval").state) == 2500  # 2.5 s → 2500 ms (step 10)
     assert await hass.config_entries.async_unload(entry.entry_id)
 
 
@@ -240,4 +266,118 @@ async def test_fast_chaser_without_letter_gap(hass):
             seen.append(lamps)
     assert seen[:5] == [[i == n for i in range(5)] for n in range(5)]
     await _call(hass, "button", "press", "button.test_stop")
+    assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_pause_sensor_is_on_during_the_letter_gap(hass):
+    entry = await _setup(hass)
+    await _call(hass, "text", "set_value", "text.test_mesaj", value="ab")
+    await _call(hass, "number", "set_value", "number.test_interval", value=1000)
+    await _call(hass, "button", "press", "button.test_start")
+    await asyncio.sleep(0.2)  # in the 0.4 s gap
+    assert hass.states.get("binary_sensor.test_pauza").state == "on"
+    assert _lamps(hass) == [False] * 5
+    await asyncio.sleep(0.4)  # A is lit
+    assert hass.states.get("binary_sensor.test_pauza").state == "off"
+    assert any(_lamps(hass))
+    await asyncio.sleep(0.6)  # the gap before B
+    assert hass.states.get("binary_sensor.test_pauza").state == "on"
+    await _call(hass, "button", "press", "button.test_stop")
+    await hass.async_block_till_done()
+    assert hass.states.get("binary_sensor.test_pauza").state == "off"
+    assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def _play_morse_e(hass, sound, **options):
+    """Morse "e" (one dot) on the yellow lamp, Interval 200 ms: lit from 0.6 to 0.8 s."""
+    entry = await _setup(hass, **options)
+    await _call(hass, "text", "set_value", "text.test_mesaj", value="e")
+    await _call(hass, "select", "select_option", "select.test_tip_mesaj", option="Morse")
+    await _call(hass, "select", "select_option", "select.test_sunet_morse", option=sound)
+    await _call(hass, "number", "set_value", "number.test_interval", value=200)
+    await _call(hass, "button", "press", "button.test_start")
+    return entry
+
+
+async def test_morse_buzzer_sounds_exactly_while_the_lamp_is_lit(hass):
+    entry = await _play_morse_e(hass, "Buzzer activ", buzzer="input_boolean.buzzer")
+    seen = set()
+    for _ in range(20):
+        await asyncio.sleep(0.05)
+        lamp = hass.states.get(LAMPS[0]).state
+        assert hass.states.get("input_boolean.buzzer").state == lamp
+        seen.add(lamp)
+    assert seen == {"on", "off"}
+    assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_morse_rtttl_plays_on_lit_and_stops_on_dark(hass):
+    calls = []
+
+    async def record(call):
+        calls.append((call.service, dict(call.data), hass.states.get(LAMPS[0]).state))
+
+    hass.services.async_register("esphome", "x_play_rtttl", record)
+    hass.services.async_register("esphome", "x_stop_rtttl", record)
+    entry = await _play_morse_e(
+        hass, "RTTTL", rtttl_play="esphome.x_play_rtttl", rtttl_stop="esphome.x_stop_rtttl"
+    )
+    await asyncio.sleep(1.0)
+    await hass.async_block_till_done()
+    assert [c[0] for c in calls] == ["x_stop_rtttl", "x_play_rtttl", "x_stop_rtttl"]
+    assert calls[1][1] == {"song_str": "morse:d=1,o=6,b=30:a"}
+    assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_stop_silences_the_morse_sound(hass):
+    entry = await _play_morse_e(hass, "Buzzer activ", buzzer="input_boolean.buzzer")
+    await asyncio.sleep(0.7)  # in the dot
+    assert hass.states.get("input_boolean.buzzer").state == "on"
+    await _call(hass, "button", "press", "button.test_stop")
+    await hass.async_block_till_done()
+    assert hass.states.get("input_boolean.buzzer").state == "off"
+    assert _lamps(hass) == [False] * 5
+    assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_changing_the_sound_mid_dot_silences_the_old_one(hass):
+    entry = await _play_morse_e(hass, "Buzzer activ", buzzer="input_boolean.buzzer")
+    await asyncio.sleep(0.7)  # in the dot
+    assert hass.states.get("input_boolean.buzzer").state == "on"
+    await _call(hass, "select", "select_option", "select.test_sunet_morse", option="Fără")
+    assert hass.states.get("input_boolean.buzzer").state == "off"
+    await _call(hass, "button", "press", "button.test_stop")
+    assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_pause_sound_example_ticks_once_per_letter_even_without_a_gap(hass):
+    """examples/automations/sunet-pauza.yaml, loaded as it is."""
+    ticks = []
+
+    async def record(call):
+        ticks.append(call.data["song_str"])
+
+    hass.services.async_register("esphome", "esphome_web_3053a0_play_rtttl", record)
+    entry = await _setup(hass, title="ESP32 devkitv1")
+    example = Path(__file__).parents[1] / "examples/automations/sunet-pauza.yaml"
+    assert await async_setup_component(hass, "automation", {"automation": [load_yaml(example)]})
+    await _call(hass, "text", "set_value", "text.esp32_devkitv1_mesaj", value="aab")
+
+    for gap, interval in ((400, 500), (0, 300)):
+        ticks.clear()
+        await _call(hass, "number", "set_value", "number.esp32_devkitv1_pauza_intre_litere", value=gap)
+        await _call(hass, "number", "set_value", "number.esp32_devkitv1_interval", value=interval)
+        await _call(hass, "button", "press", "button.esp32_devkitv1_start")
+        await asyncio.sleep(3 * interval / 1000 + 0.3)
+        await hass.async_block_till_done()
+        assert hass.states.get("sensor.esp32_devkitv1_progres").state == "gata"
+        assert len(ticks) == 3, gap  # A, A, B
+
+    ticks.clear()  # Morse has its own sound
+    await _call(hass, "select", "select_option", "select.esp32_devkitv1_tip_mesaj", option="Morse")
+    await _call(hass, "number", "set_value", "number.esp32_devkitv1_interval", value=100)
+    await _call(hass, "button", "press", "button.esp32_devkitv1_start")
+    await asyncio.sleep(2.5)
+    await hass.async_block_till_done()
+    assert ticks == []
     assert await hass.config_entries.async_unload(entry.entry_id)

@@ -8,4 +8,9 @@ entities:
     name: Buton (HW-843)
   - entity: switch.esphome_esp32_devkitv1_buzzer_hw_512
     name: Buzzer (HW-512)
+  # automations/sunet-pauza.yaml: on/off pentru tic-ul de la „Pauză între litere”
+  - entity: automation.sunet_pauza
+    name: Sunet pauză între litere
+  - entity: select.esp32_devkitv1_sunet_morse
+    name: Sunet Morse
 title: 🖲️ ESP32

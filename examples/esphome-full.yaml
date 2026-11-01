@@ -18,6 +18,10 @@ api:
         song_str: string
       then:
         - rtttl.play: !lambda "return song_str;"
+    # oprește melodia: „Sunet Morse” = RTTTL o pornește cu LED-ul și o oprește când se stinge
+    - action: stop_rtttl
+      then:
+        - rtttl.stop
 
 # ---------- Iesiri ----------
 output:

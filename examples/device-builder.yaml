@@ -20,6 +20,9 @@ api:
         song_str: string
       then:
         - rtttl.play: !lambda "return song_str;"
+    - action: stop_rtttl
+      then:
+        - rtttl.stop
 
 # Allow Over-The-Air updates
 ota:

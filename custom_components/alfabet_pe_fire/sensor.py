@@ -52,4 +52,5 @@ class ProgressSensor(AlfabetEntity, SensorEntity):
             "symbol": p.symbol.char if p.symbol else None,
             "code": p.symbol.code if p.symbol else None,  # 21, or ".-" in Morse
             "binary": getattr(p.symbol, "binary", None),  # 5-wire alphabet only
+            "pause": p.pause,  # in "Pauză între litere"
         }

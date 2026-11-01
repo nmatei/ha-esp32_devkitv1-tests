@@ -1,4 +1,4 @@
-"""Message type (colored letters / Morse) and the lamp Morse is sent on."""
+"""Message type (colored letters / Morse), the lamp Morse is sent on and its sound."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 
-from .const import MODES, MORSE_COLORS
+from .const import MODES, MORSE_COLORS, SOUNDS
 from .entity import AlfabetEntity
 
 
@@ -20,6 +20,7 @@ async def async_setup_entry(
         [
             ModeSelect(controller, "tip_mesaj", "Tip mesaj"),
             MorseColorSelect(controller, "culoare_morse", "Culoare Morse"),
+            MorseSoundSelect(controller, "sunet_morse", "Sunet Morse"),
         ]
     )
 
@@ -59,4 +60,23 @@ class MorseColorSelect(AlfabetEntity, SelectEntity, RestoreEntity):
 
     async def async_select_option(self, option: str) -> None:
         self.controller.morse_color = option
+        self.async_write_ha_state()
+
+
+class MorseSoundSelect(AlfabetEntity, SelectEntity, RestoreEntity):
+    _attr_icon = "mdi:volume-high"
+    _attr_options = list(SOUNDS)
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        last = await self.async_get_last_state()
+        if last and last.state in SOUNDS:
+            self.controller.sound = last.state
+
+    @property
+    def current_option(self) -> str:
+        return self.controller.sound
+
+    async def async_select_option(self, option: str) -> None:
+        await self.controller.async_set_sound(option)
         self.async_write_ha_state()

@@ -14,6 +14,7 @@ from homeassistant.core import HomeAssistant
 from .controller import AlfabetController
 
 PLATFORMS = [
+    Platform.BINARY_SENSOR,
     Platform.TEXT,
     Platform.NUMBER,
     Platform.SELECT,

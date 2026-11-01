@@ -32,10 +32,31 @@ def test_each_symbol_is_gap_then_code():
 
 def test_progress_counts_and_ends_done():
     _, progress = _run("A?", 2)
-    assert [(p.state, p.index, p.total) for p in progress] == [
+    assert [(p.state, p.index, p.total) for p in progress if not p.pause] == [
         (STATE_PLAYING, 1, 2), (STATE_PLAYING, 2, 2), (STATE_DONE, 2, 2)
     ]
-    assert progress[1].symbol.char == "."
+    assert progress[-2].symbol.char == "."
+
+
+def test_the_dark_gap_is_reported_as_a_pause():
+    log = []
+    a = encode("A")[0]
+
+    async def set_lights(bits):
+        log.append(("lights", bits))
+
+    async def sleep(seconds):
+        log.append(("sleep", round(seconds, 3)))
+
+    def on_progress(p):
+        log.append(("pause", p.pause))
+
+    asyncio.run(play([a], 5, set_lights, on_progress, sleep))
+    assert log == [
+        ("pause", True), ("lights", OFF), ("sleep", 0.4),
+        ("pause", False), ("lights", a.bits), ("sleep", 4.6),
+        ("lights", OFF), ("pause", False),
+    ]
 
 
 def test_empty_message_only_turns_off():
@@ -67,3 +88,16 @@ def test_no_gap_goes_straight_from_code_to_code():
         ("lights", b.bits), ("sleep", 0.3),
         ("lights", OFF),
     ]
+
+
+def test_no_gap_means_no_pause_signal():
+    progress = []
+
+    async def set_lights(bits):
+        pass
+
+    async def sleep(seconds):
+        pass
+
+    asyncio.run(play(encode("AB"), 0.3, set_lights, progress.append, sleep, gap=0))
+    assert not any(p.pause for p in progress)

@@ -35,8 +35,8 @@ prove the commands, not a fresh-clone install. `pytest.ini` limits a bare `pytes
     to A A I S T), unit counts `DOT` 1, `DASH` 3, `ELEMENT_GAP` 1, `LETTER_GAP` 3,
     `WORD_GAP` 7, `LEAD_IN` 3, `MIN_PART` 0.5.
   - `player.py` — **pure**, HA-free: `play()` (per symbol: all off for `gap` —
-    "Pauză între litere", default 0.4 s, 0 = skip —, code, hold
-    `max(interval - gap, MIN_HOLD 0.1 s)`), `play_morse()` (one lamp, waits to
+    "Pauză între litere", default 0.4 s, 0 = skip, reported as `Progress.pause` —,
+    code, hold `max(interval - gap, MIN_HOLD 0.1 s)`), `play_morse()` (one lamp, waits to
     deadlines on an injected clock so lamp latency doesn't stretch the rhythm;
     `LEAD_IN` 3 units off before the first letter; a late switch never cuts an
     element below `MIN_PART` = half — without that the slow first ESP32 call
@@ -44,19 +44,28 @@ prove the commands, not a fresh-clone install. `pytest.ini` limits a bare `pytes
     are injected, so it is tested with a fake clock. Stop = cancel the task.
   - `controller.py` — `AlfabetController`, one per config entry
     (`entry.runtime_data`): message, mode, `intervals` (ms, one per mode; `interval`
-    is the current mode's), Morse color, `repeat` (ms, step 100, 0 = once), progress
+    is the current mode's), Morse color, `repeat` (ms, step 10, 0 = once), progress
     listeners. Runs `play()` or `play_morse()` (by mode) as a background task,
     looping with a `STATE_WAITING` pause while `repeat` > 0 (settings re-read each
     time). Drives lamps with `homeassistant.turn_on/turn_off`, so it works for
-    `light` and `switch`.
+    `light` and `switch`. Morse sound (`sound`, `SOUNDS`): `play_morse` gets
+    `_set_morse`, which switches the lamp and the sound together (`asyncio.gather`),
+    so the sound lasts exactly as the lamp: the buzzer switch on/off, or RTTTL
+    `MORSE_TONE` via the play action and the stop action (options; Stop and a sound
+    change silence it).
+  - `binary_sensor.py` — Pauză: on during the dark gap before a colored letter
+    (never with gap 0). `examples/automations/sunet-pauza.yaml` ticks on every new
+    letter instead (Progres state change, `to: null`), so it works with gap 0 too;
+    `tests_ha` loads that file as it is.
   - `text.py` / `number.py` / `select.py` / `button.py` / `sensor.py` — Mesaj,
     Interval (ms, follows the mode; both values in its attributes, restored), Repetă
     după (ms; a seconds value from 0.2.3 is restored ×1000), Pauză între litere (ms),
-    Tip mesaj + Culoare Morse, Start/Stop, Progres.
+    Tip mesaj + Culoare Morse + Sunet Morse, Start/Stop, Progres.
   - `config_flow.py` — name + 5 entity selectors (`fir_1` … `fir_5`); the options
-    flow changes the lamps. `translations/` has `en` and `ro`.
+    flow changes the lamps, the buzzer and the RTTTL play / stop actions. `translations/` has `en` and `ro`.
   - `const.py` — keys, defaults (`DEFAULT_LIGHTS`), interval limits, `GAP`, `MODES`
-    (select options), `MORSE_COLORS`, `DEFAULT_INTERVALS` per mode.
+    (select options), `MORSE_COLORS`, `SOUNDS`, `MORSE_TONE`, `DEFAULT_BUZZER` /
+    `DEFAULT_RTTTL_*` (the board's), `DEFAULT_INTERVALS` per mode.
   - `brand/` — icons (`icon.png` 256, `icon@2x.png` 512, + `dark_` variants).
 - `tests/` — pure tests; root `conftest.py` loads `const`/`encoding`/`morse`/`player`
   under a synthetic package so HA is never imported.
@@ -66,13 +75,15 @@ prove the commands, not a fresh-clone install. `pytest.ini` limits a bare `pytes
   `sensors.md` (module inventory, crops in `sensors/`), `esphome-full.yaml`,
   `device-builder.yaml` (the whole config saved from the Device Builder),
   `dashboard/dashboard-leds.yaml` (lamps, Start/Stop, Mesaj, Progres),
-  `dashboard/dashboard-sensors.yaml`, `automations/`, and the setup notes
+  `dashboard/dashboard-sensors.yaml`, `automations/` (incl. `sunet-pauza.yaml`), and the setup notes
   `examples/README.md` (it links the YAML files instead of copying them).
 
 ## Integrations
 Downstream: the 5 configured lamp entities, switched through the
 `homeassistant.turn_on` / `turn_off` services (`controller.py`). By default these are
-`light.esphome_esp32_devkitv1_led_*`, ESPHome lights on an ESP32.
+`light.esphome_esp32_devkitv1_led_*`, ESPHome lights on an ESP32. With a Morse sound
+chosen, also the buzzer switch or the ESPHome `play_rtttl` / `stop_rtttl` actions
+(`stop_rtttl` must be in the firmware, see `examples/esphome-full.yaml`).
 
 Upstream: `examples/dashboard/dashboard-card.yaml` and the automation examples in the README
 address entities by id (`text.<name>_mesaj`, `number.<name>_interval`, …). Renaming an

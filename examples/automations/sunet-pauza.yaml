@@ -1,0 +1,28 @@
+# Automatizare: un „tic” pe buzzerul pasiv la începutul fiecărei litere colorate:
+# odată cu „Pauză între litere” (becurile se sting), sau, cu pauza 0, când se schimbă litera.
+# Settings → Automations → Create → ⋮ → Edit in YAML → lipește.
+# Se pornește / oprește din dashboard-ul senzori (dashboard/dashboard-sensors.yaml).
+# Trigger-ul e starea lui Progres („2 / 5 · L (…)”), care se schimbă la fiecare literă nouă;
+# `to: null` ignoră schimbările doar de atribute (ex. `pause`), deci un singur tic pe literă.
+# Pentru sunet pe toată durata pauzei, folosește binary_sensor.esp32_devkitv1_pauza (on/off).
+# Serviciul esphome.esphome_web_3053a0_play_rtttl poartă numele API al plăcii;
+# pe altă placă verifică numele în Developer Tools → Actions.
+alias: Sunet pauză
+description: Tic pe buzzerul pasiv la fiecare literă colorată (și cu pauza 0)
+triggers:
+  - trigger: state
+    entity_id: sensor.esp32_devkitv1_progres
+    to: null
+conditions:
+  - condition: state
+    entity_id: sensor.esp32_devkitv1_progres
+    attribute: state
+    state: playing
+  - condition: state
+    entity_id: select.esp32_devkitv1_tip_mesaj
+    state: Litere colorate
+actions:
+  - action: esphome.esphome_web_3053a0_play_rtttl
+    data:
+      song_str: "pauza:d=32,o=6,b=180:c"
+mode: restart

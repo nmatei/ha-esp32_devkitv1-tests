@@ -36,6 +36,7 @@ class Progress:
     index: int = 0  # 1-based position of the current symbol
     total: int = 0
     symbol: Symbol | MorseSymbol | None = None
+    pause: bool = False  # in the dark gap before ``symbol`` ("Pauză între litere")
 
 
 def hold_time(interval: float, gap: float = GAP) -> float:
@@ -53,16 +54,20 @@ async def play(
 ) -> None:
     """For each symbol: all lamps off for ``gap``, then its code until the next one.
 
+    The gap is reported as a ``pause`` progress (the "Pauză" binary sensor),
+    then the symbol again without it, as its code lights up.
+
     With ``gap`` 0 the codes follow each other without going dark (smooth
     animations), but two equal letters in a row then look like one.
     """
     total = len(symbols)
     hold = hold_time(interval, gap)
     for index, symbol in enumerate(symbols, 1):
-        on_progress(Progress(STATE_PLAYING, index, total, symbol))
         if gap > 0:
+            on_progress(Progress(STATE_PLAYING, index, total, symbol, pause=True))
             await set_lights(OFF)
             await sleep(gap)
+        on_progress(Progress(STATE_PLAYING, index, total, symbol))
         await set_lights(symbol.bits)
         await sleep(hold)
     await set_lights(OFF)
