@@ -2,12 +2,12 @@ type: entities
 entities:
   - entity: number.esp32_devkitv1_interval
     name: Interval
-  - entity: number.office_esp32_devkitv1_pauza_intre_litere
+  - entity: number.esp32_devkitv1_pauza_intre_litere
     name: Pauză între litere
-  - entity: number.office_esp32_devkitv1_repeta_dupa
+  - entity: number.esp32_devkitv1_repeta_dupa
     name: Repetă după
-  - entity: select.office_esp32_devkitv1_tip_mesaj
+  - entity: select.esp32_devkitv1_tip_mesaj
     name: Tip mesaj
-  - entity: select.office_esp32_devkitv1_culoare_morse
+  - entity: select.esp32_devkitv1_culoare_morse
     name: Culoare Morse
 title: 🖲️ ESP32 Config
