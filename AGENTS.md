@@ -76,7 +76,7 @@ prove the commands, not a fresh-clone install. `pytest.ini` limits a bare `pytes
   config saved from the Device Builder, commented; the only full ESPHome example),
   `dashboard/dashboard-leds.yaml` (lamps, Start/Stop, Mesaj, Progres),
   `dashboard/dashboard-sensors.yaml`, `dashboard/dashboard-diagnostic.yaml` (WiFi diagnostics),
-  `dashboard/dashboard-ir.yaml` (the Sony TV remote only, sent by HW-489) + `dashboard/dashboard-ir-citite.yaml` (codes read by HW-490, a free-form code to send, history; same text format both ways), `automations/` (incl. `sunet-pauza.yaml`), and the setup notes
+  `dashboard/tv.yaml` (a whole TV view: the Sony remote sent by HW-489, codes read by HW-490, a free-form code to send, history; same text format both ways), `automations/` (incl. `sunet-pauza.yaml`), and the setup notes
   `examples/README.md` (it links the YAML files instead of copying them).
 
 ## Integrations

@@ -1,0 +1,320 @@
+# View-ul TV (tip masonry, cu path și visible): telecomanda IR a TV-ului Sony, trimisă cu
+# emițătorul HW-489 (D4/GPIO4, device-builder.yaml), plus codurile citite de receptorul
+# HW-490 (RX2/GPIO16), un cod oarecare de trimis și istoricul codurilor citite.
+# Același format la citire și la trimitere („SONY 0x490 12”): un cod citit se copiază
+# în „Cod IR de trimis” sau într-un buton al telecomenzii.
+# Necesită din HACS: card-mod (pentru locurile goale din telecomandă și culori).
+type: masonry
+title: TV
+path: tv
+icon: mdi:television
+cards:
+  # TV Sony KD-65XF7096 (protocol Sony SIRC, „SONY date biți”). Codurile vin din listele
+  # publice SIRC pentru Bravia, nu au fost citite de pe telecomanda ta: dacă o tastă nu
+  # merge, apas-o pe telecomandă spre HW-490 și pune aici codul din „Ultimul cod”.
+  # Citite de pe telecomanda ta: Volum + (0x490), Volum − (0xC90), Netflix (0x1F58),
+  # YouTube (0x7123).
+  # Acțiunea e trimite_ir de pe placă (api: actions:); Sony e trimis de 3 ori.
+  # Așezate ca pe telecomandă:
+  #   Power    Mute   ·    Home   Return
+  #   Vol +     ·     ▲     ·     Prog +
+  #     ·       ◄     OK    ►       ·
+  #   Vol −     ·     ▼     ·     Prog −
+  #    |◄◄     ◄◄   Play   ►►    ►►|
+  #   YouTube  Pause  ·    Stop   Netflix
+  # „·” = loc gol, ascuns cu card_mod (HACS).
+  # Un singur grid cu 5 coloane și celule pătrate: toate butoanele au aceeași mărime, doar
+  # iconița, fără text (numele rămâne pentru editor); iconița crește cu celula (fără icon_height).
+  - type: vertical-stack
+    cards:
+      - square: true
+        type: grid
+        columns: 5
+        cards:
+          - type: button
+            name: Power
+            show_name: false
+            icon: mdi:power
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0xA90 12
+          - type: button
+            name: Mute
+            show_name: false
+            icon: mdi:volume-off
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x290 12
+          - type: button
+            show_name: false
+            show_icon: false
+            tap_action:
+              action: none
+            card_mod:
+              style: 'ha-card { visibility: hidden; }'
+          - type: button
+            name: Home
+            show_name: false
+            icon: mdi:home
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x070 12
+          - type: button
+            name: Return
+            show_name: false
+            icon: mdi:keyboard-return
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x62E9 15
+          - type: button
+            name: Volum +
+            show_name: false
+            icon: mdi:volume-plus
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x490 12
+          - type: button
+            show_name: false
+            show_icon: false
+            tap_action:
+              action: none
+            card_mod:
+              style: 'ha-card { visibility: hidden; }'
+          - type: button
+            name: Sus
+            show_name: false
+            icon: mdi:arrow-up-bold
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x2F0 12
+          - type: button
+            show_name: false
+            show_icon: false
+            tap_action:
+              action: none
+            card_mod:
+              style: 'ha-card { visibility: hidden; }'
+          - type: button
+            name: Program +
+            show_name: false
+            icon: mdi:chevron-up-box
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x090 12
+          - type: button
+            show_name: false
+            show_icon: false
+            tap_action:
+              action: none
+            card_mod:
+              style: 'ha-card { visibility: hidden; }'
+          - type: button
+            name: Stânga
+            show_name: false
+            icon: mdi:arrow-left-bold
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x2D0 12
+          - type: button
+            name: OK
+            show_name: false
+            icon: mdi:checkbox-blank-circle
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0xA70 12
+          - type: button
+            name: Dreapta
+            show_name: false
+            icon: mdi:arrow-right-bold
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0xCD0 12
+          - type: button
+            show_name: false
+            show_icon: false
+            tap_action:
+              action: none
+            card_mod:
+              style: 'ha-card { visibility: hidden; }'
+          - type: button
+            name: Volum −
+            show_name: false
+            icon: mdi:volume-minus
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0xC90 12
+          - type: button
+            show_name: false
+            show_icon: false
+            tap_action:
+              action: none
+            card_mod:
+              style: 'ha-card { visibility: hidden; }'
+          - type: button
+            name: Jos
+            show_name: false
+            icon: mdi:arrow-down-bold
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0xAF0 12
+          - type: button
+            show_name: false
+            show_icon: false
+            tap_action:
+              action: none
+            card_mod:
+              style: 'ha-card { visibility: hidden; }'
+          - type: button
+            name: Program −
+            show_name: false
+            icon: mdi:chevron-down-box
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x890 12
+          - type: button
+            name: Anterior
+            show_name: false
+            icon: mdi:skip-previous
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x1EE9 15
+          - type: button
+            name: Înapoi
+            show_name: false
+            icon: mdi:rewind
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x6CE9 15
+          - type: button
+            name: Play
+            show_name: false
+            icon: mdi:play
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x2CE9 15
+          - type: button
+            name: Înainte
+            show_name: false
+            icon: mdi:fast-forward
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x1CE9 15
+          - type: button
+            name: Următor
+            show_name: false
+            icon: mdi:skip-next
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x5EE9 15
+          - type: button
+            name: YouTube
+            show_name: false
+            icon: mdi:youtube
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x7123 15
+            # roșu YouTube
+            card_mod:
+              style: |
+                ha-card { --card-mod-icon-color: #FF0000; }
+                ha-state-icon { color: #FF0000; }
+          - type: button
+            name: Pause
+            show_name: false
+            icon: mdi:pause
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x4CE9 15
+          - type: button
+            show_name: false
+            show_icon: false
+            tap_action:
+              action: none
+            card_mod:
+              style: 'ha-card { visibility: hidden; }'
+          - type: button
+            name: Stop
+            show_name: false
+            icon: mdi:stop
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x0CE9 15
+          - type: button
+            name: Netflix
+            show_name: false
+            icon: mdi:netflix
+            tap_action:
+              action: perform-action
+              perform_action: esphome.esphome_web_3053a0_trimite_ir
+              data:
+                cod: SONY 0x1F58 15
+            # roșu Netflix
+            card_mod:
+              style: |
+                ha-card { --card-mod-icon-color: #E50914; }
+                ha-state-icon { color: #E50914; }
+  - type: entities
+    title: 📡 Coduri IR citite (HW-490)
+    show_header_toggle: false
+    entities:
+      - entity: sensor.esphome_esp32_devkitv1_cod_ir_primit_hw_490
+        name: Ultimul cod
+        secondary_info: last-changed
+      - entity: button.esphome_esp32_devkitv1_retrimite_ultimul_cod_ir
+        name: Retrimite ultimul cod
+  # istoricul: un cod apare din nou doar după alt cod (aceeași tastă de 2 ori = o intrare)
+  - type: logbook
+    title: Istoric coduri citite
+    hours_to_show: 24
+    target:
+      entity_id: sensor.esphome_esp32_devkitv1_cod_ir_primit_hw_490
+  - type: entities
+    title: 📤 Trimite cod IR (HW-489)
+    show_header_toggle: false
+    entities:
+      - entity: text.esphome_esp32_devkitv1_cod_ir_de_trimis_hw_489
+        name: Cod (ex. SONY 0xA90 12)
+      - entity: button.esphome_esp32_devkitv1_trimite_ir_hw_489
+        name: Trimite
