@@ -3,7 +3,9 @@
 # HW-490 (RX2/GPIO16), un cod oarecare de trimis și istoricul codurilor citite.
 # Același format la citire și la trimitere („SONY 0x490 12”): un cod citit se copiază
 # în „Cod IR de trimis” sau într-un buton al telecomenzii.
-# Necesită din HACS: card-mod (pentru locurile goale din telecomandă și culori).
+# Nu are nevoie de nimic din HACS. Telecomanda e un desen SVG (telecomanda-tv.svg) cu zone
+# transparente peste taste (picture-elements): pune telecomanda-tv.svg în /config/www/
+# (HA îl servește ca /local/telecomanda-tv.svg); după o modificare, reîncarcă fără cache.
 type: masonry
 title: TV
 path: tv
@@ -15,286 +17,429 @@ cards:
   # Citite de pe telecomanda ta: Volum + (0x490), Volum − (0xC90), Netflix (0x1F58),
   # YouTube (0x7123).
   # Acțiunea e trimite_ir de pe placă (api: actions:); Sony e trimis de 3 ori.
-  # Așezate ca pe telecomandă:
-  #   Power    Mute   ·    Home   Return
-  #   Vol +     ·     ▲     ·     Prog +
-  #     ·       ◄     OK    ►       ·
-  #   Vol −     ·     ▼     ·     Prog −
-  #    |◄◄     ◄◄   Play   ►►    ►►|
-  #   YouTube  Pause  ·    Stop   Netflix
-  # „·” = loc gol, ascuns cu card_mod (HACS).
-  # Un singur grid cu 5 coloane și celule pătrate: toate butoanele au aceeași mărime, doar
-  # iconița, fără text (numele rămâne pentru editor); iconița crește cu celula (fără icon_height).
-  - type: vertical-stack
-    cards:
-      - square: true
-        type: grid
-        columns: 5
-        cards:
-          - type: button
-            name: Power
-            show_name: false
-            icon: mdi:power
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0xA90 12
-          - type: button
-            name: Mute
-            show_name: false
-            icon: mdi:volume-off
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x290 12
-          - type: button
-            show_name: false
-            show_icon: false
-            tap_action:
-              action: none
-            card_mod:
-              style: 'ha-card { visibility: hidden; }'
-          - type: button
-            name: Home
-            show_name: false
-            icon: mdi:home
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x070 12
-          - type: button
-            name: Return
-            show_name: false
-            icon: mdi:keyboard-return
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x62E9 15
-          - type: button
-            name: Volum +
-            show_name: false
-            icon: mdi:volume-plus
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x490 12
-          - type: button
-            show_name: false
-            show_icon: false
-            tap_action:
-              action: none
-            card_mod:
-              style: 'ha-card { visibility: hidden; }'
-          - type: button
-            name: Sus
-            show_name: false
-            icon: mdi:arrow-up-bold
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x2F0 12
-          - type: button
-            show_name: false
-            show_icon: false
-            tap_action:
-              action: none
-            card_mod:
-              style: 'ha-card { visibility: hidden; }'
-          - type: button
-            name: Program +
-            show_name: false
-            icon: mdi:chevron-up-box
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x090 12
-          - type: button
-            show_name: false
-            show_icon: false
-            tap_action:
-              action: none
-            card_mod:
-              style: 'ha-card { visibility: hidden; }'
-          - type: button
-            name: Stânga
-            show_name: false
-            icon: mdi:arrow-left-bold
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x2D0 12
-          - type: button
-            name: OK
-            show_name: false
-            icon: mdi:checkbox-blank-circle
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0xA70 12
-          - type: button
-            name: Dreapta
-            show_name: false
-            icon: mdi:arrow-right-bold
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0xCD0 12
-          - type: button
-            show_name: false
-            show_icon: false
-            tap_action:
-              action: none
-            card_mod:
-              style: 'ha-card { visibility: hidden; }'
-          - type: button
-            name: Volum −
-            show_name: false
-            icon: mdi:volume-minus
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0xC90 12
-          - type: button
-            show_name: false
-            show_icon: false
-            tap_action:
-              action: none
-            card_mod:
-              style: 'ha-card { visibility: hidden; }'
-          - type: button
-            name: Jos
-            show_name: false
-            icon: mdi:arrow-down-bold
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0xAF0 12
-          - type: button
-            show_name: false
-            show_icon: false
-            tap_action:
-              action: none
-            card_mod:
-              style: 'ha-card { visibility: hidden; }'
-          - type: button
-            name: Program −
-            show_name: false
-            icon: mdi:chevron-down-box
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x890 12
-          - type: button
-            name: Anterior
-            show_name: false
-            icon: mdi:skip-previous
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x1EE9 15
-          - type: button
-            name: Înapoi
-            show_name: false
-            icon: mdi:rewind
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x6CE9 15
-          - type: button
-            name: Play
-            show_name: false
-            icon: mdi:play
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x2CE9 15
-          - type: button
-            name: Înainte
-            show_name: false
-            icon: mdi:fast-forward
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x1CE9 15
-          - type: button
-            name: Următor
-            show_name: false
-            icon: mdi:skip-next
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x5EE9 15
-          - type: button
-            name: YouTube
-            show_name: false
-            icon: mdi:youtube
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x7123 15
-            # roșu YouTube
-            card_mod:
-              style: |
-                ha-card { --card-mod-icon-color: #FF0000; }
-                ha-state-icon { color: #FF0000; }
-          - type: button
-            name: Pause
-            show_name: false
-            icon: mdi:pause
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x4CE9 15
-          - type: button
-            show_name: false
-            show_icon: false
-            tap_action:
-              action: none
-            card_mod:
-              style: 'ha-card { visibility: hidden; }'
-          - type: button
-            name: Stop
-            show_name: false
-            icon: mdi:stop
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x0CE9 15
-          - type: button
-            name: Netflix
-            show_name: false
-            icon: mdi:netflix
-            tap_action:
-              action: perform-action
-              perform_action: esphome.esphome_web_3053a0_trimite_ir
-              data:
-                cod: SONY 0x1F58 15
-            # roșu Netflix
-            card_mod:
-              style: |
-                ha-card { --card-mod-icon-color: #E50914; }
-                ha-state-icon { color: #E50914; }
+  # Așezate ca o aplicație de telecomandă, să încapă pe un ecran de telefon:
+  #   SONY                          Power
+  #   1   2   3   4   5
+  #   6   7   8   9   0
+  #   [ YouTube ]   [ Netflix ]
+  #        cercul: ▲ ◄ OK ► ▼
+  #   Vol +   ◄◄    Home   ►►    Prog +
+  #   VOL     Mute  ►❙❙    Return  CH
+  #   Vol −   |◄◄   Stop   ►►|   Prog −
+  # ►❙❙: atingere = Play, ținut apăsat = Pause (Sony are coduri separate).
+  # Zonele: left/top = centrul tastei, width = lățimea, în % din desen (viewBox 1000 × 1650);
+  # înălțimea vine din viewBox-ul zonei transparente. Dacă muți o tastă în SVG, mut-o și aici.
+  - type: picture-elements
+    image: /local/telecomanda-tv.svg
+    elements:
+      # Power
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 110'/%3E"
+        style:
+          left: 90.20%
+          top: 4.85%
+          width: 11.00%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0xA90 12
+      # Cifra 1
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 90'/%3E"
+        style:
+          left: 13.00%
+          top: 11.21%
+          width: 17.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x010 12
+      # Cifra 2
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 90'/%3E"
+        style:
+          left: 31.50%
+          top: 11.21%
+          width: 17.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x810 12
+      # Cifra 3
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 90'/%3E"
+        style:
+          left: 50.00%
+          top: 11.21%
+          width: 17.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x410 12
+      # Cifra 4
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 90'/%3E"
+        style:
+          left: 68.50%
+          top: 11.21%
+          width: 17.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0xC10 12
+      # Cifra 5
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 90'/%3E"
+        style:
+          left: 87.00%
+          top: 11.21%
+          width: 17.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x210 12
+      # Cifra 6
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 90'/%3E"
+        style:
+          left: 13.00%
+          top: 17.27%
+          width: 17.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0xA10 12
+      # Cifra 7
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 90'/%3E"
+        style:
+          left: 31.50%
+          top: 17.27%
+          width: 17.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x610 12
+      # Cifra 8
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 90'/%3E"
+        style:
+          left: 50.00%
+          top: 17.27%
+          width: 17.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0xE10 12
+      # Cifra 9
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 90'/%3E"
+        style:
+          left: 68.50%
+          top: 17.27%
+          width: 17.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x110 12
+      # Cifra 0
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 90'/%3E"
+        style:
+          left: 87.00%
+          top: 17.27%
+          width: 17.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x910 12
+      # YouTube
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 430 110'/%3E"
+        style:
+          left: 26.50%
+          top: 24.85%
+          width: 43.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x7123 15
+      # Netflix
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 430 110'/%3E"
+        style:
+          left: 73.50%
+          top: 24.85%
+          width: 43.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x1F58 15
+      # Sus
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'/%3E"
+        style:
+          left: 50.00%
+          top: 36.06%
+          width: 18.00%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x2F0 12
+      # Jos
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'/%3E"
+        style:
+          left: 50.00%
+          top: 61.52%
+          width: 18.00%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0xAF0 12
+      # Stânga
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'/%3E"
+        style:
+          left: 29.00%
+          top: 48.79%
+          width: 18.00%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x2D0 12
+      # Dreapta
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'/%3E"
+        style:
+          left: 71.00%
+          top: 48.79%
+          width: 18.00%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0xCD0 12
+      # OK
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 175 175'/%3E"
+        style:
+          left: 50.00%
+          top: 48.79%
+          width: 17.50%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0xA70 12
+      # Volum +
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 230'/%3E"
+        style:
+          left: 12.50%
+          top: 74.55%
+          width: 15.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x490 12
+      # Volum −
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 230'/%3E"
+        style:
+          left: 12.50%
+          top: 92.12%
+          width: 15.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0xC90 12
+      # Program +
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 230'/%3E"
+        style:
+          left: 87.50%
+          top: 74.55%
+          width: 15.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x090 12
+      # Program −
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 230'/%3E"
+        style:
+          left: 87.50%
+          top: 92.12%
+          width: 15.00%
+          border-radius: 24px
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x890 12
+      # Înapoi (◄◄)
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 146 146'/%3E"
+        style:
+          left: 33.00%
+          top: 73.03%
+          width: 14.60%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x6CE9 15
+      # Home
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 146 146'/%3E"
+        style:
+          left: 50.00%
+          top: 73.03%
+          width: 14.60%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x070 12
+      # Înainte (►►)
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 146 146'/%3E"
+        style:
+          left: 67.00%
+          top: 73.03%
+          width: 14.60%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x1CE9 15
+      # Mute
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 146 146'/%3E"
+        style:
+          left: 33.00%
+          top: 83.33%
+          width: 14.60%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x290 12
+      # Play (ținut apăsat: Pause)
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 146 146'/%3E"
+        style:
+          left: 50.00%
+          top: 83.33%
+          width: 14.60%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x2CE9 15
+        hold_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x4CE9 15
+      # Return
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 146 146'/%3E"
+        style:
+          left: 67.00%
+          top: 83.33%
+          width: 14.60%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x62E9 15
+      # Anterior (|◄◄)
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 146 146'/%3E"
+        style:
+          left: 33.00%
+          top: 93.64%
+          width: 14.60%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x1EE9 15
+      # Stop
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 146 146'/%3E"
+        style:
+          left: 50.00%
+          top: 93.64%
+          width: 14.60%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x0CE9 15
+      # Următor (►►|)
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 146 146'/%3E"
+        style:
+          left: 67.00%
+          top: 93.64%
+          width: 14.60%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0x5EE9 15
   - type: entities
     title: 📡 Coduri IR citite (HW-490)
     show_header_toggle: false

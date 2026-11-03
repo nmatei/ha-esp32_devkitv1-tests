@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 1980" width="1180" height="1980">
+  <!-- Telecomanda cu 24 de taste a tabloului cu litere (NEC, adresa 0xEF00).
+       Copiază-l în /config/www/ (se vede ca /local/telecomanda-led.svg). -->
+  <defs>
+    <radialGradient id="lucios" cx="38%" cy="30%" r="75%">
+      <stop offset="0" stop-color="#fff" stop-opacity=".30"/>
+      <stop offset=".55" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".22"/>
+    </radialGradient>
+    <linearGradient id="fata" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F1F3F6"/>
+      <stop offset="1" stop-color="#E3E6EA"/>
+    </linearGradient>
+  </defs>
+  <g font-family="'Arial Narrow','Roboto Condensed','Helvetica Neue',Arial,sans-serif">
+    <rect x="0" y="0" width="1180" height="1980" rx="80" fill="#1B1B1B"/>
+    <rect x="18" y="18" width="1144" height="1944" rx="66" fill="url(#fata)"/>
+    <rect x="108" y="280" width="474" height="210" rx="26" fill="#5E6166"/>
+    <rect x="607" y="280" width="473" height="210" rx="26" fill="#5E6166"/>
+    <path d="M114,505 H1057 A26,26 0 0 1 1083,531 V692 A26,26 0 0 1 1057,718 H878
+             A26,26 0 0 0 852,744 V1639 A26,26 0 0 1 826,1665 H114 A26,26 0 0 1 88,1639
+             V531 A26,26 0 0 1 114,505 Z" fill="#5E6166"/>
+    <!-- Luminozitate +: NEC 0xEF00 0xFF00 -->
+    <circle cx="222" cy="392" r="96" fill="#000" opacity=".28"/>
+    <circle cx="218" cy="385" r="96" fill="#F4F4F4"/>
+    <circle cx="218" cy="385" r="96" fill="url(#lucios)"/>
+    <circle cx="218" cy="397" r="24" fill="none" stroke="#111" stroke-width="7"/>
+    <line x1="242.0" y1="373.0" x2="253.4" y2="361.6" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+    <line x1="252.0" y1="397.0" x2="268.0" y2="397.0" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+    <line x1="242.0" y1="421.0" x2="253.4" y2="432.4" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+    <line x1="218.0" y1="431.0" x2="218.0" y2="447.0" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+    <line x1="194.0" y1="421.0" x2="182.6" y2="432.4" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+    <line x1="184.0" y1="397.0" x2="168.0" y2="397.0" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+    <line x1="194.0" y1="373.0" x2="182.6" y2="361.6" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+    <path d="M198,341 L218,329 L238,341" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="198" y1="341" x2="198" y2="351" stroke="#111" stroke-width="6" stroke-linecap="round"/>
+    <line x1="238" y1="341" x2="238" y2="351" stroke="#111" stroke-width="6" stroke-linecap="round"/>
+    <!-- Luminozitate −: NEC 0xEF00 0xFE01 -->
+    <circle cx="470" cy="392" r="96" fill="#000" opacity=".28"/>
+    <circle cx="466" cy="385" r="96" fill="#F4F4F4"/>
+    <circle cx="466" cy="385" r="96" fill="url(#lucios)"/>
+    <circle cx="466" cy="373" r="24" fill="none" stroke="#111" stroke-width="7"/>
+    <line x1="466.0" y1="339.0" x2="466.0" y2="323.0" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+    <line x1="490.0" y1="349.0" x2="501.4" y2="337.6" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+    <line x1="500.0" y1="373.0" x2="516.0" y2="373.0" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+    <line x1="490.0" y1="397.0" x2="501.4" y2="408.4" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+    <line x1="442.0" y1="397.0" x2="430.6" y2="408.4" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+    <line x1="432.0" y1="373.0" x2="416.0" y2="373.0" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+    <line x1="442.0" y1="349.0" x2="430.6" y2="337.6" stroke="#111" stroke-width="7" stroke-linecap="round"/>
+    <path d="M446,429 L466,441 L486,429" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="446" y1="429" x2="446" y2="419" stroke="#111" stroke-width="6" stroke-linecap="round"/>
+    <line x1="486" y1="429" x2="486" y2="419" stroke="#111" stroke-width="6" stroke-linecap="round"/>
+    <!-- OFF: NEC 0xEF00 0xFD02 -->
+    <circle cx="720" cy="392" r="96" fill="#000" opacity=".28"/>
+    <circle cx="716" cy="385" r="96" fill="#151515"/>
+    <circle cx="716" cy="385" r="96" fill="url(#lucios)"/>
+    <text x="716" y="411" font-size="72" fill="#fff" textLength="118" lengthAdjust="spacingAndGlyphs" font-weight="700" text-anchor="middle">OFF</text>
+    <!-- ON: NEC 0xEF00 0xFC03 -->
+    <circle cx="970" cy="392" r="96" fill="#000" opacity=".28"/>
+    <circle cx="966" cy="385" r="96" fill="#D8302A"/>
+    <circle cx="966" cy="385" r="96" fill="url(#lucios)"/>
+    <text x="966" y="411" font-size="72" fill="#fff" textLength="92" lengthAdjust="spacingAndGlyphs" font-weight="700" text-anchor="middle">ON</text>
+    <!-- Roșu (R): NEC 0xEF00 0xFB04 -->
+    <circle cx="222" cy="617" r="96" fill="#000" opacity=".28"/>
+    <circle cx="218" cy="610" r="96" fill="#D8302A"/>
+    <circle cx="218" cy="610" r="96" fill="url(#lucios)"/>
+    <text x="218" y="639" font-size="80" fill="#111" font-weight="700" text-anchor="middle">R</text>
+    <!-- Verde (G): NEC 0xEF00 0xFA05 -->
+    <circle cx="470" cy="617" r="96" fill="#000" opacity=".28"/>
+    <circle cx="466" cy="610" r="96" fill="#2A8A3C"/>
+    <circle cx="466" cy="610" r="96" fill="url(#lucios)"/>
+    <text x="466" y="639" font-size="80" fill="#111" font-weight="700" text-anchor="middle">G</text>
+    <!-- Albastru (B): NEC 0xEF00 0xF906 -->
+    <circle cx="720" cy="617" r="96" fill="#000" opacity=".28"/>
+    <circle cx="716" cy="610" r="96" fill="#2156C6"/>
+    <circle cx="716" cy="610" r="96" fill="url(#lucios)"/>
+    <text x="716" y="639" font-size="80" fill="#111" font-weight="700" text-anchor="middle">B</text>
+    <!-- Alb (W): NEC 0xEF00 0xF807 -->
+    <circle cx="970" cy="617" r="96" fill="#000" opacity=".28"/>
+    <circle cx="966" cy="610" r="96" fill="#F4F4F4"/>
+    <circle cx="966" cy="610" r="96" fill="url(#lucios)"/>
+    <text x="966" y="639" font-size="80" fill="#111" font-weight="700" text-anchor="middle">W</text>
+    <!-- Roșu deschis: NEC 0xEF00 0xF708 -->
+    <circle cx="222" cy="847" r="96" fill="#000" opacity=".28"/>
+    <circle cx="218" cy="840" r="96" fill="#DC3A2E"/>
+    <circle cx="218" cy="840" r="96" fill="url(#lucios)"/>
+    <!-- Verde deschis: NEC 0xEF00 0xF609 -->
+    <circle cx="470" cy="847" r="96" fill="#000" opacity=".28"/>
+    <circle cx="466" cy="840" r="96" fill="#3A9B3A"/>
+    <circle cx="466" cy="840" r="96" fill="url(#lucios)"/>
+    <!-- Albastru deschis: NEC 0xEF00 0xF50A -->
+    <circle cx="720" cy="847" r="96" fill="#000" opacity=".28"/>
+    <circle cx="716" cy="840" r="96" fill="#2770D8"/>
+    <circle cx="716" cy="840" r="96" fill="url(#lucios)"/>
+    <!-- FLASH: NEC 0xEF00 0xF40B -->
+    <circle cx="970" cy="847" r="96" fill="#000" opacity=".28"/>
+    <circle cx="966" cy="840" r="96" fill="#64676C"/>
+    <circle cx="966" cy="840" r="96" fill="url(#lucios)"/>
+    <text x="966" y="859" font-size="52" fill="#111" textLength="138" lengthAdjust="spacingAndGlyphs" font-weight="700" text-anchor="middle">FLASH</text>
+    <!-- Portocaliu închis: NEC 0xEF00 0xF30C -->
+    <circle cx="222" cy="1080" r="96" fill="#000" opacity=".28"/>
+    <circle cx="218" cy="1073" r="96" fill="#E2582B"/>
+    <circle cx="218" cy="1073" r="96" fill="url(#lucios)"/>
+    <!-- Turcoaz: NEC 0xEF00 0xF20D -->
+    <circle cx="470" cy="1080" r="96" fill="#000" opacity=".28"/>
+    <circle cx="466" cy="1073" r="96" fill="#2EA5AE"/>
+    <circle cx="466" cy="1073" r="96" fill="url(#lucios)"/>
+    <!-- Violet: NEC 0xEF00 0xF10E -->
+    <circle cx="720" cy="1080" r="96" fill="#000" opacity=".28"/>
+    <circle cx="716" cy="1073" r="96" fill="#4A2878"/>
+    <circle cx="716" cy="1073" r="96" fill="url(#lucios)"/>
+    <!-- STROBE: NEC 0xEF00 0xF00F -->
+    <circle cx="970" cy="1080" r="96" fill="#000" opacity=".28"/>
+    <circle cx="966" cy="1073" r="96" fill="#64676C"/>
+    <circle cx="966" cy="1073" r="96" fill="url(#lucios)"/>
+    <text x="966" y="1092" font-size="52" fill="#111" textLength="156" lengthAdjust="spacingAndGlyphs" font-weight="700" text-anchor="middle">STROBE</text>
+    <!-- Portocaliu: NEC 0xEF00 0xEF10 -->
+    <circle cx="222" cy="1315" r="96" fill="#000" opacity=".28"/>
+    <circle cx="218" cy="1308" r="96" fill="#EA852F"/>
+    <circle cx="218" cy="1308" r="96" fill="url(#lucios)"/>
+    <!-- Albastru-verzui: NEC 0xEF00 0xEE11 -->
+    <circle cx="470" cy="1315" r="96" fill="#000" opacity=".28"/>
+    <circle cx="466" cy="1308" r="96" fill="#2A8BB0"/>
+    <circle cx="466" cy="1308" r="96" fill="url(#lucios)"/>
+    <!-- Mov: NEC 0xEF00 0xED12 -->
+    <circle cx="720" cy="1315" r="96" fill="#000" opacity=".28"/>
+    <circle cx="716" cy="1308" r="96" fill="#6C2A7E"/>
+    <circle cx="716" cy="1308" r="96" fill="url(#lucios)"/>
+    <!-- FADE: NEC 0xEF00 0xEC13 -->
+    <circle cx="970" cy="1315" r="96" fill="#000" opacity=".28"/>
+    <circle cx="966" cy="1308" r="96" fill="#64676C"/>
+    <circle cx="966" cy="1308" r="96" fill="url(#lucios)"/>
+    <text x="966" y="1327" font-size="52" fill="#111" textLength="118" lengthAdjust="spacingAndGlyphs" font-weight="700" text-anchor="middle">FADE</text>
+    <!-- Galben: NEC 0xEF00 0xEB14 -->
+    <circle cx="222" cy="1555" r="96" fill="#000" opacity=".28"/>
+    <circle cx="218" cy="1548" r="96" fill="#F3E22B"/>
+    <circle cx="218" cy="1548" r="96" fill="url(#lucios)"/>
+    <!-- Verde închis: NEC 0xEF00 0xEA15 -->
+    <circle cx="470" cy="1555" r="96" fill="#000" opacity=".28"/>
+    <circle cx="466" cy="1548" r="96" fill="#0F5A54"/>
+    <circle cx="466" cy="1548" r="96" fill="url(#lucios)"/>
+    <!-- Roz: NEC 0xEF00 0xE916 -->
+    <circle cx="720" cy="1555" r="96" fill="#000" opacity=".28"/>
+    <circle cx="716" cy="1548" r="96" fill="#B02A86"/>
+    <circle cx="716" cy="1548" r="96" fill="url(#lucios)"/>
+    <!-- SMOOTH: NEC 0xEF00 0xE817 -->
+    <circle cx="970" cy="1555" r="96" fill="#000" opacity=".28"/>
+    <circle cx="966" cy="1548" r="96" fill="#64676C"/>
+    <circle cx="966" cy="1548" r="96" fill="url(#lucios)"/>
+    <text x="966" y="1567" font-size="52" fill="#111" textLength="166" lengthAdjust="spacingAndGlyphs" font-weight="700" text-anchor="middle">SMOOTH</text>
+  </g>
+</svg>

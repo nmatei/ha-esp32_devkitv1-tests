@@ -1,0 +1,349 @@
+# View-ul Tablou LED (tip masonry): telecomanda IR cu 24 de taste a tabloului cu litere,
+# desenată ca SVG (telecomanda-led.svg) și trimisă cu emițătorul HW-489 (device-builder.yaml).
+# Pune telecomanda-led.svg în /config/www/ (HA îl servește ca /local/telecomanda-led.svg);
+# după o modificare a lui, reîncarcă pagina fără cache.
+# Nu are nevoie de nimic din HACS: un picture-elements cu SVG-ul ca fundal și câte o zonă
+# transparentă, rotundă, peste fiecare tastă.
+#
+# Protocol NEC, adresa 0xEF00; tasta n (0 … 23, pe rânduri, de la stânga) are comanda
+# 0x(FF−n)(n): Luminozitate + 0xFF00, Luminozitate − 0xFE01, OFF 0xFD02, ON 0xFC03,
+# R 0xFB04, G 0xFA05, B 0xF906, W 0xF807 citite de pe telecomandă (HW-490); restul
+# (0xF708 … 0xE817) continuă regula. Dacă o tastă nu merge, citește-o cu HW-490 și
+# pune codul din „Ultimul cod”.
+#
+# Așezate ca pe telecomandă:
+#   Lum +          Lum −           OFF              ON
+#   R              G               B                W
+#   Roșu deschis   Verde deschis   Albastru deschis FLASH
+#   Portocaliu î.  Turcoaz         Violet           STROBE
+#   Portocaliu     Albastru-verzui Mov              FADE
+#   Galben         Verde închis    Roz              SMOOTH
+#
+# Zonele (left/top/width, în % din imagine) urmează coordonatele tastelor din SVG
+# (viewBox 1180×1980, coloane x 218/466/716/966, rânduri y 385/610/840/1073/1308/1548, r 96).
+type: masonry
+title: Tablou LED
+path: tablou-led
+icon: mdi:remote
+cards:
+  - type: picture-elements
+    image: /local/telecomanda-led.svg
+    elements:
+      # Luminozitate +
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 18.47%
+          top: 19.44%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xFF00
+      # Luminozitate −
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 39.49%
+          top: 19.44%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xFE01
+      # OFF
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 60.68%
+          top: 19.44%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xFD02
+      # ON
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 81.86%
+          top: 19.44%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xFC03
+      # Roșu (R)
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 18.47%
+          top: 30.81%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xFB04
+      # Verde (G)
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 39.49%
+          top: 30.81%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xFA05
+      # Albastru (B)
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 60.68%
+          top: 30.81%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xF906
+      # Alb (W)
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 81.86%
+          top: 30.81%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xF807
+      # Roșu deschis
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 18.47%
+          top: 42.42%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xF708
+      # Verde deschis
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 39.49%
+          top: 42.42%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xF609
+      # Albastru deschis
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 60.68%
+          top: 42.42%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xF50A
+      # FLASH
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 81.86%
+          top: 42.42%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xF40B
+      # Portocaliu închis
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 18.47%
+          top: 54.19%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xF30C
+      # Turcoaz
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 39.49%
+          top: 54.19%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xF20D
+      # Violet
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 60.68%
+          top: 54.19%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xF10E
+      # STROBE
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 81.86%
+          top: 54.19%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xF00F
+      # Portocaliu
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 18.47%
+          top: 66.06%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xEF10
+      # Albastru-verzui
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 39.49%
+          top: 66.06%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xEE11
+      # Mov
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 60.68%
+          top: 66.06%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xED12
+      # FADE
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 81.86%
+          top: 66.06%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xEC13
+      # Galben
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 18.47%
+          top: 78.18%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xEB14
+      # Verde închis
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 39.49%
+          top: 78.18%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xEA15
+      # Roz
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 60.68%
+          top: 78.18%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xE916
+      # SMOOTH
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'/%3E"
+        style:
+          left: 81.86%
+          top: 78.18%
+          width: 16.27%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: NEC 0xEF00 0xE817
+  # istoricul codurilor citite de HW-490: pentru a verifica o tastă de pe telecomanda reală
+  - type: logbook
+    title: Istoric coduri citite
+    hours_to_show: 24
+    target:
+      entity_id: sensor.esphome_esp32_devkitv1_cod_ir_primit_hw_490

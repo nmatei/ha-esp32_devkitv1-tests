@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1650" width="1000" height="1650">
+  <!-- Telecomanda TV-ului Sony KD-65XF7096, pentru view-ul TV (tv.yaml).
+       Copiaz-o în /config/www/ (se vede ca /local/telecomanda-tv.svg). -->
+  <defs>
+    <linearGradient id="inel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8A4FC8"/>
+      <stop offset="1" stop-color="#3F6FD6"/>
+    </linearGradient>
+  </defs>
+  <g font-family="-apple-system,'SF Pro Text',Roboto,'Helvetica Neue',Arial,sans-serif">
+    <rect x="0" y="0" width="1000" height="1650" rx="70" fill="#1C1C1E"/>
+    <text x="60" y="100" font-size="58" font-weight="700" letter-spacing="12" fill="#E8E8E8">SONY</text>
+    <circle cx="902" cy="85" r="50" fill="#000" opacity=".35"/>
+    <circle cx="902" cy="80" r="50" fill="#333336"/>
+    <path d="M884.4,63.9 A26,26 0 1 0 919.6,63.9" stroke="#E5534B" stroke-width="7" stroke-linecap="round" fill="none"/>
+    <line x1="902" y1="52" x2="902" y2="80" stroke="#E5534B" stroke-width="7" stroke-linecap="round"/>
+    <rect x="50" y="150" width="160" height="80" rx="40.0" fill="#000" opacity=".35"/>
+    <rect x="50" y="145" width="160" height="80" rx="40.0" fill="#333336"/>
+    <text x="130" y="201" font-size="46" fill="#E8E8E8" text-anchor="middle">1</text>
+    <rect x="235" y="150" width="160" height="80" rx="40.0" fill="#000" opacity=".35"/>
+    <rect x="235" y="145" width="160" height="80" rx="40.0" fill="#333336"/>
+    <text x="315" y="201" font-size="46" fill="#E8E8E8" text-anchor="middle">2</text>
+    <rect x="420" y="150" width="160" height="80" rx="40.0" fill="#000" opacity=".35"/>
+    <rect x="420" y="145" width="160" height="80" rx="40.0" fill="#333336"/>
+    <text x="500" y="201" font-size="46" fill="#E8E8E8" text-anchor="middle">3</text>
+    <rect x="605" y="150" width="160" height="80" rx="40.0" fill="#000" opacity=".35"/>
+    <rect x="605" y="145" width="160" height="80" rx="40.0" fill="#333336"/>
+    <text x="685" y="201" font-size="46" fill="#E8E8E8" text-anchor="middle">4</text>
+    <rect x="790" y="150" width="160" height="80" rx="40.0" fill="#000" opacity=".35"/>
+    <rect x="790" y="145" width="160" height="80" rx="40.0" fill="#333336"/>
+    <text x="870" y="201" font-size="46" fill="#E8E8E8" text-anchor="middle">5</text>
+    <rect x="50" y="250" width="160" height="80" rx="40.0" fill="#000" opacity=".35"/>
+    <rect x="50" y="245" width="160" height="80" rx="40.0" fill="#333336"/>
+    <text x="130" y="301" font-size="46" fill="#E8E8E8" text-anchor="middle">6</text>
+    <rect x="235" y="250" width="160" height="80" rx="40.0" fill="#000" opacity=".35"/>
+    <rect x="235" y="245" width="160" height="80" rx="40.0" fill="#333336"/>
+    <text x="315" y="301" font-size="46" fill="#E8E8E8" text-anchor="middle">7</text>
+    <rect x="420" y="250" width="160" height="80" rx="40.0" fill="#000" opacity=".35"/>
+    <rect x="420" y="245" width="160" height="80" rx="40.0" fill="#333336"/>
+    <text x="500" y="301" font-size="46" fill="#E8E8E8" text-anchor="middle">8</text>
+    <rect x="605" y="250" width="160" height="80" rx="40.0" fill="#000" opacity=".35"/>
+    <rect x="605" y="245" width="160" height="80" rx="40.0" fill="#333336"/>
+    <text x="685" y="301" font-size="46" fill="#E8E8E8" text-anchor="middle">9</text>
+    <rect x="790" y="250" width="160" height="80" rx="40.0" fill="#000" opacity=".35"/>
+    <rect x="790" y="245" width="160" height="80" rx="40.0" fill="#333336"/>
+    <text x="870" y="301" font-size="46" fill="#E8E8E8" text-anchor="middle">0</text>
+    <rect x="50" y="355" width="430" height="110" rx="24" fill="#F5F5F5"/>
+    <rect x="520" y="355" width="430" height="110" rx="24" fill="#F5F5F5"/>
+    <rect x="113" y="378" width="90" height="64" rx="18" fill="#FF0000"/>
+    <polygon points="146,394 146,426 174,410" fill="#fff"/>
+    <text x="217" y="427" font-size="52" font-weight="700" letter-spacing="-1" textLength="200" lengthAdjust="spacingAndGlyphs" fill="#212121">YouTube</text>
+    <text x="735" y="433" font-size="70" font-weight="700" text-anchor="middle" textLength="270" lengthAdjust="spacingAndGlyphs" fill="#E50914">NETFLIX</text>
+    <circle cx="500" cy="805" r="300" fill="#2A2A2C" stroke="url(#inel)" stroke-width="6"/>
+    <path d="M474,608 L500,582 L526,608" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M474,1002 L500,1028 L526,1002" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M303,779 L277,805 L303,831" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M697,779 L723,805 L697,831" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="500" cy="813" r="88" fill="#000" opacity=".4"/>
+    <circle cx="500" cy="805" r="85" fill="#2E2E30" stroke="url(#inel)" stroke-width="6"/>
+    <rect x="50" y="1140" width="150" height="480" rx="75.0" fill="#000" opacity=".35"/>
+    <rect x="50" y="1135" width="150" height="480" rx="75.0" fill="#333336"/>
+    <rect x="800" y="1140" width="150" height="480" rx="75.0" fill="#000" opacity=".35"/>
+    <rect x="800" y="1135" width="150" height="480" rx="75.0" fill="#333336"/>
+    <line x1="99" y1="1205" x2="151" y2="1205" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <line x1="125" y1="1179" x2="125" y2="1231" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <line x1="99" y1="1545" x2="151" y2="1545" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <text x="125" y="1388" font-size="38" letter-spacing="3" fill="#E8E8E8" text-anchor="middle">VOL</text>
+    <text x="875" y="1388" font-size="38" letter-spacing="3" fill="#E8E8E8" text-anchor="middle">CH</text>
+    <path d="M849,1218 L875,1192 L901,1218" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M849,1532 L875,1558 L901,1532" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="330" cy="1210" r="68" fill="#000" opacity=".35"/>
+    <circle cx="330" cy="1205" r="68" fill="#333336"/>
+    <polygon points="332,1185 332,1225 302,1205" fill="#E8E8E8" stroke="#E8E8E8" stroke-width="4" stroke-linejoin="round"/>
+    <polygon points="362,1185 362,1225 332,1205" fill="#E8E8E8" stroke="#E8E8E8" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="500" cy="1210" r="68" fill="#000" opacity=".35"/>
+    <circle cx="500" cy="1205" r="68" fill="#333336"/>
+    <path d="M473,1233 V1199 L500,1175 L527,1199 V1233 Z" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <line x1="500" y1="1233" x2="500" y2="1220" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="670" cy="1210" r="68" fill="#000" opacity=".35"/>
+    <circle cx="670" cy="1205" r="68" fill="#333336"/>
+    <polygon points="668,1185 668,1225 698,1205" fill="#E8E8E8" stroke="#E8E8E8" stroke-width="4" stroke-linejoin="round"/>
+    <polygon points="638,1185 638,1225 668,1205" fill="#E8E8E8" stroke="#E8E8E8" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="330" cy="1380" r="68" fill="#000" opacity=".35"/>
+    <circle cx="330" cy="1375" r="68" fill="#333336"/>
+    <path d="M296,1364 H308 L326,1349 V1401 L308,1386 H296 Z" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M340,1363 L362,1387 M362,1363 L340,1387" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="500" cy="1380" r="68" fill="#000" opacity=".35"/>
+    <circle cx="500" cy="1375" r="68" fill="#333336"/>
+    <polygon points="470,1356 470,1394 496,1375" fill="#E8E8E8" stroke="#E8E8E8" stroke-width="4" stroke-linejoin="round"/>
+    <rect x="506" y="1355" width="9" height="40" rx="2" fill="#E8E8E8"/>
+    <rect x="522" y="1355" width="9" height="40" rx="2" fill="#E8E8E8"/>
+    <circle cx="670" cy="1380" r="68" fill="#000" opacity=".35"/>
+    <circle cx="670" cy="1375" r="68" fill="#333336"/>
+    <path d="M646,1363 H676 A19,19 0 0 1 676,1401 H656" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M659,1350 L645,1363 L659,1376" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="330" cy="1550" r="68" fill="#000" opacity=".35"/>
+    <circle cx="330" cy="1545" r="68" fill="#333336"/>
+    <rect x="295" y="1524" width="8" height="42" rx="2" fill="#E8E8E8"/>
+    <polygon points="333,1525 333,1565 307,1545" fill="#E8E8E8" stroke="#E8E8E8" stroke-width="4" stroke-linejoin="round"/>
+    <polygon points="361,1525 361,1565 335,1545" fill="#E8E8E8" stroke="#E8E8E8" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="500" cy="1550" r="68" fill="#000" opacity=".35"/>
+    <circle cx="500" cy="1545" r="68" fill="#333336"/>
+    <rect x="481" y="1526" width="38" height="38" rx="5" fill="#E8E8E8"/>
+    <circle cx="670" cy="1550" r="68" fill="#000" opacity=".35"/>
+    <circle cx="670" cy="1545" r="68" fill="#333336"/>
+    <rect x="697" y="1524" width="8" height="42" rx="2" fill="#E8E8E8"/>
+    <polygon points="667,1525 667,1565 693,1545" fill="#E8E8E8" stroke="#E8E8E8" stroke-width="4" stroke-linejoin="round"/>
+    <polygon points="639,1525 639,1565 665,1545" fill="#E8E8E8" stroke="#E8E8E8" stroke-width="4" stroke-linejoin="round"/>
+  </g>
+</svg>
