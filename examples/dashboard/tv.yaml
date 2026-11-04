@@ -18,7 +18,7 @@ cards:
   # YouTube (0x7123).
   # Acțiunea e trimite_ir de pe placă (api: actions:); Sony e trimis de 3 ori.
   # Așezate ca o aplicație de telecomandă, să încapă pe un ecran de telefon:
-  #   SONY                          Power
+  #   Sursă          SONY           Power
   #   1   2   3   4   5
   #   6   7   8   9   0
   #   [ YouTube ]   [ Netflix ]
@@ -26,12 +26,26 @@ cards:
   #   Vol +   ◄◄    Home   ►►    Prog +
   #   VOL     Mute  ►❙❙    Return  CH
   #   Vol −   |◄◄   Stop   ►►|   Prog −
+  # VOL și CH sunt doar etichete (gri); Sursă = Input, cod din listele publice.
   # ►❙❙: atingere = Play, ținut apăsat = Pause (Sony are coduri separate).
   # Zonele: left/top = centrul tastei, width = lățimea, în % din desen (viewBox 1000 × 1650);
   # înălțimea vine din viewBox-ul zonei transparente. Dacă muți o tastă în SVG, mut-o și aici.
   - type: picture-elements
     image: /local/telecomanda-tv.svg
     elements:
+      # Sursă (Input)
+      - type: image
+        image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 110'/%3E"
+        style:
+          left: 9.80%
+          top: 4.85%
+          width: 11.00%
+          border-radius: 50%
+        tap_action:
+          action: perform-action
+          perform_action: esphome.esphome_web_3053a0_trimite_ir
+          data:
+            cod: SONY 0xA50 12
       # Power
       - type: image
         image: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 110'/%3E"
@@ -440,6 +454,9 @@ cards:
           perform_action: esphome.esphome_web_3053a0_trimite_ir
           data:
             cod: SONY 0x5EE9 15
+  # - - - - - - - - - - - - - - - - - - - - - - -
+  # Coduri IR citite (HW-490) și trimise (HW-489)
+  # - - - - - - - - - - - - - - - - - - - - - - -
   - type: entities
     title: 📡 Coduri IR citite (HW-490)
     show_header_toggle: false
@@ -449,7 +466,9 @@ cards:
         secondary_info: last-changed
       - entity: button.esphome_esp32_devkitv1_retrimite_ultimul_cod_ir
         name: Retrimite ultimul cod
+  # - - - - - - - - - - - - - - - - - - - - - - -
   # istoricul: un cod apare din nou doar după alt cod (aceeași tastă de 2 ori = o intrare)
+  # - - - - - - - - - - - - - - - - - - - - - - -
   - type: logbook
     title: Istoric coduri citite
     hours_to_show: 24

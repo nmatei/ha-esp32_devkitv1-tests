@@ -9,7 +9,11 @@
   </defs>
   <g font-family="-apple-system,'SF Pro Text',Roboto,'Helvetica Neue',Arial,sans-serif">
     <rect x="0" y="0" width="1000" height="1650" rx="70" fill="#1C1C1E"/>
-    <text x="60" y="100" font-size="58" font-weight="700" letter-spacing="12" fill="#E8E8E8">SONY</text>
+    <text x="506" y="100" font-size="58" font-weight="700" letter-spacing="12" fill="#E8E8E8" text-anchor="middle">SONY</text>
+    <circle cx="98" cy="85" r="50" fill="#000" opacity=".35"/>
+    <circle cx="98" cy="80" r="50" fill="#333336"/>
+    <path d="M92,58 H120 V102 H92" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M72,80 H108 M96,68 L108,80 L96,92" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     <circle cx="902" cy="85" r="50" fill="#000" opacity=".35"/>
     <circle cx="902" cy="80" r="50" fill="#333336"/>
     <path d="M884.4,63.9 A26,26 0 1 0 919.6,63.9" stroke="#E5534B" stroke-width="7" stroke-linecap="round" fill="none"/>
@@ -57,6 +61,8 @@
     <path d="M697,779 L723,805 L697,831" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     <circle cx="500" cy="813" r="88" fill="#000" opacity=".4"/>
     <circle cx="500" cy="805" r="85" fill="#2E2E30" stroke="url(#inel)" stroke-width="6"/>
+    <circle cx="500" cy="805" r="7" fill="#8E8E93"/>
+    <path d="M500,785 V765 M500,825 V845 M480,805 H460 M520,805 H540" stroke="#8E8E93" stroke-width="7" stroke-linecap="round"/>
     <rect x="50" y="1140" width="150" height="480" rx="75.0" fill="#000" opacity=".35"/>
     <rect x="50" y="1135" width="150" height="480" rx="75.0" fill="#333336"/>
     <rect x="800" y="1140" width="150" height="480" rx="75.0" fill="#000" opacity=".35"/>
@@ -64,8 +70,8 @@
     <line x1="99" y1="1205" x2="151" y2="1205" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     <line x1="125" y1="1179" x2="125" y2="1231" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     <line x1="99" y1="1545" x2="151" y2="1545" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-    <text x="125" y="1388" font-size="38" letter-spacing="3" fill="#E8E8E8" text-anchor="middle">VOL</text>
-    <text x="875" y="1388" font-size="38" letter-spacing="3" fill="#E8E8E8" text-anchor="middle">CH</text>
+    <text x="125" y="1388" font-size="38" letter-spacing="3" fill="#8E8E93" text-anchor="middle">VOL</text>
+    <text x="875" y="1388" font-size="38" letter-spacing="3" fill="#8E8E93" text-anchor="middle">CH</text>
     <path d="M849,1218 L875,1192 L901,1218" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     <path d="M849,1532 L875,1558 L901,1532" stroke="#E8E8E8" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     <circle cx="330" cy="1210" r="68" fill="#000" opacity=".35"/>
