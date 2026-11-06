@@ -17,6 +17,8 @@ depanare) e în [README.md](README.md).
   merge cu WiFi pornit.
 - **GPIO34-39** sunt doar intrări și nu au pull-up intern.
 - Evită GPIO0, 12, 15 (pini de boot).
+- Modulele care cer **5V** (MQ-135, MQ-7, HC-SR04) scot și semnal de 5V: pune un divizor
+  de tensiune (ex. 10 kΩ + 20 kΩ) între ieșirea lor și pinul GPIO.
 
 **Pini ocupați acum:** 2, 18, 19, 21, 22, 23 (LED-uri; pe 19, 21, 22 sunt și LED-urile RGB), 25, 26 (buzzere), 33 (buton),
 34, 35 (senzori analogici), 4, 16 (emițător și receptor IR).
@@ -65,6 +67,15 @@ Pozele sunt la aceeași scară (aprox. 4 px = 1 mm, măsurat după pasul de 2.54
 | **HW-493** (KY-008)<br>Laser | <img src="sensors/HW-493.jpg" width="118" style="min-width:118px"> | Dioda laser roșie, aprinsă sau stinsă. `S` → GPIO5 (`light: binary`). Nu îl îndrepta spre ochi. |
 | **HW-482** (KY-019)<br>Releu 5V (10 A) | <img src="sensors/HW-482.jpg" width="161" style="min-width:161px"> | Un comutator comandat: închide un circuit separat (bornele cu șurub). Bobina e de 5V, deci `+` → **VIN** (5V), `−` → GND, `S` → GPIO32 (`switch: platform: gpio`). *(De verificat: dacă releul comută cu doar 3.3V pe `S`.)* Nu lega 230V fără să știi ce faci. |
 | **HW-040** (KY-040)<br>Encoder rotativ cu buton | <img src="sensors/HW-040.jpg" width="134" style="min-width:134px"> | Butonul se rotește fără capăt (pași stânga/dreapta) și se poate apăsa, de exemplu pentru volum sau intervalul mesajului. `CLK` → GPIO13 (GPIO16 e luat de receptorul IR), `DT` → GPIO17 (TX2), `SW` → GPIO27, `+` → 3V3, `GND`. ESPHome: `sensor: platform: rotary_encoder` + `binary_sensor` pentru `SW`. |
+| **HW-499** (KY-027 *(de verificat)*)<br>Lampă magică (comutator de înclinare + LED) | <img src="sensors/HW-499.jpg" width="100" style="min-width:100px"> | Un comutator de înclinare (`S1`) și un LED pe aceeași plăcuță: înclini modulul și poți aprinde LED-ul. Pini `L` (LED) / `+` / `S` / `G`. `S` → GPIO27 (`binary_sensor`, `pullup: true`), `L` → GPIO5 (`light: binary`), `+` → 3V3. |
+| **HW-495** (KY-020 *(de verificat)*)<br>Comutator de înclinare cu bilă | <img src="sensors/HW-495.jpg" width="106" style="min-width:106px"> | O bilă într-un tub care închide contactul când modulul e înclinat într-o parte. Pini `−` / `+` / `S`. `S` → GPIO27 (`binary_sensor`, `pullup: true`, cu debounce). |
+| **HW-501** (KY-017 *(de verificat)*)<br>Comutator de înclinare (capsula albastră) cu LED | <img src="sensors/HW-501.jpg" width="105" style="min-width:105px"> | Capsula albastră închide contactul când e înclinată; LED-ul de pe plăcuță arată starea. Pini `−` / `+` / `S`. `S` → GPIO27 (`binary_sensor`). |
+| **SR602**<br>Senzor PIR mini, detecție mișcare | <img src="sensors/SR602.jpg" width="86" style="min-width:86px"> | Simte mișcarea unui om (căldură în mișcare), până la câțiva metri. Pini `−` / `OUT` / `+`, merge din 3V3. `OUT` → GPIO27 (`binary_sensor`, `device_class: motion`). Ieșirea rămâne activă câteva secunde după ultima mișcare. |
+| **HC-SR04**<br>Senzor de distanță cu ultrasunete | <img src="sensors/HC-SR04.jpg" width="189" style="min-width:189px"> | Trimite un sunet de 40 kHz și măsoară ecoul: distanța de la 2 cm la ~4 m. Pini `Vcc` / `Trig` / `Echo` / `Gnd`. `Vcc` → **VIN** (5V), `Trig` → GPIO13, `Echo` → GPIO14 **prin divizor** (ecoul e de 5V), `Gnd` → GND. ESPHome: `sensor: platform: ultrasonic`. *(De verificat: plăcuța scrie `Trig_RX_SCL_I/O` și `Echo_TX_SDA`, deci e o variantă nouă care poate și UART/I2C; implicit merge ca HC-SR04 clasic.)* |
+| **MQ-135**<br>Senzor de calitate a aerului (gaze) | <img src="sensors/MQ-135.jpg" width="158" style="min-width:158px"> | Rezistența scade în prezența gazelor (amoniac, NOx, fum, benzen, CO2 doar orientativ). Pini `VCC` / `GND` / `DO` / `AO`. Încălzitorul are nevoie de **5V** (`VCC` → VIN, ~150 mA) și de câteva minute de încălzire (prima dată chiar ore). `AO` → GPIO32 **prin divizor** (`sensor: platform: adc`, valoare brută, necalibrată), `DO` → GPIO27 tot prin divizor (prag reglat din potențiometru). |
+| **MQ-7**<br>Senzor de monoxid de carbon (CO) | <img src="sensors/MQ-7.jpg" width="160" style="min-width:160px"> | Același fel de modul ca MQ-135, sensibil la CO. Aceleași legături (5V + divizor). Datasheet-ul cere încălzirea în cicluri 5V / 1.4V, iar modulul ține 5V constant, deci valoarea e doar orientativă: **nu ține loc de detector de CO pentru siguranță**. |
+| **Display OLED 0.96"**, interfață I2C<br>(SSD1306, 128×64) | <img src="sensors/OLED-0.96.jpg" width="150" style="min-width:150px"> | Ecran mic monocrom pe care ESP32 poate scrie text sau valori (ex. litera curentă din mesaj). Bareta de pini vine separat și trebuie lipită. Pini `GND` / `VDD` / `SCK` / `SDA`, `VDD` → 3V3. Pinii I2C obișnuiți (21, 22) sunt ocupați de LED-uri, deci `i2c:` cu `sda: GPIO27`, `scl: GPIO14`. ESPHome: `display: platform: ssd1306_i2c`, `model: SSD1306 128x64`, adresa `0x3C`. |
+| **SG90** (Micro Servo 9g)<br>Servomotor | <img src="sensors/SG90.jpg" width="199" style="min-width:199px"> | Un motoraș care se rotește la un unghi dat (0-180°), de exemplu un indicator sau o barieră. Fire: maro → GND, roșu → **VIN** (5V), portocaliu (semnal) → GPIO13. ESPHome: `output: platform: ledc` cu `frequency: 50 Hz` + `servo:`. Când pornește trage curent mai mult, deci alimentează placa dintr-un USB bun. |
 
 ## Fișiere de copiat
 
@@ -78,6 +89,5 @@ Pozele sunt la aceeași scară (aprox. 4 px = 1 mm, măsurat după pasul de 2.54
 | [dashboard/tv.yaml](dashboard/tv.yaml) | View-ul TV: telecomanda Sony (HW-489), codurile IR citite (HW-490), un cod oarecare de trimis și istoricul |
 | [automations/toggle-leds-button.yaml](automations/toggle-leds-button.yaml) | Butonul pornește/oprește mesajul, cu sunet |
 
-Pozele originale: `sensors/sensors-colection-1 (v2).jpeg`, `sensors/sensors-colection-2 (v2).jpeg`.
 Sursa codurilor HW: [Identifying Geekcreit modules from the 37-in-1 bundle](https://blog.renttalent.dk/2020/12/identifying-geekcriet-modules-from-37.html).
 <!--LLM_GENERATED_END-->
