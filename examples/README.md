@@ -76,7 +76,7 @@ Notă: device-ul a rămas înregistrat în API ca `esphome-web-3053a0`, deci ser
 
 ## 3. Cablare
 
-<img src="sensors/ESP32-DEVKITV1.jpg" width="160" alt="ESP32 DevKit V1"> <img src="sensors/terminal-adapter.jpeg" width="331" alt="Adaptor cu borne pentru ESP32 cu 30 de pini">
+<img src="componente/ESP32-DEVKITV1.jpg" width="160" alt="ESP32 DevKit V1"> <img src="componente/terminal-adapter.jpeg" width="331" alt="Adaptor cu borne pentru ESP32 cu 30 de pini">
 
 **Adaptorul cu borne** (*Terminal adapter for ESP32 30PIN*): placa se înfige în baretele negre din mijloc, iar firele modulelor se strâng în bornele cu șurub, fără breadboard. Etichetele bornelor sunt aceleași ca pe placă (inclusiv **RX2** = GPIO16 și **TX2** = GPIO17); are și borne pentru **3V3**, **GND** și **VIN**.
 
@@ -108,6 +108,10 @@ LED-urile RGB **HW-479** și **HW-478** sunt legate în paralel cu LED-urile ro�
 | HW-508 | Buzzer pasiv (PWM/melodii) | **D26** (GPIO26) | S + GND |
 | HW-490 | Receptor IR | **RX2** (GPIO16) | 3 pini: S / mijloc=VCC / −; `inverted: true` |
 | HW-489 | Emițător IR | **D4** (GPIO4) | `+` (la capăt) → 3V3; LED-ul e între `+` și S, deci `inverted: true` |
+| SR602 | PIR, mișcare | **D27** (GPIO27) | `+` → 3V3; `pulldown: true` |
+| HC-SR04 | Distanță ultrasunete | Trig **D13**, Echo **D14** | `Vcc` → 3V3, Echo direct; dacă nu merge, `Vcc` → VIN (5V) și Echo prin divizor 10k + 20k |
+| MQ-7 | Gaz CO (orientativ) | AO → **VP** (GPIO36) | `VCC` → VIN (5V); AO prin divizor 10k + 20k, `multiply: 1.5` |
+| SG90 | Servo | **D32** (GPIO32) | roșu → VIN (5V), maro → GND; ledc 50 Hz pe `channel: 2` |
 
 Diferența buzzere: conectat direct la 3V3+GND, **activul sună continuu**, pasivul tace (sau un "tic").
 

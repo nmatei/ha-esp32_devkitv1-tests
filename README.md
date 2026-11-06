@@ -97,7 +97,7 @@ Start/Stop, Mesaj and Progres; needs `button-card` and `card-mod` from HACS) and
 [examples/dashboard/dashboard-card.yaml](examples/dashboard/dashboard-card.yaml) (the settings).
 
 The full device setup (ESPHome, wiring, dashboard, automations), in Romanian:
-[examples/](examples/README.md); the sensors on the board: [examples/sensors.md](examples/sensors.md).
+[examples/](examples/README.md); the modules and parts on the board: [examples/componente.md](examples/componente.md).
 
 ## 🔁 Looping animations
 

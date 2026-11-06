@@ -72,7 +72,7 @@ prove the commands, not a fresh-clone install. `pytest.ini` limits a bare `pytes
 - `tests_ha/` — integration tests against a real HA core; lamps are `input_boolean`s.
 - `examples/` — `dashboard/dashboard-card.yaml` (Lovelace card: the settings) and `esphome-leds.yaml` (the
   device side: 5 GPIO binary lights), plus the whole board setup, in Romanian:
-  `sensors.md` (module inventory, crops in `sensors/`), `device-builder.yaml` (the whole board
+  `componente.md` (inventory of modules and parts, incl. resistors; photos in `componente/`), `device-builder.yaml` (the whole board
   config saved from the Device Builder, commented; the only full ESPHome example),
   `dashboard/dashboard-leds.yaml` (lamps, Start/Stop, Mesaj, Progres),
   `dashboard/dashboard-sensors.yaml`, `dashboard/dashboard-diagnostic.yaml` (WiFi diagnostics),
