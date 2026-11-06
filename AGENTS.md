@@ -76,7 +76,7 @@ prove the commands, not a fresh-clone install. `pytest.ini` limits a bare `pytes
   config saved from the Device Builder, commented; the only full ESPHome example),
   `dashboard/dashboard-leds.yaml` (lamps, Start/Stop, Mesaj, Progres),
   `dashboard/dashboard-sensors.yaml`, `dashboard/dashboard-diagnostic.yaml` (WiFi diagnostics),
-  `dashboard/tv.yaml` + `telecomanda-tv.svg` (a whole TV view: the Sony remote sent by HW-489, drawn as SVG under picture-elements hotspots like `tablou-led`, codes read by HW-490, a free-form code to send, history; same text format both ways), `dashboard/tablou-led.yaml` + `telecomanda-led.svg` (the 24-key NEC remote of the letter light box, drawn as SVG under picture-elements hotspots; code n = `NEC 0xEF00 0x(FF−n)(n)`), `automations/` (incl. `sunet-pauza.yaml`), and the setup notes
+  `dashboard/tv.yaml` + `telecomanda-tv.svg` (a whole TV view: the Sony remote sent by HW-489, drawn as SVG under picture-elements hotspots like `tablou-led`, codes read by HW-490, a free-form code to send, history; same text format both ways), `dashboard/tablou-led.yaml` + `telecomanda-led.svg` (the 24-key NEC remote of the letter light box, drawn as SVG under picture-elements hotspots; code n = `NEC 0xEF00 0x(FF−n)(n)`), `automations/` (incl. `sunet-pauza.yaml` and `senzor-parcare.yaml`: HC-SR04 starts / stops the message and sets Interval + Repetă după by distance; both loaded as they are by `tests_ha`), and the setup notes
   `examples/README.md` (it links the YAML files instead of copying them).
 
 ## Integrations

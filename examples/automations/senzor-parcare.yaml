@@ -1,0 +1,70 @@
+# Automatizare: „senzor de parcare” cu HC-SR04 (Distanta).
+# Sub 1 m pornește mesajul; cu cât te apropii, cu atât Interval și Repetă după scad, deci
+# mesajul se repetă tot mai repede. Peste 1,10 m (sau fără ecou) îl oprește, dacă rulează.
+# Settings → Automations → Create → ⋮ → Edit in YAML → lipește.
+# Se pornește / oprește din dashboard-ul senzori (dashboard/dashboard-sensors.yaml).
+#
+# - Senzorul raportează în metri, o dată pe secundă; fără ecou e `unknown` (= departe).
+# - Distanța se rotunjește din 5 în 5 cm (5, 10 … 100); valorile se schimbă doar când trece
+#   în altă treaptă: 5 cm → Interval 100 ms, Repetă după 100 ms; 1 m → 200 ms, 1000 ms;
+#   între ele, liniar (rotunjit la 10 ms).
+# - La o treaptă nouă, dacă mesajul rulează, e oprit și pornit din nou cu noile valori, ca ritmul
+#   să se schimbe imediat, nu abia după ce se termină toate literele.
+# - Între 1 m și 1,10 m nu face nimic (histerezis), altfel pe la 1 m ar porni / opri la fiecare citire.
+# - „Rulează” = atributul `state` al lui Progres e `playing` sau `waiting`.
+# - Merge cel mai bine cu un mesaj scurt (ex. o literă). La Litere colorate „Pauză între litere”
+#   (implicit 400 ms) e parte din Interval, deci aproape de senzor ritmul e dat mai ales de pauză:
+#   micșoreaz-o pentru un efect mai rapid.
+# Pragurile și valorile sunt în `variables`, ca să le reglezi.
+alias: ESP32 Senzor parcare LEDs
+description: HC-SR04 pornește mesajul sub 1 m și îl accelerează pe măsură ce te apropii
+triggers:
+  - trigger: state
+    entity_id: sensor.esphome_esp32_devkitv1_distanta_hc_sr04
+variables:
+  prag_start: 100 # cm: sub atât pornește
+  prag_stop: 110 # cm: peste atât oprește
+  treapta: 5 # cm
+  aproape: { cm: 5, interval: 100, repeta: 100 }
+  departe: { cm: 100, interval: 200, repeta: 1000 }
+  cm: "{{ states('sensor.esphome_esp32_devkitv1_distanta_hc_sr04') | float(999) * 100 }}"
+  ruleaza: "{{ state_attr('sensor.esp32_devkitv1_progres', 'state') in ['playing', 'waiting'] }}"
+  # distanța pe treaptă, între aproape.cm și departe.cm; f = 0 aproape … 1 departe
+  f: >-
+    {% set d = ((cm / treapta) | round | int) * treapta %}
+    {% set d = [[d, aproape.cm] | max, departe.cm] | min %}
+    {{ (d - aproape.cm) / (departe.cm - aproape.cm) }}
+  interval: "{{ ((aproape.interval + f * (departe.interval - aproape.interval)) / 10) | round | int * 10 }}"
+  repeta: "{{ ((aproape.repeta + f * (departe.repeta - aproape.repeta)) / 10) | round | int * 10 }}"
+  schimbat: >-
+    {{ states('number.esp32_devkitv1_interval') | float(0) != interval
+       or states('number.esp32_devkitv1_repeta_dupa') | float(0) != repeta }}
+actions:
+  - choose:
+      - conditions: "{{ cm < prag_start and (schimbat or not ruleaza) }}"
+        sequence:
+          - if: "{{ ruleaza }}"
+            then:
+              - action: button.press
+                target:
+                  entity_id: button.esp32_devkitv1_stop
+          - action: number.set_value
+            target:
+              entity_id: number.esp32_devkitv1_interval
+            data:
+              value: "{{ interval }}"
+          - action: number.set_value
+            target:
+              entity_id: number.esp32_devkitv1_repeta_dupa
+            data:
+              value: "{{ repeta }}"
+          - action: button.press
+            target:
+              entity_id: button.esp32_devkitv1_start
+      - conditions: "{{ cm > prag_stop and ruleaza }}"
+        sequence:
+          - action: button.press
+            target:
+              entity_id: button.esp32_devkitv1_stop
+mode: queued
+max: 2

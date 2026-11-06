@@ -249,6 +249,12 @@ Capcane evitate:
   se pornește / oprește din [dashboard-sensors.yaml](dashboard/dashboard-sensors.yaml).
   Pentru un sunet cât ține toată pauza: `binary_sensor.esp32_devkitv1_pauza` e `on` cât stau becurile
   stinse înaintea unei litere (cu pauza 0 rămâne `off`).
+- **Senzor de parcare** (HC-SR04): automatizarea
+  [automations/senzor-parcare.yaml](automations/senzor-parcare.yaml) apasă Start când te apropii sub
+  1 m și Stop când pleci peste 1,10 m (sau nu mai e ecou). Din 5 în 5 cm, cu cât ești mai aproape, cu
+  atât Interval și Repetă după sunt mai mici (1 m: 200 / 1000 ms … 5 cm: 100 / 100 ms); la fiecare
+  treaptă nouă mesajul e repornit, ca ritmul să se schimbe imediat. Merge cel mai bine cu un
+  mesaj scurt; se pornește / oprește din [dashboard-sensors.yaml](dashboard/dashboard-sensors.yaml).
 - **Morse**: se alege din `select.esp32_devkitv1_sunet_morse` — `Fără`, `Buzzer activ` (HW-512) sau
   `RTTTL` (HW-508). Îl face integrarea, nu o automatizare: sunetul pornește și se oprește în același
   moment cu becul, deci ține exact cât e becul aprins. RTTTL are nevoie de acțiunea `stop_rtttl` pe placă

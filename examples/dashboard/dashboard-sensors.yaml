@@ -14,3 +14,8 @@ entities:
     name: Sunet pauză între litere
   - entity: binary_sensor.esp32_devkitv1_pauza
     name: Pauză între litere
+  - entity: sensor.esphome_esp32_devkitv1_distanta_hc_sr04
+    name: Distanta (HC-SR04)
+  # automations/senzor-parcare.yaml: on/off pentru pornirea mesajului de la distanță
+  - entity: automation.esp32_senzor_parcare_leds
+    name: Senzor parcare

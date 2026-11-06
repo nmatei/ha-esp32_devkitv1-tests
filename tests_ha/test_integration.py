@@ -383,6 +383,59 @@ async def test_pause_sound_example_ticks_once_per_letter_even_without_a_gap(hass
     assert await hass.config_entries.async_unload(entry.entry_id)
 
 
+async def test_parking_sensor_example_starts_near_restarts_faster_per_5_cm_and_stops_far(hass):
+    """examples/automations/senzor-parcare.yaml, loaded as it is."""
+    entry = await _setup(hass, title="ESP32 devkitv1")
+    example = Path(__file__).parents[1] / "examples/automations/senzor-parcare.yaml"
+    assert await async_setup_component(hass, "automation", {"automation": [load_yaml(example)]})
+    await _call(hass, "text", "set_value", "text.esp32_devkitv1_mesaj", value="a")
+    distance = "sensor.esphome_esp32_devkitv1_distanta_hc_sr04"
+
+    def number(name):
+        return float(hass.states.get(f"number.esp32_devkitv1_{name}").state)
+
+    def running():
+        return hass.states.get("sensor.esp32_devkitv1_progres").attributes["state"] in (
+            "playing",
+            "waiting",
+        )
+
+    async def measure(value):
+        hass.states.async_set(distance, value)
+        await hass.async_block_till_done()
+        await asyncio.sleep(0.05)
+        await hass.async_block_till_done()
+
+    await measure("0.30")
+    assert (number("interval"), number("repeta_dupa")) == (130, 340)
+    assert running()
+    task = entry.runtime_data._task
+
+    await measure("0.31")  # the same 5 cm step: left playing as it is
+    assert entry.runtime_data._task is task
+
+    await measure("0.10")  # a closer step: restarted at once with the faster values
+    assert (number("interval"), number("repeta_dupa")) == (110, 150)
+    assert running()
+    assert entry.runtime_data._task is not task
+
+    await measure("0.02")  # under 5 cm counts as 5 cm
+    assert (number("interval"), number("repeta_dupa")) == (100, 100)
+
+    await measure("1.05")  # between the thresholds: nothing changes
+    assert running()
+    assert number("interval") == 100
+
+    await measure("1.50")
+    assert hass.states.get("sensor.esp32_devkitv1_progres").state == "oprit"
+
+    await measure("0.20")
+    assert running()
+    await measure("unknown")  # no echo = nothing in front
+    assert hass.states.get("sensor.esp32_devkitv1_progres").state == "oprit"
+    assert await hass.config_entries.async_unload(entry.entry_id)
+
+
 async def test_morse_plays_silently_when_the_rtttl_stop_action_is_missing(hass, caplog):
     """Firmware not reinstalled with stop_rtttl: no tone that can't be stopped, no failure."""
     calls = []
