@@ -1,7 +1,7 @@
 # ESPHome: configurația completă a plăcii ESP32 DevKit V1, salvată din Device Builder.
 # Pe o placă nouă: păstrează secțiunile generate la ADOPT (esphome:, esp32:, api: cu cheia
 # de criptare, ota:, wifi:) și adaugă restul de aici; unește blocurile api: și wifi:.
-# Parolele sunt !secret (secrets.yaml din Device Builder). Cablare și explicații: README.md, sensors.md.
+# Parolele sunt !secret (secrets.yaml din Device Builder). Cablare și explicații: README.md, componente.md.
 esphome:
   name: esphome-web-3053a0
   friendly_name: esphome-web-3053a0
@@ -87,6 +87,16 @@ binary_sensor:
     filters:
       - delayed_on: 10ms    # debounce
       - delayed_off: 10ms
+  # PIR SR602: OUT e 3.3V cât timp vede mișcare (+ câteva secunde după).
+  # pulldown: fără modul legat, pinul nu plutește (nu apar mișcări false)
+  - platform: gpio
+    pin:
+      number: GPIO27
+      mode:
+        input: true
+        pulldown: true
+    name: "Miscare (SR602)"
+    device_class: motion
 
 sensor:
   # Lumina - ramane cum era
@@ -117,6 +127,21 @@ sensor:
       reference_temperature: 25°C
       reference_resistance: 10kOhm
     name: "Temperatura (HW-498)"
+
+  # Distanța, HC-SR04: Vcc pe 3V3 și Echo direct pe GPIO14; dacă nu merge la 3.3V, Vcc pe VIN (5V)
+  # și Echo NUMAI prin divizor (10k + 20k) spre GPIO14. Vezi componente.md.
+  # Fără ecou (nimic în față sau prea departe) valoarea e „necunoscut”.
+  - platform: ultrasonic
+    trigger_pin: GPIO13
+    echo_pin: GPIO14
+    name: "Distanta (HC-SR04)"
+    update_interval: 1s
+    timeout: 4m
+    accuracy_decimals: 2
+    filters:
+      - median:
+          window_size: 5
+          send_every: 1
 
   # Diagnostic: semnalul și de cât timp merge placa fără repornire
   - platform: wifi_signal
@@ -164,9 +189,25 @@ output:
     pin: GPIO18
     id: out_alb
   # Buzzer pasiv - cu suport de melodii
+  # Canalele ledc 0+1, 2+3 ... împart același timer: buzzerul pe 0 și servo-ul pe 2,
+  # altfel fiecare notă RTTTL ar schimba și frecvența servo-ului (50 Hz).
   - platform: ledc
     pin: GPIO26
     id: buzzer_pasiv
+    channel: 0
+  # Servo SG90: semnalul (firul portocaliu) pe GPIO32, 50 Hz
+  - platform: ledc
+    pin: GPIO32
+    id: servo_pwm
+    frequency: 50 Hz
+    channel: 2
+
+servo:
+  - id: servo_sg90
+    output: servo_pwm
+    # după 1 s fără comandă oprește impulsurile: servo-ul nu mai bâzâie și nu trage curent
+    auto_detach_time: 1s
+    # dacă nu ajunge la 0° / 180°: min_level: 2.5%, max_level: 12.5%
 
 rtttl:
   output: buzzer_pasiv
@@ -261,6 +302,23 @@ remote_transmitter:
     number: GPIO4
     inverted: true
   carrier_duty_percent: 50%
+
+# unghiul servo-ului SG90, din HA (0-180°)
+number:
+  - platform: template
+    name: "Servo (SG90)"
+    icon: "mdi:rotate-right"
+    unit_of_measurement: "°"
+    min_value: 0
+    max_value: 180
+    step: 5
+    optimistic: true
+    restore_value: true
+    initial_value: 90
+    set_action:
+      - servo.write:
+          id: servo_sg90
+          level: !lambda "return x / 90.0 - 1.0;"  # 0° → -1, 90° → 0, 180° → 1
 
 # codul de trimis, scris din HA (se păstrează după repornire)
 text:
