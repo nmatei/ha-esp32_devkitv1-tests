@@ -110,7 +110,6 @@ LED-urile RGB **HW-479** și **HW-478** sunt legate în paralel cu LED-urile ro�
 | HW-489 | Emițător IR | **D4** (GPIO4) | `+` (la capăt) → 3V3; LED-ul e între `+` și S, deci `inverted: true` |
 | SR602 | PIR, mișcare | **D27** (GPIO27) | `+` → 3V3; `pulldown: true` |
 | HC-SR04 | Distanță ultrasunete | Trig **D13**, Echo **D14** | `Vcc` → 3V3, Echo direct; dacă nu merge, `Vcc` → VIN (5V) și Echo prin divizor 10k + 20k |
-| MQ-7 | Gaz CO (orientativ) | AO → **VP** (GPIO36) | `VCC` → VIN (5V); AO prin divizor 10k + 20k, `multiply: 1.5` |
 | SG90 | Servo | **D32** (GPIO32) | roșu → VIN (5V), maro → GND; ledc 50 Hz pe `channel: 2` |
 
 Diferența buzzere: conectat direct la 3V3+GND, **activul sună continuu**, pasivul tace (sau un "tic").

@@ -1,5 +1,5 @@
 <!--LLM_GENERATED_START-->
-# Componente pentru ESP32 DevKit V1
+# 🧰 Componente pentru ESP32 DevKit V1
 
 Inventarul pieselor din cutie (senzori, module, rezistențe): ce face fiecare și cum
 s-ar lega la placă, ca să alegi ce conectezi mai departe. Povestea completă a setup-ului (ESPHome, cablare,
@@ -9,7 +9,7 @@ depanare) e în [README.md](README.md).
 
 **Adaptorul cu borne** (*Terminal adapter for ESP32 30PIN*): placa se înfige în baretele negre din mijloc, iar firele modulelor se strâng în bornele cu șurub, fără breadboard. Etichetele bornelor sunt aceleași ca pe placă (inclusiv **RX2** = GPIO16 și **TX2** = GPIO17); are și borne pentru **3V3**, **GND** și **VIN**.
 
-## Reguli de legare (pe scurt)
+## 🔌 Reguli de legare (pe scurt)
 
 - Alimentează modulele din **3V3** + **GND**, nu din VIN (5V): ieșirea lor ar putea
   depăși 3.3V și ar arde pinul. Pinii GPIO nu suportă 5V.
@@ -21,9 +21,10 @@ depanare) e în [README.md](README.md).
   de tensiune (ex. 10 kΩ + 20 kΩ) între ieșirea lor și pinul GPIO.
 
 **Pini ocupați acum:** 2, 18, 19, 21, 22, 23 (LED-uri; pe 19, 21, 22 sunt și LED-urile RGB), 25, 26 (buzzere), 33 (buton),
-34, 35, 36 (senzori analogici; 36 = MQ-7), 4, 16 (emițător și receptor IR), 13, 14 (HC-SR04),
+34, 35 (senzori analogici), 4, 16 (emițător și receptor IR), 13, 14 (HC-SR04),
 27 (PIR SR602), 32 (servo SG90).
-**Încă liberi și siguri:** 5, 17 (marcat TX2 pe placă) (intrare/ieșire), 39 (doar intrare, analogic).
+**Încă liberi și siguri:** 5, 17 (marcat TX2 pe placă) (intrare/ieșire), 36 (VP; propus pentru MQ-7), 39 (VN)
+(doar intrare, analogic).
 
 Pe modulele negre cu 3 pini, `S` = semnal, `+` = 3V3, `−` = GND. Pe modulele roșii cu
 4 pini: `A0` = ieșire analogică, `G` = GND, `+` = 3V3, `D0` = ieșire digitală (prag
@@ -33,7 +34,7 @@ Codurile HW-xxx sunt cele tipărite pe plăcuțe. Numele și echivalentul KY-0xx
 lista kitului Geekcreit de 37 de module (sursă mai jos). Nu sunt un standard: unde
 nu sunt sigur, scrie *(de verificat)*.
 
-## Toate modulele
+## 📦 Toate modulele
 
 Cele marcate ✅ sunt deja legate. Configurația lor ESPHome e în
 [device-builder.yaml](device-builder.yaml). Pinii propuși pentru celelalte sunt doar o
@@ -71,13 +72,13 @@ Pozele sunt la aceeași scară (aprox. 4 px = 1 mm, măsurat după pasul de 2.54
 | **HW-495** (KY-020 *(de verificat)*)<br>Comutator de înclinare cu bilă | <img src="componente/HW-495.jpg" width="106" style="min-width:106px"> | O bilă într-un tub care închide contactul când modulul e înclinat într-o parte. Pini `−` / `+` / `S`. `S` → GPIO27 (`binary_sensor`, `pullup: true`, cu debounce). |
 | **HW-501** (KY-017 *(de verificat)*)<br>Comutator de înclinare (capsula albastră) cu LED | <img src="componente/HW-501.jpg" width="105" style="min-width:105px"> | Capsula albastră închide contactul când e înclinată; LED-ul de pe plăcuță arată starea. Pini `−` / `+` / `S`. `S` → GPIO27 (`binary_sensor`). |
 | ✅ **SR602**<br>Senzor PIR mini, detecție mișcare | <img src="componente/SR602.jpg" width="86" style="min-width:86px"> | Simte mișcarea unui om (căldură în mișcare), până la câțiva metri. **Legat:** `OUT` → **D27** (GPIO27), `+` → 3V3, `−` → GND. ESPHome: `binary_sensor` cu `device_class: motion` și `pulldown: true`. Ieșirea rămâne activă câteva secunde după ultima mișcare. După alimentare are nevoie de ~30 s să se stabilizeze. |
-| ✅ **HC-SR04**<br>Senzor de distanță cu ultrasunete | <img src="componente/HC-SR04.jpg" width="189" style="min-width:189px"> | Trimite un sunet de 40 kHz și măsoară ecoul: distanța de la 2 cm la ~4 m. **Legat:** `Trig` → **D13** (GPIO13), `Echo` → **D14** (GPIO14), `Gnd` → GND. Întâi încearcă `Vcc` → **3V3**, cu `Echo` direct pe D14, fără rezistențe (variantele noi merg și la 3.3V). Dacă distanța rămâne „necunoscut” sau sare aiurea, mută `Vcc` pe **VIN** (5V), dar **numai cu divizor** pe `Echo`: `Echo` → 10 kΩ → D14, și din D14 20 kΩ → GND (sau 270 Ω + 2 × 220 Ω, vezi [Rezistențe](#rezistențe)). Pe VIN fără divizor, ecoul de 5V arde pinul. ESPHome: `sensor: platform: ultrasonic`, în metri, cu filtru median. *(De verificat: plăcuța scrie `Trig_RX_SCL_I/O` și `Echo_TX_SDA`, deci e o variantă nouă care poate și UART/I2C; implicit merge ca HC-SR04 clasic.)* |
+| ✅ **HC-SR04**<br>Senzor de distanță cu ultrasunete | <img src="componente/HC-SR04.jpg" width="189" style="min-width:189px"> | Trimite un sunet de 40 kHz și măsoară ecoul: distanța de la 2 cm la ~4 m. **Legat:** `Trig` → **D13** (GPIO13), `Echo` → **D14** (GPIO14), `Gnd` → GND. Întâi încearcă `Vcc` → **3V3**, cu `Echo` direct pe D14, fără rezistențe (variantele noi merg și la 3.3V). Dacă distanța rămâne „necunoscut” sau sare aiurea, mută `Vcc` pe **VIN** (5V), dar **numai cu divizor** pe `Echo`: `Echo` → 10 kΩ → D14, și din D14 20 kΩ → GND (sau 270 Ω + 2 × 220 Ω, vezi [Rezistențe](#-rezistențe)). Pe VIN fără divizor, ecoul de 5V arde pinul. ESPHome: `sensor: platform: ultrasonic`, în metri, cu filtru median. *(De verificat: plăcuța scrie `Trig_RX_SCL_I/O` și `Echo_TX_SDA`, deci e o variantă nouă care poate și UART/I2C; implicit merge ca HC-SR04 clasic.)* |
 | **MQ-135**<br>Senzor de calitate a aerului (gaze) | <img src="componente/MQ-135.jpg" width="158" style="min-width:158px"> | Rezistența scade în prezența gazelor (amoniac, NOx, fum, benzen, CO2 doar orientativ). Pini `VCC` / `GND` / `DO` / `AO`. Încălzitorul are nevoie de **5V** (`VCC` → VIN, ~150 mA) și de câteva minute de încălzire (prima dată chiar ore). `AO` → GPIO32 **prin divizor** (`sensor: platform: adc`, valoare brută, necalibrată), `DO` → GPIO27 tot prin divizor (prag reglat din potențiometru). |
-| ✅ **MQ-7**<br>Senzor de monoxid de carbon (CO) | <img src="componente/MQ-7.jpg" width="160" style="min-width:160px"> | Același fel de modul ca MQ-135, sensibil la CO. **Legat:** `VCC` → **VIN** (5V), `GND` → GND, `AO` → 10 kΩ → **VP** (GPIO36), și din VP 20 kΩ → GND (divizor), `DO` neconectat (pragul se face în HA). ESPHome: `adc` cu `multiply: 1.5`, dă tensiunea de pe `AO` (0-5V, mai mare = mai mult CO). Se încălzește: lasă-l câteva minute înainte să te uiți la valoare. Datasheet-ul cere încălzirea în cicluri 5V / 1.4V, iar modulul ține 5V constant, deci valoarea e doar orientativă: **nu ține loc de detector de CO pentru siguranță**. |
+| **MQ-7**<br>Senzor de monoxid de carbon (CO) | <img src="componente/MQ-7.jpg" width="160" style="min-width:160px"> | Același fel de modul ca MQ-135, sensibil la CO. Legături propuse: `VCC` → **VIN** (5V), `GND` → GND, `AO` → 10 kΩ → **VP** (GPIO36), și din VP 20 kΩ (sau 2 × 10 kΩ) → GND (divizor, obligatoriu), `DO` neconectat. ESPHome propus: `sensor: platform: adc`, `pin: GPIO36`, `attenuation: 12db`, `filters: multiply: 1.5` (tensiunea de pe `AO`, 0-5V, mai mare = mai mult CO). Se încălzește: lasă-l câteva minute înainte să te uiți la valoare. Datasheet-ul cere încălzirea în cicluri 5V / 1.4V, iar modulul ține 5V constant, deci valoarea e doar orientativă: **nu ține loc de detector de CO pentru siguranță**. |
 | **Display OLED 0.96"**, interfață I2C<br>(SSD1306, 128×64) | <img src="componente/OLED-0.96.jpg" width="150" style="min-width:150px"> | Ecran mic monocrom pe care ESP32 poate scrie text sau valori (ex. litera curentă din mesaj). Bareta de pini vine separat și trebuie lipită. Pini `GND` / `VDD` / `SCK` / `SDA`, `VDD` → 3V3. Pinii I2C obișnuiți (21, 22) sunt ocupați de LED-uri, deci `i2c:` cu `sda: GPIO27`, `scl: GPIO14`. ESPHome: `display: platform: ssd1306_i2c`, `model: SSD1306 128x64`, adresa `0x3C`. |
 | ✅ **SG90** (Micro Servo 9g)<br>Servomotor | <img src="componente/SG90.jpg" width="199" style="min-width:199px"> | Un motoraș care se rotește la un unghi dat (0-180°), de exemplu un indicator sau o barieră. **Legat:** maro → GND, roșu → **VIN** (5V), portocaliu (semnal) → **D32** (GPIO32). ESPHome: `output: platform: ledc` cu `frequency: 50 Hz` și `channel: 2` (alt timer decât buzzerul pasiv) + `servo:`; unghiul se dă din HA cu numărul „Servo (SG90)”. Când pornește trage curent mai mult, deci alimentează placa dintr-un USB bun. |
 
-## Rezistențe
+## 🌈 Rezistențe
 
 <img src="componente/placa-leduri-cu-rezistente.jpeg" width="500" alt="Breadboard cu cele 5 LED-uri și rezistențele lor">
 
@@ -93,7 +94,7 @@ Se citesc dinspre capătul opus benzii maro de toleranță, care e puțin mai de
 
 **De ce două valori:** un LED „mănâncă” o tensiune fixă, *Vf*: ~2V roșu și galben,
 ~3V albastru, verde și alb. Rezistența primește restul, iar curentul e
-`I = (U − Vf) / R`. Valorile sunt alese pentru **5V**, ca LED-urile să ia ~10 mA:
+`I = (U − Vf) / R`. Valorile sunt alese pentru **5V**, cum erau alimentate LED-urile înainte, și pentru 5V sunt corecte: LED-urile iau ~10 mA.
 
 | LED-uri | Vf | R | la 5V | la 3.3V (pin GPIO) |
 |---|---|---|---|---|
@@ -103,8 +104,8 @@ Se citesc dinspre capătul opus benzii maro de toleranță, care e puțin mai de
 **La 3.3V, adică așa cum sunt legate acum:** pinii ESP32 scot doar 3.3V, deci LED-urile
 merg pe coloana din dreapta. Nu se strică nimic, doar luminează mai slab. Albastrul,
 verdele și albul rămân cu doar ~0.3V peste Vf, de aceea sunt cele mai slabe. Ca să fie mai
-luminoase la 3.3V, pune rezistențe mai mici: **100 Ω** dă ~13 mA la roșu/galben și ~3 mA la
-albastru/verde/alb. Nu coborî sub ~47 Ω.
+luminoase la 3.3V, pune rezistențe mai mici: **150 Ω** la galben și roșu, **47 Ω** la albastru,
+verde și alb (vezi [De cumpărat](#-de-cumpărat)). Nu coborî sub 47 Ω.
 
 **La 5V** ajung doar dacă un LED e alimentat din VIN, nu dintr-un pin GPIO. Așa ar sta
 mereu aprins și n-ar mai putea fi comandat, decât printr-un tranzistor.
@@ -116,7 +117,27 @@ mereu aprins și n-ar mai putea fi comandat, decât printr-un tranzistor.
 - **MQ-7, `AO`:** **nu**. Un divizor atât de mic „încarcă” ieșirea senzorului, iar valoarea
   iese greșită. Pentru MQ-7 trebuie 10 kΩ + 20 kΩ, pe care se bazează și `multiply: 1.5`.
 
-## Fișiere de copiat
+### 🛒 De cumpărat
+
+Desenate cu benzile reale, ca cele de mai sus (peliculă metalică, 5 benzi, ±1%). În magazin
+caută, de exemplu, „rezistență 10k 1/4W”. Variantele cu 4 benzi (±5%, corp bej) merg la fel.
+
+| Valoare | Cum arată | Pentru | Câte | Benzi (5, ±1%) | Benzi (4, ±5%) |
+|---|---|---|---|---|---|
+| **10 kΩ** | <img src="componente/rezistenta-10k.svg" width="156" alt="Rezistență 10 kΩ"> | divizorul de pe `AO` la MQ-7 și MQ-135: una sus, două în serie jos (= 20 kΩ) | **6** (3 / senzor) | maro, negru, negru, roșu, **maro** | maro, negru, portocaliu, auriu |
+| **150 Ω** | <img src="componente/rezistenta-150.svg" width="156" alt="Rezistență 150 Ω"> | LED galben și roșu la 3.3V: ~8 mA în loc de ~5 mA | **2** | maro, verde, negru, negru, **maro** | maro, verde, maro, auriu |
+| **47 Ω** | <img src="componente/rezistenta-47.svg" width="156" alt="Rezistență 47 Ω"> | LED albastru, verde și alb la 3.3V: ~5-8 mA în loc de ~1.4 mA | **3** | galben, violet, negru, **auriu**, **maro** | galben, violet, negru, auriu |
+| *20 kΩ* | <img src="componente/rezistenta-20k.svg" width="156" alt="Rezistență 20 kΩ"> | *în loc de 2 × 10 kΩ, jos în divizor (se găsește mai greu)* | *opțional* | roșu, negru, negru, roșu, **maro** | roșu, negru, portocaliu, auriu |
+
+**LED-uri la 3.3V:** cu 270 Ω / 220 Ω nu se strică nimic, LED-urile doar luminează slab.
+150 Ω și 47 Ω sunt doar ca să lumineze mai tare.
+- La albastru, verde și alb rămân doar ~0.3V peste Vf, deci curentul depinde mult de
+  LED-ul exact. Pinul scade și el puțin sub sarcină, așa că vor fi tot ceva mai slabe decât
+  la 5V. Verdele mare poate fi și verde-gălbui (Vf ~2.2V); dacă e prea tare cu 47 Ω, pune-i
+  150 Ω, ca la galben.
+- Toate valorile țin curentul sub ~10 mA pe pin, departe de limita ESP32 (~20 mA recomandat).
+
+## 📄 Fișiere de copiat
 
 | Fișier | Ce e |
 |---|---|
