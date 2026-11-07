@@ -4,7 +4,7 @@
 # Settings → Automations → Create → ⋮ → Edit in YAML → lipește.
 # Se pornește / oprește din dashboard-ul senzori (dashboard/dashboard-sensors.yaml).
 #
-# - Senzorul raportează în metri, o dată pe secundă; fără ecou e `unknown` (= departe).
+# - Senzorul raportează în metri, la 200 ms (device-builder.yaml); fără ecou e `unknown` (= departe).
 # - Distanța se rotunjește din 5 în 5 cm (5, 10 … 100); valorile se schimbă doar când trece
 #   în altă treaptă: 5 cm → Interval 100 ms, Repetă după 100 ms; 1 m → 200 ms, 1000 ms;
 #   între ele, liniar (rotunjit la 10 ms).

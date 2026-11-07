@@ -15,6 +15,9 @@ esp32:
 
 # Enable logging
 logger:
+  logs:
+    # HC-SR04 măsoară la 200 ms: fără asta, fiecare citire brută („Got distance: 1.234 m”) e în log
+    ultrasonic.sensor: INFO
 
 # Enable Home Assistant API
 api:
@@ -131,17 +134,22 @@ sensor:
   # Distanța, HC-SR04: Vcc pe 3V3 și Echo direct pe GPIO14; dacă nu merge la 3.3V, Vcc pe VIN (5V)
   # și Echo NUMAI prin divizor (10k + 20k) spre GPIO14. Vezi componente.md.
   # Fără ecou (nimic în față sau prea departe) valoarea e „necunoscut”.
+  # 200 ms + median pe 3 citiri: reacționează în ~0,4 s (pentru senzor-parcare.yaml); median
+  # pe 5 la 1 s întârzia 2–3 s. HC-SR04 cere minim ~60 ms între măsurători, deci nu sub 100 ms.
   - platform: ultrasonic
     trigger_pin: GPIO13
     echo_pin: GPIO14
     name: "Distanta (HC-SR04)"
-    update_interval: 1s
+    update_interval: 200ms
     timeout: 4m
     accuracy_decimals: 2
     filters:
       - median:
-          window_size: 5
+          window_size: 3
           send_every: 1
+      # 2 zecimale (cm) de la început, și trimite doar când se schimbă: 1.23 → 1.23 nu mai pleacă
+      - round: 2
+      - delta: 0.005 # după round, orice schimbare reală e ≥ 0.01
 
   # Diagnostic: semnalul și de cât timp merge placa fără repornire
   - platform: wifi_signal
