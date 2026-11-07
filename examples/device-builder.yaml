@@ -108,6 +108,11 @@ sensor:
     name: "Senzor Lumina (HW-486)"
     attenuation: 12db
     update_interval: 2s
+    # o zecimală e destul pentru lumină; trimite doar când se schimbă (2.1 → 2.1 nu mai pleacă)
+    accuracy_decimals: 1
+    filters:
+      - round: 1
+      - delta: 0.05 # după round, orice schimbare reală e ≥ 0.1
 
   # Temperatura - lantul de 3 pasi
   - platform: adc
