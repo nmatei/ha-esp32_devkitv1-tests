@@ -101,3 +101,64 @@ def test_no_gap_means_no_pause_signal():
 
     asyncio.run(play(encode("AB"), 0.3, set_lights, progress.append, sleep, gap=0))
     assert not any(p.pause for p in progress)
+
+
+def _run_live(message, settings, changes, gap=True):
+    """Plays on a fake clock; ``changes`` maps a time to settings that change then.
+
+    The fake sleep wakes up early at each change, as the controller does.
+    Returns [(time, bits)] of every lamp switch.
+    """
+    now = [0.0]
+    log = []
+    pending = sorted(changes.items())
+
+    async def set_lights(bits):
+        log.append((round(now[0], 3), bits))
+
+    async def sleep(seconds):
+        end = now[0] + seconds
+        if pending and pending[0][0] < end:
+            at, change = pending.pop(0)
+            now[0] = at
+            settings.update(change)
+        else:
+            now[0] = end
+
+    asyncio.run(
+        play(
+            encode(message),
+            lambda: settings["interval"],
+            set_lights,
+            lambda p: None,
+            sleep,
+            gap=(lambda: settings["gap"]) if gap else 0,
+            clock=lambda: now[0],
+        )
+    )
+    return log
+
+
+def test_a_shorter_interval_ends_the_letter_that_is_playing_at_once():
+    a, b = encode("AB")
+    log = _run_live("AB", {"interval": 5, "gap": 0}, {1: {"interval": 2}})
+    assert log == [(0, a.bits), (2, b.bits), (4, OFF)]
+
+
+def test_an_interval_already_passed_ends_the_letter_immediately():
+    a, b = encode("AB")
+    log = _run_live("AB", {"interval": 5, "gap": 0}, {3: {"interval": 1}})
+    assert log == [(0, a.bits), (3, b.bits), (4, OFF)]
+
+
+def test_a_longer_interval_extends_the_letter_that_is_playing():
+    a, b = encode("AB")
+    log = _run_live("AB", {"interval": 2, "gap": 0}, {1: {"interval": 3}})
+    assert log == [(0, a.bits), (3, b.bits), (6, OFF)]
+
+
+def test_a_shorter_gap_ends_the_dark_pause_at_once():
+    a = encode("A")[0]
+    log = _run_live("A", {"interval": 5, "gap": 2}, {0.5: {"gap": 1}})
+    # dark until 1 (not 2), then lit for interval - gap = 4
+    assert log == [(0, OFF), (1, a.bits), (5, OFF)]

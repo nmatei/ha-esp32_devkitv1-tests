@@ -383,7 +383,40 @@ async def test_pause_sound_example_ticks_once_per_letter_even_without_a_gap(hass
     assert await hass.config_entries.async_unload(entry.entry_id)
 
 
-async def test_parking_sensor_example_starts_near_restarts_faster_per_5_cm_and_stops_far(hass):
+async def test_a_shorter_interval_re_times_the_letter_that_is_playing(hass):
+    entry = await _setup(hass)
+    await _call(hass, "number", "set_value", "number.test_pauza_intre_litere", value=0)
+    await _call(hass, "number", "set_value", "number.test_interval", value=5000)
+    await _call(hass, "text", "set_value", "text.test_mesaj", value="ab")
+    await _call(hass, "button", "press", "button.test_start")
+    await asyncio.sleep(0.2)
+    first = _lamps(hass)
+    await _call(hass, "number", "set_value", "number.test_interval", value=300)
+    await asyncio.sleep(0.25)  # 0.45 s in: past the new 0.3 s, long before 5 s
+    await hass.async_block_till_done()
+    assert _lamps(hass) != first
+    assert hass.states.get("sensor.test_progres").state.startswith("2 / 2")
+    assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_a_shorter_repeat_ends_the_pause_before_the_next_repetition(hass):
+    entry = await _setup(hass)
+    await _call(hass, "number", "set_value", "number.test_pauza_intre_litere", value=0)
+    await _call(hass, "number", "set_value", "number.test_interval", value=100)
+    await _call(hass, "number", "set_value", "number.test_repeta_dupa", value=60000)
+    await _call(hass, "text", "set_value", "text.test_mesaj", value="a")
+    await _call(hass, "button", "press", "button.test_start")
+    await asyncio.sleep(0.3)
+    await hass.async_block_till_done()
+    assert entry.runtime_data.progress.state == "waiting"
+    await _call(hass, "number", "set_value", "number.test_repeta_dupa", value=100)
+    await asyncio.sleep(0.05)  # waited 0.2 s already: the 0.1 s pause is over
+    await hass.async_block_till_done()
+    assert entry.runtime_data.progress.state == "playing"
+    assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_parking_sensor_example_starts_near_speeds_up_per_5_cm_without_restart_and_stops_far(hass):
     """examples/automations/senzor-parcare.yaml, loaded as it is."""
     entry = await _setup(hass, title="ESP32 devkitv1")
     example = Path(__file__).parents[1] / "examples/automations/senzor-parcare.yaml"
@@ -414,10 +447,10 @@ async def test_parking_sensor_example_starts_near_restarts_faster_per_5_cm_and_s
     await measure("0.31")  # the same 5 cm step: left playing as it is
     assert entry.runtime_data._task is task
 
-    await measure("0.10")  # a closer step: restarted at once with the faster values
+    await measure("0.10")  # a closer step: faster, the same playback (no Stop / Start)
     assert (number("interval"), number("repeta_dupa")) == (110, 150)
     assert running()
-    assert entry.runtime_data._task is not task
+    assert entry.runtime_data._task is task
 
     await measure("0.02")  # under 5 cm counts as 5 cm
     assert (number("interval"), number("repeta_dupa")) == (100, 100)

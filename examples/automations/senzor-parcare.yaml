@@ -8,8 +8,9 @@
 # - Distanța se rotunjește din 5 în 5 cm (5, 10 … 100); valorile se schimbă doar când trece
 #   în altă treaptă: 5 cm → Interval 100 ms, Repetă după 100 ms; 1 m → 200 ms, 1000 ms;
 #   între ele, liniar (rotunjit la 10 ms).
-# - La o treaptă nouă, dacă mesajul rulează, e oprit și pornit din nou cu noile valori, ca ritmul
-#   să se schimbe imediat, nu abia după ce se termină toate literele.
+# - La o treaptă nouă se schimbă doar Interval și Repetă după: integrarea le aplică imediat, chiar
+#   în mijlocul unei litere sau al pauzei de repetare, deci ritmul trece lin, fără Stop / Start.
+#   Start se apasă numai când mesajul nu rulează (Start l-ar lua de la capăt).
 # - Între 1 m și 1,10 m nu face nimic (histerezis), altfel pe la 1 m ar porni / opri la fiecare citire.
 # - „Rulează” = atributul `state` al lui Progres e `playing` sau `waiting`.
 # - Merge cel mai bine cu un mesaj scurt (ex. o literă). La Litere colorate „Pauză între litere”
@@ -43,11 +44,6 @@ actions:
   - choose:
       - conditions: "{{ cm < prag_start and (schimbat or not ruleaza) }}"
         sequence:
-          - if: "{{ ruleaza }}"
-            then:
-              - action: button.press
-                target:
-                  entity_id: button.esp32_devkitv1_stop
           - action: number.set_value
             target:
               entity_id: number.esp32_devkitv1_interval
@@ -58,9 +54,11 @@ actions:
               entity_id: number.esp32_devkitv1_repeta_dupa
             data:
               value: "{{ repeta }}"
-          - action: button.press
-            target:
-              entity_id: button.esp32_devkitv1_start
+          - if: "{{ not ruleaza }}"
+            then:
+              - action: button.press
+                target:
+                  entity_id: button.esp32_devkitv1_start
       - conditions: "{{ cm > prag_stop and ruleaza }}"
         sequence:
           - action: button.press

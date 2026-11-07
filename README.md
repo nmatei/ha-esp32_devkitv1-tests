@@ -85,7 +85,7 @@ One device per entry, with:
 | `select.<name>_culoare_morse`   | Morse: the lamp (`galben` … `alb`, wire 1 … 5)    |
 | `select.<name>_sunet_morse`     | Morse sound, exactly as long as the lamp is lit: `Fără` (none, default), `Buzzer activ` (a switch on/off with the lamp), `RTTTL` (a long tone started on lit, stopped on dark). The buzzer and the two RTTTL actions (`play_rtttl` with `song_str`, `stop_rtttl`) are set in the integration options. |
 | `number.<name>_pauza_intre_litere` | colored letters: ms all lamps stay dark before each letter, 0–5000, step 10, default 400. **0 = no dark gap** (smooth, fast animations; two equal letters in a row then look like one). |
-| `number.<name>_repeta_dupa`     | ms, 0–3600000, step 10: **0 = play once**; above 0 the message starts again after that pause, forever, until Stop (or until set back to 0). Each repetition reads the settings again, so they can be changed while it repeats. |
+| `number.<name>_repeta_dupa`     | ms, 0–3600000, step 10: **0 = play once**; above 0 the message starts again after that pause, forever, until Stop (or until set back to 0). Each repetition reads the message and the type again; Interval, Pauză între litere and Repetă după apply at once, even in the middle of a letter or of this pause. |
 | `binary_sensor.<name>_pauza`   | colored letters: `on` while all lamps are dark before a letter (Pauză între litere), to react to it (stays `off` with Pauză între litere = 0). For a sound on every letter, gap or not, see [sunet-pauza.yaml](examples/automations/sunet-pauza.yaml) |
 | `button.<name>_start`           | plays from the beginning (restarts if running)    |
 | `button.<name>_stop`            | stops and turns all lamps off                     |

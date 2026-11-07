@@ -26,6 +26,10 @@ from .morse import (
 )
 
 SetLights = Callable[[tuple[bool, ...]], Awaitable[None]]
+Seconds = float | Callable[[], float]
+"""A duration, or a getter re-read at every wait, so a change applies at once."""
+
+_EPSILON = 1e-9  # float noise left over after a fake clock adds up the waits
 
 
 @dataclass(frozen=True)
@@ -44,13 +48,46 @@ def hold_time(interval: float, gap: float = GAP) -> float:
     return max(interval - gap, MIN_HOLD)
 
 
+def _live(value: Seconds) -> Callable[[], float]:
+    return value if callable(value) else lambda: value
+
+
+class _Waiter:
+    """Waits until a deadline that is re-read every time ``sleep`` returns.
+
+    ``sleep`` may return early (the controller wakes it up when a setting
+    changes); the deadline is then recomputed from the new settings, so a
+    shorter interval ends the current wait at once and a longer one extends it.
+    Without a ``clock`` the time is counted from the sleeps themselves.
+    """
+
+    def __init__(
+        self,
+        sleep: Callable[[float], Awaitable[None]],
+        clock: Callable[[], float] | None,
+    ) -> None:
+        self._sleep = sleep
+        self._clock = clock
+        self._virtual = 0.0
+
+    def now(self) -> float:
+        return self._clock() if self._clock else self._virtual
+
+    async def until(self, deadline: Callable[[], float]) -> None:
+        while (left := deadline() - self.now()) > _EPSILON:
+            await self._sleep(left)
+            if not self._clock:
+                self._virtual += left
+
+
 async def play(
     symbols: list[Symbol],
-    interval: float,
+    interval: Seconds,
     set_lights: SetLights,
     on_progress: Callable[[Progress], None],
     sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
-    gap: float = GAP,
+    gap: Seconds = GAP,
+    clock: Callable[[], float] | None = None,
 ) -> None:
     """For each symbol: all lamps off for ``gap``, then its code until the next one.
 
@@ -59,24 +96,30 @@ async def play(
 
     With ``gap`` 0 the codes follow each other without going dark (smooth
     animations), but two equal letters in a row then look like one.
+
+    ``interval`` and ``gap`` may be getters: they are read again during every
+    wait, so a change shortens or lengthens the letter that is playing.
     """
+    interval, gap = _live(interval), _live(gap)
+    waiter = _Waiter(sleep, clock)
     total = len(symbols)
-    hold = hold_time(interval, gap)
     for index, symbol in enumerate(symbols, 1):
-        if gap > 0:
+        if gap() > 0:
             on_progress(Progress(STATE_PLAYING, index, total, symbol, pause=True))
             await set_lights(OFF)
-            await sleep(gap)
+            start = waiter.now()
+            await waiter.until(lambda: start + gap())
         on_progress(Progress(STATE_PLAYING, index, total, symbol))
         await set_lights(symbol.bits)
-        await sleep(hold)
+        start = waiter.now()
+        await waiter.until(lambda: start + hold_time(interval(), gap()))
     await set_lights(OFF)
     on_progress(Progress(STATE_DONE, total, total))
 
 
 async def play_morse(
     symbols: list[MorseSymbol],
-    unit: float,
+    unit: Seconds,
     wire: int,
     set_lights: SetLights,
     on_progress: Callable[[Progress], None],
@@ -91,7 +134,10 @@ async def play_morse(
     each one lasts at least ``MIN_PART`` of its length; the rhythm resumes from
     there. The first call turns everything off and is followed by a
     ``LEAD_IN``, so the first dot goes over a link that is already awake.
+    ``unit`` may be a getter, read again during every wait.
     """
+    unit = _live(unit)
+    waiter = _Waiter(sleep, clock)
     total = len(symbols)
     lit = tuple(i == wire for i in range(WIRE_COUNT))
     await set_lights(OFF)
@@ -99,9 +145,14 @@ async def play_morse(
 
     async def wait(units: int) -> None:
         nonlocal deadline
-        span = units * unit
-        deadline = max(deadline + span, clock() + span * MIN_PART)
-        await sleep(max(deadline - clock(), 0))
+        base, entered = deadline, clock()
+
+        def target() -> float:
+            span = units * unit()
+            return max(base + span, entered + span * MIN_PART)
+
+        await waiter.until(target)
+        deadline = target()
 
     await wait(LEAD_IN)
 

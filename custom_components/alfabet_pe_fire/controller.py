@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 from collections.abc import Callable
 
@@ -57,6 +58,7 @@ class AlfabetController:
         self._warned: set[str] = set()  # missing RTTTL actions already logged
         self.progress = Progress()
         self._task: asyncio.Task | None = None
+        self._changed = asyncio.Event()  # wakes up a wait when a setting changes
         self._listeners: set[Callable[[], None]] = set()
 
     @property
@@ -106,6 +108,19 @@ class AlfabetController:
         """Switch the message type; the Interval entity then shows that mode's value."""
         self.mode = mode
         self._notify()
+
+    @callback
+    def settings_changed(self) -> None:
+        """Interval, Pauză or Repetă după changed: the playback re-times at once."""
+        self._changed.set()
+        self._notify()  # e.g. Progres shows the new Repetă după
+
+    async def _sleep(self, seconds: float) -> None:
+        """Like asyncio.sleep, but returns early when a setting changes."""
+        self._changed.clear()
+        with contextlib.suppress(TimeoutError):
+            async with asyncio.timeout(seconds):
+                await self._changed.wait()
 
     @callback
     def _set_progress(self, progress: Progress) -> None:
@@ -173,37 +188,56 @@ class AlfabetController:
             await self._set_sound(False, old)
 
     async def _play_once(self) -> None:
-        if self.mode == MODE_MORSE:
+        # Interval and Pauză are read during every wait (getters), so a change
+        # re-times the letter that is playing; the mode is fixed for this pass
+        mode = self.mode
+
+        def interval() -> float:
+            return self.intervals[mode] / 1000
+
+        if mode == MODE_MORSE:
             await play_morse(
                 morse.encode(self.message),
-                self.interval / 1000,
+                interval,
                 MORSE_COLORS.index(self.morse_color),
                 self._set_morse,
                 self._set_progress,
+                sleep=self._sleep,
                 clock=self.hass.loop.time,
             )
         else:
             await play(
                 encode(self.message),
-                self.interval / 1000,
+                interval,
                 self._set_lights,
                 self._set_progress,
-                gap=self.gap / 1000,
+                sleep=self._sleep,
+                gap=lambda: self.gap / 1000,
+                clock=self.hass.loop.time,
             )
+
+    async def _wait_repeat(self) -> bool:
+        """The Repetă după pause, re-timed at once when it changes; False if set to 0."""
+        start = self.hass.loop.time()
+        while self.repeat > 0:
+            left = start + self.repeat / 1000 - self.hass.loop.time()
+            if left <= 0:
+                return True
+            await self._sleep(left)
+        return False
 
     async def _run(self) -> None:
         """Play, then, while Repeat is > 0, pause that long and play again.
 
-        Every repetition reads the settings again, so the message, the type,
-        the interval and the pause can be changed while it repeats.
+        Every repetition reads the message and the type again; the interval,
+        the pause and Repetă după apply at once, even in the middle of a letter.
         """
         try:
             await self._play_once()
             while self.repeat > 0:
                 p = self.progress
                 self._set_progress(Progress(STATE_WAITING, p.index, p.total))
-                await asyncio.sleep(self.repeat / 1000)
-                if self.repeat <= 0:  # turned off during the pause
+                if not await self._wait_repeat():  # turned off during the pause
                     self._set_progress(Progress(STATE_DONE, p.index, p.total))
                     break
                 await self._play_once()

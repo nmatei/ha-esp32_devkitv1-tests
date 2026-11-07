@@ -40,14 +40,18 @@ prove the commands, not a fresh-clone install. `pytest.ini` limits a bare `pytes
     deadlines on an injected clock so lamp latency doesn't stretch the rhythm;
     `LEAD_IN` 3 units off before the first letter; a late switch never cuts an
     element below `MIN_PART` = half — without that the slow first ESP32 call
-    swallowed the first dot of SOS), `Progress`. Lamps / progress / sleep / clock
+    swallowed the first dot of SOS), `Progress`. `interval` / `gap` / `unit` may be
+    getters (`Seconds`), re-read during every wait (`_Waiter`), so a setting change
+    re-times the letter that is playing. Lamps / progress / sleep / clock
     are injected, so it is tested with a fake clock. Stop = cancel the task.
   - `controller.py` — `AlfabetController`, one per config entry
     (`entry.runtime_data`): message, mode, `intervals` (ms, one per mode; `interval`
     is the current mode's), Morse color, `repeat` (ms, step 10, 0 = once), progress
     listeners. Runs `play()` or `play_morse()` (by mode) as a background task,
-    looping with a `STATE_WAITING` pause while `repeat` > 0 (settings re-read each
-    time). Drives lamps with `homeassistant.turn_on/turn_off`, so it works for
+    looping with a `STATE_WAITING` pause while `repeat` > 0 (message and mode re-read
+    each time). Interval, gap and repeat apply at once: the player gets them as getters
+    and waits on deadlines re-read whenever `sleep` returns; `settings_changed()`
+    (called by the Number entities) wakes the controller's `_sleep` early. Drives lamps with `homeassistant.turn_on/turn_off`, so it works for
     `light` and `switch`. Morse sound (`sound`, `SOUNDS`): `play_morse` gets
     `_set_morse`, which switches the lamp and the sound together (`asyncio.gather`),
     so the sound lasts exactly as the lamp: the buzzer switch on/off, or RTTTL
@@ -76,7 +80,7 @@ prove the commands, not a fresh-clone install. `pytest.ini` limits a bare `pytes
   config saved from the Device Builder, commented; the only full ESPHome example),
   `dashboard/dashboard-leds.yaml` (lamps, Start/Stop, Mesaj, Progres),
   `dashboard/dashboard-sensors.yaml`, `dashboard/dashboard-diagnostic.yaml` (WiFi diagnostics),
-  `dashboard/tv.yaml` + `telecomanda-tv.svg` (a whole TV view: the Sony remote sent by HW-489, drawn as SVG under picture-elements hotspots like `tablou-led`, codes read by HW-490, a free-form code to send, history; same text format both ways), `dashboard/tablou-led.yaml` + `telecomanda-led.svg` (the 24-key NEC remote of the letter light box, drawn as SVG under picture-elements hotspots; code n = `NEC 0xEF00 0x(FF−n)(n)`), `automations/` (incl. `sunet-pauza.yaml` and `senzor-parcare.yaml`: HC-SR04 starts / stops the message and sets Interval + Repetă după by distance; both loaded as they are by `tests_ha`), and the setup notes
+  `dashboard/tv.yaml` + `telecomanda-tv.svg` (a whole TV view: the Sony remote sent by HW-489, drawn as SVG under picture-elements hotspots like `tablou-led`, codes read by HW-490, a free-form code to send, history; same text format both ways), `dashboard/tablou-led.yaml` + `telecomanda-led.svg` (the 24-key NEC remote of the letter light box, drawn as SVG under picture-elements hotspots; code n = `NEC 0xEF00 0x(FF−n)(n)`), `automations/` (incl. `sunet-pauza.yaml` and `senzor-parcare.yaml`: HC-SR04 starts / stops the message and sets Interval + Repetă după by distance in 5 cm steps, without restarting it; both loaded as they are by `tests_ha`), and the setup notes
   `examples/README.md` (it links the YAML files instead of copying them).
 
 ## Integrations

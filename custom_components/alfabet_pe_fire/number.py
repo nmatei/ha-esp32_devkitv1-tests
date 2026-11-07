@@ -99,6 +99,7 @@ class IntervalNumber(AlfabetEntity, RestoreNumber):
     async def async_set_native_value(self, value: float) -> None:
         self.controller.interval = _to_step(value)
         self.async_write_ha_state()
+        self.controller.settings_changed()
 
 
 class RepeatNumber(AlfabetEntity, RestoreNumber):
@@ -127,6 +128,7 @@ class RepeatNumber(AlfabetEntity, RestoreNumber):
     async def async_set_native_value(self, value: float) -> None:
         self.controller.repeat = _repeat_step(value)
         self.async_write_ha_state()
+        self.controller.settings_changed()
 
 
 class GapNumber(AlfabetEntity, RestoreNumber):
@@ -152,3 +154,4 @@ class GapNumber(AlfabetEntity, RestoreNumber):
     async def async_set_native_value(self, value: float) -> None:
         self.controller.gap = _to_step(value, GAP_STEP, 0, MAX_GAP_MS)
         self.async_write_ha_state()
+        self.controller.settings_changed()

@@ -138,3 +138,24 @@ def test_a_slow_switch_mid_message_keeps_every_element_visible():
     assert all(end - start >= 0.2 for start, end in on)
     gaps = [b[0] - a[1] for a, b in zip(on, on[1:])]
     assert all(g >= 0.2 for g in gaps)
+
+
+def test_a_shorter_unit_speeds_up_the_element_that_is_playing():
+    now = [0.0]
+    unit = [1.0]
+    log = []
+
+    async def set_lights(bits):
+        log.append((round(now[0], 3), any(bits)))
+
+    async def sleep(seconds):
+        # at t = 4 (in the dash of T, lit since 3) the unit drops to 0.5
+        if unit[0] == 1.0 and now[0] < 4 < now[0] + seconds:
+            now[0] = 4
+            unit[0] = 0.5
+        else:
+            now[0] += seconds
+
+    asyncio.run(play_morse(encode("t"), lambda: unit[0], 0, set_lights, lambda p: None, sleep, lambda: now[0]))
+    # the dash is 3 units: 1.5 s at the new unit, so it ends at 4.5 instead of 6
+    assert _on_times(log) == [(3, 4.5)]
