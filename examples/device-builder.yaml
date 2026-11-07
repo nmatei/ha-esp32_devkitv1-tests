@@ -135,6 +135,15 @@ sensor:
       reference_temperature: 25°C
       reference_resistance: 10kOhm
     name: "Temperatura (HW-498)"
+    accuracy_decimals: 1
+    filters:
+      # media a 5 citiri (2 s fiecare) → o valoare la 10 s, fără zgomotul ADC-ului
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 5
+      - round: 1
+      # trimite doar la o schimbare de cel puțin 0.2 °C: 17.7 ↔ 17.8 (zgomot) nu mai pleacă
+      - delta: 0.15
 
   # Distanța, HC-SR04: Vcc pe 3V3 și Echo direct pe GPIO14; dacă nu merge la 3.3V, Vcc pe VIN (5V)
   # și Echo NUMAI prin divizor (10k + 20k) spre GPIO14. Vezi componente.md.
